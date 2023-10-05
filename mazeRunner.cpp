@@ -25,6 +25,27 @@ int main(void){
     printStartText();
     printMainMenu();
     
+    int input;
+
+    do {
+        std::cin >> input;
+        if (input == 1) {
+            printGenerateMazeMenu();
+        } else if (input == 2) {
+            // Placeholder for build maze menu
+            continue;
+        } else if (input == 3) {
+            printSolveMazeMenu();
+        } else if (input == 4) {
+            printTeamInfo();
+        } else if (input == 5) {
+            printExitMassage();
+        } else {
+            // Re-prompts the user for input repeatedly
+            std::cout << "Invalid input. Please try again." << std::endl;
+        }
+    } while (input != 5);
+
 
     mcpp::MinecraftConnection mc; 
     mc.doCommand("time set day"); 
