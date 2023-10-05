@@ -19,9 +19,11 @@ enum States{
 
 int main(void){
 
-    bool mode = NORMAL_MODE;
+    // bool mode = NORMAL_MODE;
     //read Mode
-
+    
+    printStartText();
+    printMainMenu();
     
 
     mcpp::MinecraftConnection mc; 
