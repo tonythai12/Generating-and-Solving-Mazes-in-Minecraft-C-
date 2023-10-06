@@ -19,6 +19,7 @@ enum States{
 
 void ReadMazeFromTerminal(); // option 1 in generate maze menu
 void GenerateRandomMaze(); // option 2 in generate maze menu
+void SolveMaze();
 
 int main(void){
 
@@ -34,11 +35,35 @@ int main(void){
         std::cin >> input;
         if (input == 1) {
             printGenerateMazeMenu();
+            std::cin >> input;
+
+            if (input == 1) {
+                ReadMazeFromTerminal();
+            } else if (input == 2) {
+                GenerateRandomMaze();
+            } else if (input == 3) {
+                printMainMenu();
+            } else {
+                std::cout << "Invalid input. Please try again." << std::endl;
+            }
+
         } else if (input == 2) {
             // Placeholder for build maze menu
             continue;
         } else if (input == 3) {
             printSolveMazeMenu();
+            std::cin >> input;
+
+            if (input == 1) {
+                SolveMaze();
+            } else if (input == 2) {
+                // Placeholder for show escape route
+                continue;
+            } else if (input == 3) {
+                printMainMenu();
+            } else {
+                std::cout << "Invalid input. Please try again." << std::endl;
+            }
         } else if (input == 4) {
             printTeamInfo();
         } else if (input == 5) {
