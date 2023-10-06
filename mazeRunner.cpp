@@ -17,6 +17,9 @@ enum States{
     ST_Exit
 };
 
+void ReadMazeFromTerminal(); // option 1 in generate maze menu
+void GenerateRandomMaze(); // option 2 in generate maze menu
+
 int main(void){
 
     // bool mode = NORMAL_MODE;
@@ -58,9 +61,28 @@ int main(void){
         //Do something
     }
 
-    printExitMassage();
-
 
     return EXIT_SUCCESS;
+
+}
+
+void ReadMazeFromTerminal() {
+    // Base point
+    int x, y, z;
+    std::cout << "Enter the basePoint of maze:" << std::endl;
+    std::cin >> x >> y >> z;
+    mcpp::Coordinate basePoint = mcpp::Coordinate(x, y + 1, z);
+
+    // Length and Width
+    int length, width;
+    std::cin >> length;
+    do {
+        std::cin >> width;
+        if (width % 2 == 0) {
+            std::cout << "Width must be an odd number. Please re-enter:" << std::endl;
+        }
+    } while (width % 2 == 0);
+
+    //TODO: Maze Structure
 
 }
