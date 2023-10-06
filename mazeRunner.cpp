@@ -86,3 +86,7 @@ void ReadMazeFromTerminal() {
     //TODO: Maze Structure
 
 }
+
+void GenerateRandomMaze() {
+    //TODO: Generate maze and print in console
+}
