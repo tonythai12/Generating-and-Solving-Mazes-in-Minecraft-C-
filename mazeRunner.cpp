@@ -66,6 +66,7 @@ int main(void){
 
 }
 
+// Tony
 void ReadMazeFromTerminal() {
     // Base point
     int x, y, z;
@@ -86,7 +87,7 @@ void ReadMazeFromTerminal() {
     //TODO: Maze Structure
 
 }
-
+// Keenan and karan
 void GenerateRandomMaze() {
     //TODO: Generate maze and print in console
 }
