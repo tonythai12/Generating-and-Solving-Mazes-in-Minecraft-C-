@@ -87,7 +87,12 @@ void ReadMazeFromTerminal() {
     //TODO: Maze Structure
 
 }
-// Keenan and karan
+// Ravi
 void GenerateRandomMaze() {
     //TODO: Generate maze and print in console
+}
+
+// Keenan
+void SolveMaze() {
+    // TODO: Solve maze code 
 }
