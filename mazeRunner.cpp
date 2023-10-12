@@ -148,13 +148,13 @@ bool canMove(int x, int z, AgentDirection dir) {
     mcpp::Coordinate playerPos = mc.getPlayerPosition();
 
     if (dir == UP) {
-        blockType = mc.getBlock(mcpp::Coordinate(playerPos.x, playerPos.y, playerPos.z + 1));
-    } else if (dir == RIGHT) {
         blockType = mc.getBlock(mcpp::Coordinate(playerPos.x + 1, playerPos.y, playerPos.z));
+    } else if (dir == RIGHT) {
+        blockType = mc.getBlock(mcpp::Coordinate(playerPos.x, playerPos.y, playerPos.z + 1));
     } else if (dir == DOWN) {
-        blockType = mc.getBlock(mcpp::Coordinate(playerPos.x, playerPos.y, playerPos.z - 1));
-    } else if (dir == LEFT) {
         blockType = mc.getBlock(mcpp::Coordinate(playerPos.x - 1, playerPos.y, playerPos.z));
+    } else if (dir == LEFT) {
+        blockType = mc.getBlock(mcpp::Coordinate(playerPos.x, playerPos.y, playerPos.z - 1));
     } else {
         return false;
     }
