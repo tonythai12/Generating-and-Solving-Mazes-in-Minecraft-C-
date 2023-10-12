@@ -149,8 +149,34 @@ bool canMove(int x, int z, AgentDirection dir) {
 // Keenan
 void SolveMaze() {
     // TODO: Solve maze code 
-    Agent player(mcpp::Coordinate(4848, 71, 4369));
-
-
     
+    // Find player position
+    mcpp::MinecraftConnection mc;
+    mcpp::Coordinate playerPos = mc.getPlayerPosition();
+    int x = playerPos.x;
+    int z = playerPos.z;
+
+    bool solved = false;
+    AgentDirection dir = UP;
+
+    while (!solved) {
+        // Try turning right
+        if (!canMove(x, z, dir)) {
+            do {
+                // Turns right until there's a valid move
+                mcpp::SetBlock(playerPos, mcpp::Blocks::LIME_CARPET);
+            } while (!canMove(x, z, dir));
+        }
+
+        // Move in directions
+        if (dir == UP) {
+            x--;
+        } else if (dir == RIGHT) {
+            z++;
+        } else if (dir == DOWN) {
+            x++;
+        } else if (dir == LEFT) {
+            z--;
+        }
+    }
 }
