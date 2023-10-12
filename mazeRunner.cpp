@@ -156,6 +156,7 @@ void SolveMaze() {
     
     // Find player position
     mcpp::MinecraftConnection mc;
+    
     mcpp::Coordinate playerPos = mc.getPlayerPosition();
     int x = playerPos.x;
     int z = playerPos.z;
@@ -185,5 +186,10 @@ void SolveMaze() {
         // Highlight solved tile
         void setBlock(mcpp::Coordinate playerPos, mcpp::BlockType LIME_CARPET);
         std::this_thread::sleep_for(std::chrono::seconds(1)); // 1s delay
+
+        // Exit dummy maze if reached this condition
+        if (x == 4 && z == 5) {
+            solved = true;
+        }
     }
 }
