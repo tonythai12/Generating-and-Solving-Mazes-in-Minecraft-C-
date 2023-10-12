@@ -142,7 +142,7 @@ void SolveMaze() {
 
     // Condition for while-loop
     bool solved = false;
-    AgentDirection dir = UP;
+    AgentDirection dir = RIGHT;
 
     while (!solved) {
         // Try turning right
@@ -156,11 +156,11 @@ void SolveMaze() {
 
         // Move in directions
         if (dir == UP) {
-            x--;
+            x++;
         } else if (dir == RIGHT) {
             z++;
         } else if (dir == DOWN) {
-            x++;
+            x--;
         } else if (dir == LEFT) {
             z--;
         }
