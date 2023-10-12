@@ -32,4 +32,5 @@ AgentDirection Agent::turn(AgentDirection dir) {
 
 Agent::~Agent()
 {
+    std::cout << "Agent destroyed" << std::endl;
 }
