@@ -33,13 +33,14 @@ class Agent
 
 public:
     Agent(mcpp::Coordinate startLoc);
-    bool canMove(int x, int z, AgentDirection dir, mcpp::Coordinate& loc);
+    bool canMove(int x, int z, AgentDirection dir);
     AgentDirection turn(AgentDirection dir);
     ~Agent();
 
 private:
     /* data */
     mcpp::MinecraftConnection mc;
+    mcpp::Coordinate startLoc;
 
 };
 
