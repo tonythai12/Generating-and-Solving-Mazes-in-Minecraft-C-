@@ -147,14 +147,15 @@ void SolveMaze() {
     while (!solved) {
         // Try turning right
         if (!player.canMove(x, z, dir, playerPos)) {
+            // If cannot turn right
             do {
                 // Turns right until there's a valid move
                 dir = player.turn(dir);
-            // Exits loop do-while loop when there's a valid move
+            // Exits loop when there's a valid move
             } while (!player.canMove(x, z, dir, playerPos));
         }
 
-        // Move in directions
+        // Then, updates coords by moving in direction of dir
         if (dir == UP) {
             x++;
         } else if (dir == RIGHT) {
@@ -164,7 +165,8 @@ void SolveMaze() {
         } else if (dir == LEFT) {
             z--;
         }
-        // Updates player position with new coordinates
+
+        // Updates playerPos with new coordinates
         playerPos.x = x;
         playerPos.z = z;
 
@@ -175,9 +177,6 @@ void SolveMaze() {
         std::this_thread::sleep_for(std::chrono::seconds(1)); 
         mc.setBlock(playerPos, mcpp::Blocks::AIR);
 
-        // Exit dummy" maze if reached this condition
-        if (x == 4 && z == 5) {
-            solved = true;
-        }
+        // now work out exit condition
     }
 }
