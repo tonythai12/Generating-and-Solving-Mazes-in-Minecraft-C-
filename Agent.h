@@ -33,6 +33,8 @@ class Agent
 
 public:
     Agent(mcpp::Coordinate startLoc);
+    bool canMove(int x, int z, AgentDirection dir, mcpp::Coordinate& loc);
+    AgentDirection turn(AgentDirection dir);
     ~Agent();
 
 private:
