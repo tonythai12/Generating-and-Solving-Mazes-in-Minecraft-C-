@@ -165,7 +165,6 @@ bool canMove(int x, int z, AgentDirection dir) {
 // Keenan
 void SolveMaze() {
     // TODO: Solve maze code 
-
     mcpp::MinecraftConnection mc;
 
     // Find player position
@@ -196,6 +195,8 @@ void SolveMaze() {
             z--;
         }
         // Highlight solved tile
+        playerPos.x = x;
+        playerPos.z = z;
         mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
         std::this_thread::sleep_for(std::chrono::seconds(1)); // 1s delay
 
