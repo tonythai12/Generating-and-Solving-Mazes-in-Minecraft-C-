@@ -4,7 +4,7 @@ Agent::Agent(mcpp::Coordinate startLoc)
 {
 }
 
-bool canMove(int x, int z, AgentDirection dir, mcpp::Coordinate& loc) {
+bool Agent::canMove(int x, int z, AgentDirection dir, mcpp::Coordinate& loc) {
 
     mcpp::MinecraftConnection mc;
     
@@ -27,7 +27,7 @@ bool canMove(int x, int z, AgentDirection dir, mcpp::Coordinate& loc) {
     return blockType == mcpp::Blocks::AIR;
 }
 
-AgentDirection turn(AgentDirection dir) {
+AgentDirection Agent::turn(AgentDirection dir) {
     return static_cast<AgentDirection>((dir + 1) % 4);
 }
 
