@@ -205,7 +205,7 @@ void SolveMaze() {
         // Highlights 'solved' tile
         mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
         
-        // 1 second delay and then remove highlighted tile
+        // 3 second delay and then remove highlighted tile
         std::this_thread::sleep_for(std::chrono::seconds(1)); 
         mc.setBlock(playerPos, mcpp::Blocks::AIR);
 
