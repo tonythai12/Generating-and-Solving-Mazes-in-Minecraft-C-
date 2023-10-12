@@ -144,7 +144,7 @@ bool canMove(int x, int z, AgentDirection dir) {
     mcpp::MinecraftConnection mc;
     
     // Initialise default blockType
-    mcpp::BlockType blockType(0);
+    mcpp::BlockType blockType(1);
     mcpp::Coordinate playerPos = mc.getPlayerPosition();
 
     if (dir == UP) {
@@ -159,6 +159,7 @@ bool canMove(int x, int z, AgentDirection dir) {
         return false;
     }
 
+    // If an air block is returned, canMove == true
     return blockType == mcpp::Blocks::AIR;
 }
 
@@ -169,9 +170,12 @@ void SolveMaze() {
 
     // Find player position
     mcpp::Coordinate playerPos = mc.getPlayerPosition();
+
+    // Initialise variables for x and z coordinates
     int x = playerPos.x;
     int z = playerPos.z;
 
+    // Condition for while-loop
     bool solved = false;
     AgentDirection dir = UP;
 
@@ -181,6 +185,7 @@ void SolveMaze() {
             do {
                 // Turns right until there's a valid move
                 dir = turn(dir);
+            // Exits loop do-while loop when there's a valid move
             } while (!canMove(x, z, dir));
         }
 
@@ -194,11 +199,16 @@ void SolveMaze() {
         } else if (dir == LEFT) {
             z--;
         }
-        // Highlight solved tile
+        // Updates player position with new coordinates
         playerPos.x = x;
         playerPos.z = z;
+
+        // Highlights 'solved' tile
         mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
-        std::this_thread::sleep_for(std::chrono::seconds(1)); // 1s delay
+        
+        // 1 second delay and then remove highlighted tile
+        std::this_thread::sleep_for(std::chrono::seconds(1)); 
+        mc.setBlock(playerPos, mcpp::Blocks::AIR);
 
         // Exit dummy" maze if reached this condition
         if (x == 4 && z == 5) {
