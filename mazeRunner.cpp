@@ -164,7 +164,7 @@ void SolveMaze() {
         if (!canMove(x, z, dir)) {
             do {
                 // Turns right until there's a valid move
-                mcpp::SetBlock(playerPos, mcpp::Blocks::LIME_CARPET);
+                void setBlock(mcpp::Coordinate playerPos, mcpp::BlockType LIME_CARPET);
             } while (!canMove(x, z, dir));
         }
 
