@@ -16,10 +16,20 @@ enum States{
     ST_Creators,
     ST_Exit
 };
+// dummy maze, assume it's generated
+char maze[5][6] = {
+    {'x', 'x', 'x', 'x', 'x', 'x'},
+    {'x', '.', '.', '.', '.', 'x'},
+    {'x', 'x', 'x', '.', 'x', 'x'},
+    {'x', '.', '.', '.', '.', 'x'},
+    {'x', 'x', 'x', 'x', 'x', 'x'}
+};
 
 void ReadMazeFromTerminal(); // option 1 in generate maze menu
 void GenerateRandomMaze(); // option 2 in generate maze menu
 void SolveMaze();
+AgentDirection turn(AgentDirection dir);
+bool canMove(int x, int z, AgentDirection dir);
 
 int main(void){
 
@@ -115,9 +125,32 @@ void ReadMazeFromTerminal() {
 // Ravi
 void GenerateRandomMaze() {
     //TODO: Generate maze and print in console
+
+    // dummy maze for solving, assume generated
+    
+}
+
+AgentDirection turn(AgentDirection dir) {
+    return static_cast<AgentDirection>((dir + 1) % 4);
+}
+
+bool canMove(int x, int z, AgentDirection dir) {
+    if (dir == UP) {
+        return maze[x][z + 1] == '.';
+    } else if (dir == RIGHT) {
+        return maze[x + 1][z] == '.';
+    } else if (dir == DOWN) {
+        return maze[x][z - 1] == '.';
+    } else if (dir == LEFT) {
+        return maze[x - 1][z] == '.';
+    }
 }
 
 // Keenan
 void SolveMaze() {
     // TODO: Solve maze code 
+    Agent player(mcpp::Coordinate(4848, 71, 4369));
+
+
+    
 }

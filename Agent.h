@@ -21,6 +21,13 @@ enum AgentOrientation{
     Z_MINUS
 };
 
+enum AgentDirection {
+    UP,
+    RIGHT,
+    DOWN,
+    LEFT
+};
+
 class Agent
 {
 
