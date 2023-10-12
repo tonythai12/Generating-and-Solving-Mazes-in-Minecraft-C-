@@ -39,9 +39,12 @@ int main(void){
 
     // bool mode = NORMAL_MODE;
     //read Mode
-    
+
+    mcpp::MinecraftConnection mc;
     printStartText();
     printMainMenu();
+
+    void SolveMaze();
     
     int input;
 
@@ -88,8 +91,6 @@ int main(void){
         }
     } while (input != 5);
 
-
-    mcpp::MinecraftConnection mc; 
     mc.doCommand("time set day"); 
 
     States curState = ST_Main;
@@ -139,24 +140,35 @@ AgentDirection turn(AgentDirection dir) {
 }
 
 bool canMove(int x, int z, AgentDirection dir) {
+
+    mcpp::MinecraftConnection mc;
+    
+    // Initialise default blockType
+    mcpp::BlockType blockType(0);
+    mcpp::Coordinate playerPos = mc.getPlayerPosition();
+
     if (dir == UP) {
-        return maze[x][z + 1] == '.';
+        blockType = mc.getBlock(mcpp::Coordinate(playerPos.x, playerPos.y, playerPos.z + 1));
     } else if (dir == RIGHT) {
-        return maze[x + 1][z] == '.';
+        blockType = mc.getBlock(mcpp::Coordinate(playerPos.x + 1, playerPos.y, playerPos.z));
     } else if (dir == DOWN) {
-        return maze[x][z - 1] == '.';
+        blockType = mc.getBlock(mcpp::Coordinate(playerPos.x, playerPos.y, playerPos.z - 1));
     } else if (dir == LEFT) {
-        return maze[x - 1][z] == '.';
+        blockType = mc.getBlock(mcpp::Coordinate(playerPos.x - 1, playerPos.y, playerPos.z));
+    } else {
+        return false;
     }
+
+    return blockType == mcpp::Blocks::AIR;
 }
 
 // Keenan
 void SolveMaze() {
     // TODO: Solve maze code 
-    
-    // Find player position
+
     mcpp::MinecraftConnection mc;
-    
+
+    // Find player position
     mcpp::Coordinate playerPos = mc.getPlayerPosition();
     int x = playerPos.x;
     int z = playerPos.z;
@@ -184,10 +196,10 @@ void SolveMaze() {
             z--;
         }
         // Highlight solved tile
-        void setBlock(mcpp::Coordinate playerPos, mcpp::BlockType LIME_CARPET);
+        mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
         std::this_thread::sleep_for(std::chrono::seconds(1)); // 1s delay
 
-        // Exit dummy maze if reached this condition
+        // Exit dummy" maze if reached this condition
         if (x == 4 && z == 5) {
             solved = true;
         }
