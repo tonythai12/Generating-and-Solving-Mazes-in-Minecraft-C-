@@ -6,6 +6,10 @@
 #include "Maze.h"
 #include "Agent.h"
 
+// For sleep and time duration
+#include <thread>   
+#include <chrono>   
+
 #define NORMAL_MODE 0
 #define TESTING_MODE 1
 
@@ -164,7 +168,7 @@ void SolveMaze() {
         if (!canMove(x, z, dir)) {
             do {
                 // Turns right until there's a valid move
-                void setBlock(mcpp::Coordinate playerPos, mcpp::BlockType LIME_CARPET);
+                dir = turn(dir);
             } while (!canMove(x, z, dir));
         }
 
@@ -178,5 +182,8 @@ void SolveMaze() {
         } else if (dir == LEFT) {
             z--;
         }
+        // Highlight solved tile
+        void setBlock(mcpp::Coordinate playerPos, mcpp::BlockType LIME_CARPET);
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // 1s delay
     }
 }
