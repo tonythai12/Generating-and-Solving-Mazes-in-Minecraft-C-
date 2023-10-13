@@ -94,22 +94,56 @@ int main(void){
 // Tony
 void ReadMazeFromTerminal() {
     // Base point
+    mcpp::MinecraftConnection mc;
     int x, y, z;
     std::cout << "Enter the basePoint of maze:" << std::endl;
     std::cin >> x >> y >> z;
     mcpp::Coordinate basePoint = mcpp::Coordinate(x, y + 1, z);
 
     // Length and Width
-    int length, width;
-    std::cin >> length;
+    int envLength, envWidth;
+    std::cin >> envLength;
     do {
-        std::cin >> width;
-        if (width % 2 == 0) {
+        std::cin >> envWidth;
+        if (envWidth % 2 == 0) {
             std::cout << "Width must be an odd number. Please re-enter:" << std::endl;
         }
-    } while (width % 2 == 0);
+    } while (envWidth % 2 == 0);
+    
+    
+    char envStructure [envLength][envWidth];
+    char readChar;
+
+    for (int i = 0; i < envLength; i++) {
+        for (int j = 0; j < envLength; j++) {
+            std::cin >> readChar;
+            envStructure[i][j] = readChar;
+
+        }
+    }
+    for (int i = 0; i < envLength; i++) {
+        for (int j = 0; j < envWidth; j++) {
+        if (envStructure[i][j] == 'x') {
+            mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::BRICKS);
+        } else {
+            mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::AIR);
+        }
+    }
+ }
 
     //TODO: Maze Structure
+    std::vector<std::string> maze;
+    std::cout << "Enter the maze structure:" << std::endl;
+    std::string row;
+    for (int i = 0; i < envLength; i++) {
+        std::cin >> row;
+        if (row.size() != static_cast<size_t>(envWidth)) {
+            std::cout << "Invalid input. Row should have exactly " << envWidth<< " characters." << std::endl;
+            i--;
+        } else {
+            maze.push_back(row);
+        }
+    }
 
 }
 // Ravi
