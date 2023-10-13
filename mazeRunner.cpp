@@ -6,6 +6,10 @@
 #include "Maze.h"
 #include "Agent.h"
 
+// For sleep and time duration
+#include <thread>   
+#include <chrono>   
+
 #define NORMAL_MODE 0
 #define TESTING_MODE 1
 
@@ -25,9 +29,12 @@ int main(void){
 
     // bool mode = NORMAL_MODE;
     //read Mode
-    
+
+    mcpp::MinecraftConnection mc;
     printStartText();
     printMainMenu();
+
+    void SolveMaze();
     
     int input;
 
@@ -74,8 +81,6 @@ int main(void){
         }
     } while (input != 5);
 
-
-    mcpp::MinecraftConnection mc; 
     mc.doCommand("time set day"); 
 
     States curState = ST_Main;
@@ -149,9 +154,69 @@ void ReadMazeFromTerminal() {
 // Ravi
 void GenerateRandomMaze() {
     //TODO: Generate maze and print in console
+
+    // dummy maze for solving, assume generated
+    
 }
 
 // Keenan
 void SolveMaze() {
     // TODO: Solve maze code 
+    mcpp::MinecraftConnection mc;
+
+    int counter = 1;
+
+    // Find player position
+    mcpp::Coordinate playerPos = mc.getPlayerPosition();
+
+    // Initialise player @ playerPos
+    Agent player(playerPos);
+
+    // Initialise variables for x and z coordinates
+    int x = playerPos.x;
+    int z = playerPos.z;
+
+    // Condition for while-loop
+    bool solved = false;
+    AgentDirection dir = RIGHT;
+
+    while (!solved) {
+        // Try turning right
+        if (!player.canMove(x, z, dir, playerPos)) {
+            // If cannot turn right
+            do {
+                // Turns right until there's a valid move
+                dir = player.turn(dir);
+            // Exits loop when there's a valid move
+            } while (!player.canMove(x, z, dir, playerPos));
+        }
+
+        // Then, updates coords by moving in direction of dir
+        if (dir == UP) {
+            x++;
+        } else if (dir == RIGHT) {
+            z++;
+        } else if (dir == DOWN) {
+            x--;
+        } else if (dir == LEFT) {
+            z--;
+        }
+
+        // Updates playerPos with new coordinates
+        playerPos.x = x;
+        playerPos.z = z;
+
+        // Highlights 'solved' tile
+        mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
+
+        // Initialise counter for steps to print in console
+        std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << ")" << std::endl;
+        counter++;
+        
+        // 3 second delay and then remove highlighted tile
+        std::this_thread::sleep_for(std::chrono::seconds(1)); 
+        mc.setBlock(playerPos, mcpp::Blocks::AIR);
+
+        // now work out exit condition
+    }
 }
