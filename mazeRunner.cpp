@@ -146,13 +146,13 @@ void SolveMaze() {
 
     while (!solved) {
         // Try turning right
-        if (!player.canMove(x, z, dir)) {
+        if (!player.canMove(x, z, dir, playerPos)) {
             // If cannot turn right
             do {
                 // Turns right until there's a valid move
                 dir = player.turn(dir);
             // Exits loop when there's a valid move
-            } while (!player.canMove(x, z, dir));
+            } while (!player.canMove(x, z, dir, playerPos));
         }
 
         // Then, updates coords by moving in direction of dir
