@@ -210,7 +210,8 @@ void SolveMaze() {
         mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
 
         // Initialise counter for steps to print in console
-        std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << ")" << std::endl;
+        std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << 
+        ", " << playerPos.z << ")" << std::endl;
         counter++;
         
         // 3 second delay and then remove highlighted tile
