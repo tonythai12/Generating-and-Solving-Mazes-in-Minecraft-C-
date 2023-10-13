@@ -146,13 +146,13 @@ void SolveMaze() {
 
     while (!solved) {
         // Try turning right
-        if (!player.canMove(x, z, dir, playerPos)) {
+        if (!player.canMove(x, z, dir)) {
             // If cannot turn right
             do {
                 // Turns right until there's a valid move
                 dir = player.turn(dir);
             // Exits loop when there's a valid move
-            } while (!player.canMove(x, z, dir, playerPos));
+            } while (!player.canMove(x, z, dir));
         }
 
         // Then, updates coords by moving in direction of dir
@@ -172,6 +172,11 @@ void SolveMaze() {
 
         // Highlights 'solved' tile
         mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
+
+        // Initialise counter for steps to print in console
+        int counter = 1;
+        std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << ")" << std::endl;
+        counter++;
         
         // 3 second delay and then remove highlighted tile
         std::this_thread::sleep_for(std::chrono::seconds(1)); 
