@@ -13,13 +13,13 @@ bool Agent::canMove(int x, int z, AgentDirection dir, mcpp::Coordinate &loc) {
     mcpp::BlockType blockType(1);
 
     if (dir == UP) {
-        blockType = mc.getBlock(mcpp::Coordinate(startLoc.x + 1, startLoc.y, startLoc.z));
+        blockType = mc.getBlock(mcpp::Coordinate(loc.x + 1, loc.y, loc.z));
     } else if (dir == RIGHT) {
-        blockType = mc.getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z + 1));
+        blockType = mc.getBlock(mcpp::Coordinate(loc.x, loc.y, loc.z + 1));
     } else if (dir == DOWN) {
-        blockType = mc.getBlock(mcpp::Coordinate(startLoc.x - 1, startLoc.y, startLoc.z));
+        blockType = mc.getBlock(mcpp::Coordinate(loc.x - 1, loc.y, loc.z));
     } else if (dir == LEFT) {
-        blockType = mc.getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z - 1));
+        blockType = mc.getBlock(mcpp::Coordinate(loc.x, loc.y, loc.z - 1));
     } else {
         return false;
     }
