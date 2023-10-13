@@ -1,10 +1,11 @@
 #include "Agent.h"
 
-Agent::Agent(mcpp::Coordinate startLoc)
+Agent::Agent(mcpp::Coordinate &startLoc)
 {
+    this->startLoc = startLoc;
 }
 
-bool Agent::canMove(int x, int z, AgentDirection dir, mcpp::Coordinate& loc) {
+bool Agent::canMove(int x, int z, AgentDirection dir, mcpp::Coordinate &loc) {
 
     mcpp::MinecraftConnection mc;
     
