@@ -130,6 +130,8 @@ void SolveMaze() {
     // TODO: Solve maze code 
     mcpp::MinecraftConnection mc;
 
+    int counter = 1;
+
     // Find player position
     mcpp::Coordinate playerPos = mc.getPlayerPosition();
 
@@ -174,7 +176,6 @@ void SolveMaze() {
         mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
 
         // Initialise counter for steps to print in console
-        int counter = 1;
         std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << ")" << std::endl;
         counter++;
         
