@@ -175,7 +175,8 @@ void SolveMaze() {
 
         // Initialise counter for steps to print in console
         int counter = 1;
-        std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.z << ")" << std::endl;
+        std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << ")" << std::endl;
+        counter++;
         
         // 3 second delay and then remove highlighted tile
         std::this_thread::sleep_for(std::chrono::seconds(1)); 
