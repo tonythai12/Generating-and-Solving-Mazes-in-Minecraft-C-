@@ -28,6 +28,7 @@ void RightHandWallFollower(Agent *player, AgentDirection &dir, int &x, int &z,
                             mcpp::Coordinate &playerPos);
 void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc);
 void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
+void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 
 int main(void){
 
@@ -188,22 +189,13 @@ void SolveMaze() {
         // Solve the current tile
         RightHandWallFollower(player, dir, x, z, playerPos);
 
-        // Then, updates coords by moving in direction of dir
-        if (dir == UP) {
-            x++;
-        } else if (dir == RIGHT) {
-            z++;
-        } else if (dir == DOWN) {
-            x--;
-        } else if (dir == LEFT) {
-            z--;
-        }
-        
-        // Updates playerPos with new coordinates
-        playerPos.x = x;
-        playerPos.z = z;
+        // Update coordinates for the next tile to be solved
+        UpdateCoordsAfterSolving(dir, x, z, playerPos);
 
+        // Print out the coordinates of the solved tile
         PrintSteps(counter, playerPos);
+
+        // Highlight the solved tile
         HighlightSolvedBlock(playerPos, mc);
 
         // now work out exit condition
@@ -216,6 +208,30 @@ void PrintSteps(int &counter, const mcpp::Coordinate &playerPos) {
     std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << 
         ", " << playerPos.z << ")" << std::endl;
     counter++;
+}
+
+/* 
+    The function below updates the coordinates of the agent that's solving the maze.
+    It either increments or decrements the x or z coordinate depending on the direction.
+    After that, it updates the playerPos with the new coordinates.
+*/
+void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, 
+                            mcpp::Coordinate &playerPos) {
+
+    // Updates coords after moving in direction of dir
+    if (dir == UP) {
+        x++;
+    } else if (dir == RIGHT) {
+        z++;
+    } else if (dir == DOWN) {
+        x--;
+    } else if (dir == LEFT) {
+        z--;
+    }
+        
+    // Updates playerPos with new coordinates
+    playerPos.x = x;
+    playerPos.z = z;      
 }
 
 void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc) {
