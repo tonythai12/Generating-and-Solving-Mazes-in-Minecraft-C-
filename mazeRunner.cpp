@@ -38,8 +38,6 @@ int main(void){
     mcpp::MinecraftConnection mc;
     printStartText();
     printMainMenu();
-
-    void SolveMaze();
     
     int input;
 
@@ -250,12 +248,14 @@ void RightHandWallFollower(Agent *player, AgentDirection &dir, int &x, int &z,
     bool moved = false;
     while (!moved) {
         AgentDirection rightDir = player->turn(dir);
+
         // Try to turn right first
         if (player->canMove(x, z, rightDir, playerPos)) {
             std::cout << "Turning right." << std::endl;
             dir = rightDir;
             moved = true;
         } 
+
         // If it can move straight, do so
         else if (player->canMove(x, z, dir, playerPos)) {
             std::cout << "Moving straight." << std::endl;
@@ -263,6 +263,7 @@ void RightHandWallFollower(Agent *player, AgentDirection &dir, int &x, int &z,
         } 
         else {
             std::cout << "Cannot move straight or right. Trying to turn left." << std::endl;
+
             // Can't move straight or right. Try to turn left
             for (int i = 0; i < 3; i++) {
                 dir = player->turn(dir);
