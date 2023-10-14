@@ -24,7 +24,7 @@ enum States{
 void ReadMazeFromTerminal(); // option 1 in generate maze menu
 void GenerateRandomMaze(); // option 2 in generate maze menu
 void SolveMaze();
-void RightHandWallFollower(Agent &player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
+void RightHandWallFollower(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 
 int main(void){
 
@@ -169,7 +169,7 @@ void SolveMaze() {
     mcpp::Coordinate playerPos = mc.getPlayerPosition();
 
     // Initialise player @ playerPos
-    Agent player(playerPos);
+    Agent *player = new Agent(playerPos);
 
     // Initialise variables for x and z coordinates
     int x = playerPos.x;
@@ -213,20 +213,22 @@ void SolveMaze() {
 
         // now work out exit condition
     }
+
+    delete player;
 }
 
-void RightHandWallFollower(Agent &player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos) {
+void RightHandWallFollower(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos) {
     bool moved = false;
     while (!moved) {
-        AgentDirection rightDir = player.turn(dir);
+        AgentDirection rightDir = player->turn(dir);
         // Try to turn right first
-        if (player.canMove(x, z, rightDir, playerPos)) {
+        if (player->canMove(x, z, rightDir, playerPos)) {
             std::cout << "Turning right." << std::endl;
             dir = rightDir;
             moved = true;
         } 
         // If it can move straight, do so
-        else if (player.canMove(x, z, dir, playerPos)) {
+        else if (player->canMove(x, z, dir, playerPos)) {
             std::cout << "Moving straight." << std::endl;
             moved = true;
         } 
@@ -234,8 +236,8 @@ void RightHandWallFollower(Agent &player, AgentDirection &dir, int &x, int &z, m
             std::cout << "Cannot move straight or right. Trying to turn left." << std::endl;
             // Can't move straight or right. Try to turn left
             for (int i = 0; i < 3; i++) {
-                dir = player.turn(dir);
-                if (player.canMove(x, z, dir, playerPos)) {
+                dir = player->turn(dir);
+                if (player->canMove(x, z, dir, playerPos)) {
                     moved = true;
                     break;
                 }
@@ -244,8 +246,8 @@ void RightHandWallFollower(Agent &player, AgentDirection &dir, int &x, int &z, m
             // If it still can't move, it means it has to turn around
             if (!moved) {
                 std::cout << "Turning around." << std::endl;
-                dir = player.turn(dir);
-                dir = player.turn(dir);
+                dir = player->turn(dir);
+                dir = player->turn(dir);
                 moved = true;
             }
         }
