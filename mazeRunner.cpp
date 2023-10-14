@@ -24,8 +24,7 @@ enum States{
 void ReadMazeFromTerminal(); // option 1 in generate maze menu
 void GenerateRandomMaze(); // option 2 in generate maze menu
 void SolveMaze();
-void RightHandWallFollower(Agent *player, AgentDirection &dir, int &x, int &z, 
-                            mcpp::Coordinate &playerPos);
+void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc);
 void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
@@ -185,7 +184,7 @@ void SolveMaze() {
 
     while (!solvedMaze) {
         // Solve the current tile
-        RightHandWallFollower(player, dir, x, z, playerPos);
+        SolveTile(player, dir, x, z, playerPos);
 
         // Update coordinates for the next tile to be solved
         UpdateCoordsAfterSolving(dir, x, z, playerPos);
@@ -243,8 +242,7 @@ void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConn
     std::this_thread::sleep_for(std::chrono::seconds(1)); 
 }
 
-void RightHandWallFollower(Agent *player, AgentDirection &dir, int &x, int &z, 
-                           mcpp::Coordinate &playerPos) {
+void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos) {
     bool moved = false;
     while (!moved) {
         AgentDirection rightDir = player->turn(dir);
