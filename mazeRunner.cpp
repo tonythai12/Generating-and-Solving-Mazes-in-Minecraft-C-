@@ -24,7 +24,9 @@ enum States{
 void ReadMazeFromTerminal(); // option 1 in generate maze menu
 void GenerateRandomMaze(); // option 2 in generate maze menu
 void SolveMaze();
-void RightHandWallFollower(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
+void RightHandWallFollower(Agent *player, AgentDirection &dir, int &x, int &z, 
+                            mcpp::Coordinate &playerPos);
+void HighlightSolvedBlock(mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc);
 
 int main(void){
 
@@ -177,10 +179,11 @@ void SolveMaze() {
 
     // Condition for while-loop
     bool solvedMaze = false;
+
+    // Initialise direction
     AgentDirection dir = UP;
 
     while (!solvedMaze) {
-
         // Solve the current tile
         RightHandWallFollower(player, dir, x, z, playerPos);
 
@@ -199,17 +202,12 @@ void SolveMaze() {
         playerPos.x = x;
         playerPos.z = z;
 
-        // Highlights 'solved' tile
-        mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
-
         // Initialise counter for steps to print in console
         std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << 
         ", " << playerPos.z << ")" << " in " << dir << std::endl;
         counter++;
-        
-        // 3 second delay and then remove highlighted tile
-        std::this_thread::sleep_for(std::chrono::seconds(1)); 
-        mc.setBlock(playerPos, mcpp::Blocks::AIR);
+
+        HighlightSolvedBlock(playerPos, mc);
 
         // now work out exit condition
     }
@@ -217,7 +215,19 @@ void SolveMaze() {
     delete player;
 }
 
-void RightHandWallFollower(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos) {
+void HighlightSolvedBlock(mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc) {
+    mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
+
+    // 1 second sleep delay
+    std::this_thread::sleep_for(std::chrono::seconds(1)); 
+
+    // Remove highlighted block
+    mc.setBlock(playerPos, mcpp::Blocks::AIR);
+    std::this_thread::sleep_for(std::chrono::seconds(1)); 
+}
+
+void RightHandWallFollower(Agent *player, AgentDirection &dir, int &x, int &z, 
+                           mcpp::Coordinate &playerPos) {
     bool moved = false;
     while (!moved) {
         AgentDirection rightDir = player->turn(dir);
