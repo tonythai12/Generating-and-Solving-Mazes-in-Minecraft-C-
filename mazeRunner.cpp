@@ -178,17 +178,39 @@ void SolveMaze() {
 
     // Condition for while-loop
     bool solved = false;
-    AgentDirection dir = RIGHT;
+    AgentDirection dir = UP;
 
     while (!solved) {
         // Try turning right
-        if (!player.canMove(x, z, dir, playerPos)) {
-            // If cannot turn right
-            do {
-                // Turns right until there's a valid move
-                dir = player.turn(dir);
-            // Exits loop when there's a valid move
-            } while (!player.canMove(x, z, dir, playerPos));
+        // if (!player.canMove(x, z, dir, playerPos)) {
+        //     // If cannot turn right
+        //     do {
+        //         // Turns right until there's a valid move
+        //         dir = player.turn(dir);
+        //     // Exits loop when there's a valid move
+        //     } while (!player.canMove(x, z, dir, playerPos));
+        // }
+
+        bool moved = false;
+
+        while (!moved) {
+            // Try turning right
+            if (player.canMove(x, z, RIGHT, playerPos)) {
+                dir = RIGHT;
+                moved = true;
+            // If can't turn right but can turn forward
+            } else if (player.canMove(x, z, UP, playerPos)) {
+                dir = UP;
+                moved = true;
+            // If can't turn right or forward but can turn left
+            } else if (player.canMove(x, z, DOWN, playerPos)) {
+                dir = DOWN;
+                moved = true;
+            // If can't turn right, forward or left but can turn back
+            } else {
+                dir = LEFT;
+                moved = true;
+            }
         }
 
         // Then, updates coords by moving in direction of dir
@@ -201,7 +223,7 @@ void SolveMaze() {
         } else if (dir == LEFT) {
             z--;
         }
-
+        
         // Updates playerPos with new coordinates
         playerPos.x = x;
         playerPos.z = z;
@@ -211,8 +233,9 @@ void SolveMaze() {
 
         // Initialise counter for steps to print in console
         std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << 
-        ", " << playerPos.z << ")" << std::endl;
+        ", " << playerPos.z << ")" << " in " << dir << std::endl;
         counter++;
+        
         
         // 3 second delay and then remove highlighted tile
         std::this_thread::sleep_for(std::chrono::seconds(1)); 
