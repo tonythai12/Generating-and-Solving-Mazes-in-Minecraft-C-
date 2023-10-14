@@ -26,7 +26,8 @@ void GenerateRandomMaze(); // option 2 in generate maze menu
 void SolveMaze();
 void RightHandWallFollower(Agent *player, AgentDirection &dir, int &x, int &z, 
                             mcpp::Coordinate &playerPos);
-void HighlightSolvedBlock(mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc);
+void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc);
+void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
 
 int main(void){
 
@@ -202,11 +203,7 @@ void SolveMaze() {
         playerPos.x = x;
         playerPos.z = z;
 
-        // Initialise counter for steps to print in console
-        std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << 
-        ", " << playerPos.z << ")" << " in " << dir << std::endl;
-        counter++;
-
+        PrintSteps(counter, playerPos);
         HighlightSolvedBlock(playerPos, mc);
 
         // now work out exit condition
@@ -215,7 +212,13 @@ void SolveMaze() {
     delete player;
 }
 
-void HighlightSolvedBlock(mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc) {
+void PrintSteps(int &counter, const mcpp::Coordinate &playerPos) {
+    std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << 
+        ", " << playerPos.z << ")" << std::endl;
+    counter++;
+}
+
+void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc) {
     mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
 
     // 1 second sleep delay
