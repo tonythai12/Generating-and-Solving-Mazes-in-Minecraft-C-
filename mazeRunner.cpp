@@ -24,6 +24,7 @@ enum States{
 void ReadMazeFromTerminal(); // option 1 in generate maze menu
 void GenerateRandomMaze(); // option 2 in generate maze menu
 void SolveMaze();
+void RightHandWallFollower(Agent &player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 
 int main(void){
 
@@ -161,9 +162,7 @@ void GenerateRandomMaze() {
 
 // Keenan
 void SolveMaze() {
-    // TODO: Solve maze code 
     mcpp::MinecraftConnection mc;
-
     int counter = 1;
 
     // Find player position
@@ -177,58 +176,13 @@ void SolveMaze() {
     int z = playerPos.z;
 
     // Condition for while-loop
-    bool solved = false;
+    bool solvedMaze = false;
     AgentDirection dir = UP;
 
-    while (!solved) {
-        // Try turning right
-        // if (!player.canMove(x, z, dir, playerPos)) {
-        //     // If cannot turn right
-        //     do {
-        //         // Turns right until there's a valid move
-        //         dir = player.turn(dir);
-        //     // Exits loop when there's a valid move
-        //     } while (!player.canMove(x, z, dir, playerPos));
-        // }
+    while (!solvedMaze) {
 
-        bool moved = false;
-
-        while (!moved) {
-            AgentDirection rightDir = player.turn(dir);
-
-            // Try to turn right first
-            if (player.canMove(x, z, rightDir, playerPos)) {
-                std::cout << "Turning right." << std::endl;
-                dir = rightDir;
-                moved = true;
-            } 
-            // If it can move straight, do so
-            else if (player.canMove(x, z, dir, playerPos)) {
-                std::cout << "Moving straight." << std::endl;
-                moved = true;
-            } 
-            else {
-                std::cout << "Cannot move straight or right. Trying to turn left." << std::endl;
-                // Can't move straight or right. Try to turn left
-                for (int i = 0; i < 3; i++) {
-                    dir = player.turn(dir);
-                    if (player.canMove(x, z, dir, playerPos)) {
-                        moved = true;
-                        break;
-                    }
-                }
-
-                // If it still can't move, it means it has to turn around
-                if (!moved) {
-                    std::cout << "Turning around." << std::endl;
-                    dir = player.turn(dir);
-                    dir = player.turn(dir);
-                    moved = true;
-                }
-            }
-        }
-
-        
+        // Solve the current tile
+        RightHandWallFollower(player, dir, x, z, playerPos);
 
         // Then, updates coords by moving in direction of dir
         if (dir == UP) {
@@ -253,11 +207,47 @@ void SolveMaze() {
         ", " << playerPos.z << ")" << " in " << dir << std::endl;
         counter++;
         
-        
         // 3 second delay and then remove highlighted tile
         std::this_thread::sleep_for(std::chrono::seconds(1)); 
         mc.setBlock(playerPos, mcpp::Blocks::AIR);
 
         // now work out exit condition
+    }
+}
+
+void RightHandWallFollower(Agent &player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos) {
+    bool moved = false;
+    while (!moved) {
+        AgentDirection rightDir = player.turn(dir);
+        // Try to turn right first
+        if (player.canMove(x, z, rightDir, playerPos)) {
+            std::cout << "Turning right." << std::endl;
+            dir = rightDir;
+            moved = true;
+        } 
+        // If it can move straight, do so
+        else if (player.canMove(x, z, dir, playerPos)) {
+            std::cout << "Moving straight." << std::endl;
+            moved = true;
+        } 
+        else {
+            std::cout << "Cannot move straight or right. Trying to turn left." << std::endl;
+            // Can't move straight or right. Try to turn left
+            for (int i = 0; i < 3; i++) {
+                dir = player.turn(dir);
+                if (player.canMove(x, z, dir, playerPos)) {
+                    moved = true;
+                    break;
+                }
+            }
+
+            // If it still can't move, it means it has to turn around
+            if (!moved) {
+                std::cout << "Turning around." << std::endl;
+                dir = player.turn(dir);
+                dir = player.turn(dir);
+                moved = true;
+            }
+        }
     }
 }
