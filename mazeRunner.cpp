@@ -194,24 +194,41 @@ void SolveMaze() {
         bool moved = false;
 
         while (!moved) {
-            // Try turning right
-            if (player.canMove(x, z, RIGHT, playerPos)) {
-                dir = RIGHT;
+            AgentDirection rightDir = player.turn(dir);
+
+            // Try to turn right first
+            if (player.canMove(x, z, rightDir, playerPos)) {
+                std::cout << "Turning right." << std::endl;
+                dir = rightDir;
                 moved = true;
-            // If can't turn right but can turn forward
-            } else if (player.canMove(x, z, UP, playerPos)) {
-                dir = UP;
+            } 
+            // If it can move straight, do so
+            else if (player.canMove(x, z, dir, playerPos)) {
+                std::cout << "Moving straight." << std::endl;
                 moved = true;
-            // If can't turn right or forward but can turn left
-            } else if (player.canMove(x, z, DOWN, playerPos)) {
-                dir = DOWN;
-                moved = true;
-            // If can't turn right, forward or left but can turn back
-            } else {
-                dir = LEFT;
-                moved = true;
+            } 
+            else {
+                std::cout << "Cannot move straight or right. Trying to turn left." << std::endl;
+                // Can't move straight or right. Try to turn left
+                for (int i = 0; i < 3; i++) {
+                    dir = player.turn(dir);
+                    if (player.canMove(x, z, dir, playerPos)) {
+                        moved = true;
+                        break;
+                    }
+                }
+
+                // If it still can't move, it means it has to turn around
+                if (!moved) {
+                    std::cout << "Turning around." << std::endl;
+                    dir = player.turn(dir);
+                    dir = player.turn(dir);
+                    moved = true;
+                }
             }
         }
+
+        
 
         // Then, updates coords by moving in direction of dir
         if (dir == UP) {
