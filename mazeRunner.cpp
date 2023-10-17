@@ -26,7 +26,7 @@ enum States{
 };
 
 struct CoordDir {
-    int x, y, z;
+    mcpp::Coordinate coord;
     AgentDirection dir;
 };
 
@@ -38,6 +38,7 @@ void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConn
 void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 std::string coordDirToKey(const CoordDir& cd);
+bool TrackTile(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles);
 
 int main(void){
 
@@ -209,25 +210,7 @@ void SolveMaze() {
         HighlightSolvedBlock(playerPos, mc);
 
         // now work out exit condition
-        CoordDir currentTile {playerPos.x, playerPos.y, playerPos.z, dir};
-        visitedTiles.push_back(currentTile);
-
-        std::map<std::string, int> tileCounter;
-        int N = 2;
-
-        // Count occurrences of each tile with direction
-        for (const auto& tile : visitedTiles) {
-            std::string key = coordDirToKey(tile);
-            tileCounter[key]++;
-        }
-
-        // Check if any tile with direction has been visited more than N times
-        for (const auto& entry : tileCounter) {
-            if (entry.second > N) {
-                solvedMaze = true; // Exit condition
-                break;
-            }
-        }
+        solvedMaze = TrackTile(playerPos, dir, visitedTiles);
     }
 
     delete player;
@@ -315,5 +298,32 @@ void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordin
 }
 
 std::string coordDirToKey(const CoordDir& cd) {
-    return std::to_string(cd.x) + "_" + std::to_string(cd.y) + "_" + std::to_string(cd.z) + "_" + std::to_string(cd.dir);
+    return std::to_string(cd.coord.x) + "_" + std::to_string(cd.coord.y) + "_" + std::to_string(cd.coord.z) + "_" + std::to_string(cd.dir);
+}
+
+bool TrackTile(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles) {
+    CoordDir currentTile {coord, dir};
+    visitedTiles.push_back(currentTile);
+
+    bool isSolved = false;
+
+    std::map<std::string, int> tileCounter;
+    int N = 2;
+
+    // Count occurrences of each tile with direction
+    for (const auto& tile : visitedTiles) {
+        std::string key = coordDirToKey(tile);
+        tileCounter[key]++;
+    }
+
+    // Check if any tile with direction has been visited more than N times
+    for (const auto& entry : tileCounter) {
+        if (entry.second > N) {
+            isSolved = true; // Exit condition
+            break;
+        }
+    }
+
+    return isSolved;
+
 }
