@@ -8,7 +8,11 @@
 
 // For sleep and time duration
 #include <thread>   
-#include <chrono>   
+#include <chrono> 
+
+// For tracking tiles that have been solved (for looped mazes)
+#include <map>
+#include <algorithm>
 
 #define NORMAL_MODE 0
 #define TESTING_MODE 1
@@ -21,6 +25,11 @@ enum States{
     ST_Exit
 };
 
+struct CoordDir {
+    int x, y, z;
+    AgentDirection dir;
+};
+
 void ReadMazeFromTerminal(); // option 1 in generate maze menu
 void GenerateRandomMaze(); // option 2 in generate maze menu
 void SolveMaze();
@@ -28,6 +37,7 @@ void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordin
 void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc);
 void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
+std::string coordDirToKey(const CoordDir& cd);
 
 int main(void){
 
@@ -182,6 +192,9 @@ void SolveMaze() {
     // Initialise direction
     AgentDirection dir = UP;
 
+    // Collection to store all the visited tiles
+    std::vector<CoordDir> visitedTiles;
+
     while (!solvedMaze) {
         // Solve the current tile
         SolveTile(player, dir, x, z, playerPos);
@@ -196,6 +209,25 @@ void SolveMaze() {
         HighlightSolvedBlock(playerPos, mc);
 
         // now work out exit condition
+        CoordDir currentTile {playerPos.x, playerPos.y, playerPos.z, dir};
+        visitedTiles.push_back(currentTile);
+
+        std::map<std::string, int> tileCounter;
+        int N = 2;
+
+        // Count occurrences of each tile with direction
+        for (const auto& tile : visitedTiles) {
+            std::string key = coordDirToKey(tile);
+            tileCounter[key]++;
+        }
+
+        // Check if any tile with direction has been visited more than N times
+        for (const auto& entry : tileCounter) {
+            if (entry.second > N) {
+                solvedMaze = true; // Exit condition
+                break;
+            }
+        }
     }
 
     delete player;
@@ -280,4 +312,8 @@ void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordin
             }
         }
     }
+}
+
+std::string coordDirToKey(const CoordDir& cd) {
+    return std::to_string(cd.x) + "_" + std::to_string(cd.y) + "_" + std::to_string(cd.z) + "_" + std::to_string(cd.dir);
 }

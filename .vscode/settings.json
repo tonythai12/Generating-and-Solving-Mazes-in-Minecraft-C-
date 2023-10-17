@@ -65,6 +65,10 @@
         "random": "cpp",
         "algorithm": "cpp",
         "thread": "cpp",
-        "charconv": "cpp"
+        "charconv": "cpp",
+        "deque": "cpp",
+        "queue": "cpp",
+        "__tree": "cpp",
+        "map": "cpp"
     }
 }
