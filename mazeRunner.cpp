@@ -25,6 +25,11 @@ enum States{
     ST_Exit
 };
 
+/*
+    Custom data structure for storing an agent's coordinates and direction faced.
+    This struct is used in the AllVisited() function, to determine if a particular tile has been
+    visited more than N times.
+*/
 struct CoordDir {
     mcpp::Coordinate coord;
     AgentDirection dir;
@@ -38,7 +43,7 @@ void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConn
 void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 std::string coordDirToKey(const CoordDir& cd);
-bool TrackTile(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles);
+bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles);
 
 int main(void){
 
@@ -172,7 +177,9 @@ void GenerateRandomMaze() {
     
 }
 
-// Keenan
+/*
+    Solves the perfect or looped maze using the right-hand-follow algorithm.
+*/
 void SolveMaze() {
     mcpp::MinecraftConnection mc;
     int counter = 1;
@@ -210,12 +217,16 @@ void SolveMaze() {
         HighlightSolvedBlock(playerPos, mc);
 
         // now work out exit condition
-        solvedMaze = TrackTile(playerPos, dir, visitedTiles);
+        solvedMaze = AllVisited(playerPos, dir, visitedTiles);
     }
 
     delete player;
 }
+/*
+    Prints the coordinates of the solved tile in the console.
 
+    Part of the SolveMaze() function.
+*/
 void PrintSteps(int &counter, const mcpp::Coordinate &playerPos) {
     std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << 
         ", " << playerPos.z << ")" << std::endl;
@@ -223,9 +234,10 @@ void PrintSteps(int &counter, const mcpp::Coordinate &playerPos) {
 }
 
 /* 
-    The function below updates the coordinates of the agent that's solving the maze.
-    It either increments or decrements the x or z coordinate depending on the direction.
-    After that, it updates the playerPos with the new coordinates.
+    After a tile has been solved, this function increments or decrements the 'x' or 'z' coordinate, 
+    depending on the direction that the agent is facing. Through this, the agent is able to move.
+
+    Part of the SolveMaze() function.
 */
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, 
                             mcpp::Coordinate &playerPos) {
@@ -246,6 +258,12 @@ void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z,
     playerPos.z = z;      
 }
 
+/*
+    Highlights the solved tile with a lime carpet block for 1 second.
+    It then removes the lime carpet block by generating an air block in place of it.
+
+    Part of the SolveMaze() function.
+*/
 void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc) {
     mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
 
@@ -256,6 +274,18 @@ void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConn
     mc.setBlock(playerPos, mcpp::Blocks::AIR);
     std::this_thread::sleep_for(std::chrono::seconds(1)); 
 }
+
+/*
+    Solves the current tile by turning right, straight, left, or turning around. This is achieved
+    through the right-hand wall-follower algorithm.
+
+    If it can turn right it will. If not, it moves straight. If it can't move straight, 
+    it will try to turn left. If it can't turn left, it will turn around. 
+
+    This function will continue to execute until AllVisited() is true.
+
+    Part of the SolveMaze() function.
+*/
 
 void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos) {
     bool moved = false;
@@ -297,11 +327,22 @@ void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordin
     }
 }
 
+/*
+    Converts a CoordDir struct to a string, which is used as a key in a map.
+    This is used in the AllVisited() function.
+*/
 std::string coordDirToKey(const CoordDir& cd) {
-    return std::to_string(cd.coord.x) + "_" + std::to_string(cd.coord.y) + "_" + std::to_string(cd.coord.z) + "_" + std::to_string(cd.dir);
+    return std::to_string(cd.coord.x) + "_" + std::to_string(cd.coord.y) + "_" 
+    + std::to_string(cd.coord.z) + "_" + std::to_string(cd.dir);
 }
 
-bool TrackTile(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles) {
+/*
+    Checks if a tile has been visited more than N times with the same agent direction. 
+    If so, it returns true. Otherwise, it returns false. 
+    
+    Used as an exit condition for SolveMaze().
+*/
+bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles) {
     CoordDir currentTile {coord, dir};
     visitedTiles.push_back(currentTile);
 
