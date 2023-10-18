@@ -200,7 +200,11 @@ void SolveMaze() {
     // Initialise direction
     AgentDirection dir = UP;
 
-    // Collection to store all the visited tiles
+    /* 
+        Using a vector instead of a linked list to store all visitedTiles due always appending to the end
+        of the vector. Further, we are occasionally checking all elements. No insertions or deletions
+        are occuring in arbitrary positions. As such, a vector would be more time and space efficient.
+    */
     std::vector<CoordDir> visitedTiles;
 
     while (!solvedMaze) {
