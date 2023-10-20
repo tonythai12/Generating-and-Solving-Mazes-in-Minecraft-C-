@@ -26,8 +26,9 @@ public:
 private:
     /* data */
     // Random length and width of the maze
-    unsigned int height = 7;
-    unsigned int width = 5;
+    unsigned int height;
+    unsigned int width;
+    unsigned int ylen;
 
     // The base point of the maze
     mcpp::Coordinate basePoint;

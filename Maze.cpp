@@ -63,9 +63,21 @@ void Maze::generateMazeStructure()
 void Maze::generateMaze(){
     Maze::generateMazeStructure();
 
+    mcpp::MinecraftConnection mc;
+    basePoint.y = mc.getHeight(basePoint.x, basePoint.z) + 1;
     for(int i = 0; i < height; i++){
         for(int j = 0; j < width; j++){
-            std::cout << maze[i][j] << " ";
+            if (maze[i][j] == 1){
+                mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::BRICKS);
+                mc.setBlock(basePoint + mcpp::Coordinate(i, 1, j), mcpp::Blocks::BRICKS);
+                mc.setBlock(basePoint + mcpp::Coordinate(i, 1, j), mcpp::Blocks::BRICKS);
+            }
+            else
+            {
+                mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::AIR);
+                mc.setBlock(basePoint + mcpp::Coordinate(i, 1, j), mcpp::Blocks::AIR);
+                mc.setBlock(basePoint + mcpp::Coordinate(i, 1, j), mcpp::Blocks::AIR);
+            }
         }
         std::cout << std::endl;
     }

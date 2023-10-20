@@ -68,7 +68,11 @@ int main(void){
             if (input == 1) {
                 ReadMazeFromTerminal();
             } else if (input == 2) {
-                GenerateRandomMaze();
+                mcpp::Coordinate basePoint;
+                std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
+                // basePoint.y = mc.getHeight(basePoint.x, basePoint.z) + 1; // Set basePoint to be on top of the ground
+                Maze maze(basePoint, 7, 5, NORMAL_MODE);
+                maze.generateMaze();
             } else if (input == 3) {
                 printMainMenu();
             } else {
