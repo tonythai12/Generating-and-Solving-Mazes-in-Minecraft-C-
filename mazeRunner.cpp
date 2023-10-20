@@ -44,6 +44,9 @@ void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 std::string coordDirToKey(const CoordDir& cd);
 bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles);
+void GetEnvStructure(mcpp::Coordinate &basePoint, mcpp::MinecraftConnection &mc, int &length, int &width);
+void RemoveEnvironment();
+void RestoreEnvironment();
 
 int main(void){
 
@@ -371,4 +374,19 @@ bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<C
 
     return isSolved;
 
+}
+
+void GetEnvStructure(mcpp::Coordinate &basePoint, mcpp::MinecraftConnection &mc, int &length, int &width) {
+    // co-ordinate to match = basePoint.y
+
+    mcpp::BlockType block(1);
+    int height = 3;
+    //char envStructure [length][width][height];
+    for (int i = 0; i < length; i++) {
+        for (int j = 0; j < width; j++) {
+            for (int k = 0; k < height; k++) {
+                block = mc.getBlock(basePoint);
+            }
+        }
+    }
 }
