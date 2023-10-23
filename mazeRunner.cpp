@@ -379,8 +379,12 @@ bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<C
     return isSolved;
 
 }
-
-void GetEnvStructure(mcpp::Coordinate &basePoint, mcpp::MinecraftConnection &mc, int &length, int &width) {
+/*
+    Retrieves the blockTypes of the environment within the specified bounds.
+    Stored in a 3D vector, which will be used to restore the environment after solving the maze.
+*/
+std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coordinate &basePoint, 
+                                            mcpp::MinecraftConnection &mc, int &length, int &width) {
     
     // Calculate corners and then get heights
     mcpp::Coordinate corner1(basePoint.x, 0, basePoint.z);
@@ -399,5 +403,5 @@ void GetEnvStructure(mcpp::Coordinate &basePoint, mcpp::MinecraftConnection &mc,
 
     // Get all blocks using the min/max y-values
     mcpp::Coordinate basePoint2 = mcpp::Coordinate(basePoint.x + length, basePoint.y, basePoint.z + width);
-    auto envStructure = mc.getBlocks(basePoint, basePoint2);
+    return mc.getBlocks(basePoint, basePoint2);
 }
