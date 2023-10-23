@@ -44,9 +44,12 @@ void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 std::string coordDirToKey(const CoordDir& cd);
 bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles);
-void GetEnvStructure(mcpp::Coordinate &basePoint, mcpp::MinecraftConnection &mc, int &length, int &width);
-void RemoveEnvironment();
-void RestoreEnvironment();
+std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coordinate &basePoint, 
+                                            mcpp::MinecraftConnection &mc, int &length, int &width);
+void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
+                       mcpp::MinecraftConnection& mc);
+void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
+                       mcpp::MinecraftConnection& mc);
 
 int main(void){
 
@@ -444,9 +447,9 @@ void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate&
     }
 
     // Change every block below floorLevel to GRASS
-    for (int x = corner1.x; x <= corner2.x; ++x) {
-        for (int y = corner1.y; y <= floorLevel; ++y) {
-            for (int z = corner1.z; z <= corner2.z; ++z) {
+    for (int x = corner1.x; x <= corner2.x; x++) {
+        for (int y = corner1.y; y <= floorLevel; y++) {
+            for (int z = corner1.z; z <= corner2.z; z++) {
                 mcpp::Coordinate coord(x, y, z);
                 mc.setBlock(coord, mcpp::Blocks::GRASS);
             }
