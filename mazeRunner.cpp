@@ -381,16 +381,23 @@ bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<C
 }
 
 void GetEnvStructure(mcpp::Coordinate &basePoint, mcpp::MinecraftConnection &mc, int &length, int &width) {
-    // co-ordinate to match = basePoint.y
+    
+    // Calculate corners and then get heights
+    mcpp::Coordinate corner1(basePoint.x, 0, basePoint.z);
+    mcpp::Coordinate corner2(basePoint.x + length, 0, basePoint.z + width);
+    auto envHeights = mc.getHeights(corner1, corner2);
 
-    mcpp::BlockType block(1);
-    int height = 3;
-    //char envStructure [length][width][height];
-    for (int i = 0; i < length; i++) {
-        for (int j = 0; j < width; j++) {
-            for (int k = 0; k < height; k++) {
-                block = mc.getBlock(basePoint);
-            }
+    // Find min and max y-values
+    int minY = std::numeric_limits<int>::max();
+    int maxY = std::numeric_limits<int>::min();
+    for (const auto& row : envHeights) {
+        for (int height : row) {
+            if (height < minY) minY = height;
+            if (height > maxY) maxY = height;
         }
     }
+
+    // Get all blocks using the min/max y-values
+    mcpp::Coordinate basePoint2 = mcpp::Coordinate(basePoint.x + length, basePoint.y, basePoint.z + width);
+    auto envStructure = mc.getBlocks(basePoint, basePoint2);
 }
