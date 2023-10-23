@@ -82,3 +82,45 @@ void Maze::generateMaze(){
         std::cout << std::endl;
     }
 }
+
+mcpp::Coordinate Maze::selectRandomStartingPoint(){
+    
+    mcpp::Coordinate randomStart;
+    
+    // Array to store mccp::Coordinate of the starting point
+    std::vector<mcpp::Coordinate> startingPoints;
+
+    for (int i = 0; i < height; i++)
+    {
+        for(int j = 0; j < width; j++)
+        {
+            if (maze[i][j] == 0)
+            {
+                if (j < j / 2 && i < i / 2) {
+                    startingPoints.push_back(mcpp::Coordinate(i - 1, 0, j - 1));
+                }
+                else if (j < j / 2 && i > i / 2)
+                {
+                    startingPoints.push_back(mcpp::Coordinate(i + 1, 0, j - 1));
+                }
+                else if (j > j / 2 && i < i / 2)
+                {
+                    startingPoints.push_back(mcpp::Coordinate(i - 1, 0, j + 1));
+                }
+                else if (j > j / 2 && i > i / 2)
+                {
+                    startingPoints.push_back(mcpp::Coordinate(i + 1, 0, j + 1));
+                }
+                
+            }
+        }
+
+        std::random_device rd;
+        std::mt19937 generator(rd());
+        std::uniform_int_distribution<int> distribution(0, startingPoints.size() - 1);
+        int random_index = distribution(generator);
+        randomStart = startingPoints.at(random_index);
+    }
+    
+    return randomStart;
+}

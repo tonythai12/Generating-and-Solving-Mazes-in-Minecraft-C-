@@ -22,6 +22,9 @@ public:
     // Print the maze
     void printMaze();
 
+    // Selecting random starting point in the maze
+    mcpp::Coordinate selectRandomStartingPoint();
+
 
 private:
     /* data */
