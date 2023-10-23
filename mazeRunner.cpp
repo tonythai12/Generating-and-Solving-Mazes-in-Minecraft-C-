@@ -427,3 +427,29 @@ void rebuildEnvironment(const mcpp::Coordinate& corner1,
         }
     }
 }
+
+void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
+                       mcpp::MinecraftConnection& mc) {
+    // Determine the floorLevel for the maze
+    int floorLevel = corner1.y + 1;
+
+    // Change every block above floorLevel to AIR
+    for (int x = corner1.x; x <= corner2.x; x++) {
+        for (int y = floorLevel + 1; y <= corner2.y; y++) {
+            for (int z = corner1.z; z <= corner2.z; z++) {
+                mcpp::Coordinate coord(x, y, z);
+                mc.setBlock(coord, mcpp::Blocks::AIR);
+            }
+        }
+    }
+
+    // Change every block below floorLevel to GRASS
+    for (int x = corner1.x; x <= corner2.x; ++x) {
+        for (int y = corner1.y; y <= floorLevel; ++y) {
+            for (int z = corner1.z; z <= corner2.z; ++z) {
+                mcpp::Coordinate coord(x, y, z);
+                mc.setBlock(coord, mcpp::Blocks::GRASS);
+            }
+        }
+    }
+}
