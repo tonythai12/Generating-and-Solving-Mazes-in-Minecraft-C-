@@ -405,3 +405,25 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coor
     mcpp::Coordinate basePoint2 = mcpp::Coordinate(basePoint.x + length, basePoint.y, basePoint.z + width);
     return mc.getBlocks(basePoint, basePoint2);
 }
+
+/*
+    Rebuilds the environment after the user exits the program. Uses the 3D vector returned from getEnvironment().
+*/
+void rebuildEnvironment(const mcpp::Coordinate& corner1, 
+                        const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment, 
+                        mcpp::MinecraftConnection& mc) {
+    
+    // Assume [x][y][z]
+    int xLen = savedEnvironment.size();
+    int yLen = savedEnvironment[0].size(); // Assumes non-empty nested vectors
+    int zLen = savedEnvironment[0][0].size(); // Assumes non-empty nested vectors
+
+    for (int x = 0; x < xLen; x++) {
+        for (int y = 0; y < yLen; y++) {
+            for (int z = 0; z < zLen; ++z) {
+                mcpp::Coordinate newCoord(corner1.x + x, corner1.y + y, corner1.z + z);
+                mc.setBlock(newCoord, savedEnvironment[x][y][z]);
+            }
+        }
+    }
+}
