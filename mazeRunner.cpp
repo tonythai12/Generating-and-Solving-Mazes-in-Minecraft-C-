@@ -44,9 +44,12 @@ void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 std::string coordDirToKey(const CoordDir& cd);
 bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles);
-void GetEnvStructure(mcpp::Coordinate &basePoint, mcpp::MinecraftConnection &mc, int &length, int &width);
-void RemoveEnvironment();
-void RestoreEnvironment();
+std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coordinate &basePoint, 
+                                            mcpp::MinecraftConnection &mc, int &length, int &width);
+void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
+                       mcpp::MinecraftConnection& mc);
+void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
+                       mcpp::MinecraftConnection& mc);
 
 int main(void){
 
@@ -378,17 +381,76 @@ bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<C
     return isSolved;
 
 }
+/*
+    Retrieves the blockTypes of the environment within the specified bounds.
+    Stored in a 3D vector, which will be used to restore the environment after solving the maze.
+*/
+std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coordinate &basePoint, 
+                                            mcpp::MinecraftConnection &mc, int &length, int &width) {
+    
+    // Calculate corners and then get heights
+    mcpp::Coordinate corner1(basePoint.x, 0, basePoint.z);
+    mcpp::Coordinate corner2(basePoint.x + length, 0, basePoint.z + width);
+    auto envHeights = mc.getHeights(corner1, corner2);
 
-void GetEnvStructure(mcpp::Coordinate &basePoint, mcpp::MinecraftConnection &mc, int &length, int &width) {
-    // co-ordinate to match = basePoint.y
+    // Find min and max y-values
+    int minY = std::numeric_limits<int>::max();
+    int maxY = std::numeric_limits<int>::min();
+    for (const auto& row : envHeights) {
+        for (int height : row) {
+            if (height < minY) minY = height;
+            if (height > maxY) maxY = height;
+        }
+    }
 
-    mcpp::BlockType block(1);
-    int height = 3;
-    //char envStructure [length][width][height];
-    for (int i = 0; i < length; i++) {
-        for (int j = 0; j < width; j++) {
-            for (int k = 0; k < height; k++) {
-                block = mc.getBlock(basePoint);
+    // Get all blocks using the min/max y-values
+    mcpp::Coordinate basePoint2 = mcpp::Coordinate(basePoint.x + length, basePoint.y, basePoint.z + width);
+    return mc.getBlocks(basePoint, basePoint2);
+}
+
+/*
+    Rebuilds the environment after the user exits the program. Uses the 3D vector returned from getEnvironment().
+*/
+void rebuildEnvironment(const mcpp::Coordinate& corner1, 
+                        const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment, 
+                        mcpp::MinecraftConnection& mc) {
+    
+    // Assume [x][y][z]
+    int xLen = savedEnvironment.size();
+    int yLen = savedEnvironment[0].size(); // Assumes non-empty nested vectors
+    int zLen = savedEnvironment[0][0].size(); // Assumes non-empty nested vectors
+
+    for (int x = 0; x < xLen; x++) {
+        for (int y = 0; y < yLen; y++) {
+            for (int z = 0; z < zLen; ++z) {
+                mcpp::Coordinate newCoord(corner1.x + x, corner1.y + y, corner1.z + z);
+                mc.setBlock(newCoord, savedEnvironment[x][y][z]);
+            }
+        }
+    }
+}
+
+void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
+                       mcpp::MinecraftConnection& mc) {
+    // Determine the floorLevel for the maze
+    int floorLevel = corner1.y + 1;
+
+    // Change every block above floorLevel to AIR
+    for (int x = corner1.x; x <= corner2.x; x++) {
+        for (int y = floorLevel + 1; y <= corner2.y; y++) {
+            for (int z = corner1.z; z <= corner2.z; z++) {
+                mcpp::Coordinate coord(x, y, z);
+                mc.setBlock(coord, mcpp::Blocks::AIR);
+            }
+        }
+    }
+
+    // Change every block below floorLevel to GRASS
+    for (int x = corner1.x; x <= corner2.x; x++) {
+        for (int y = corner1.y; y <= floorLevel; y++) {
+            for (int z = corner1.z; z <= corner2.z; z++) {
+                mcpp::Coordinate coord(x, y, z);
+                mc.setBlock(coord, mcpp::Blocks::GRASS);
             }
         }
     }
