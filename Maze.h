@@ -58,6 +58,10 @@ public:
     // check if the cell is visited
     bool visited(Cell cell);
 
+    mcpp::Coordinate getBasePoint() const { return basePoint; }
+    int getLength() const { return length; }
+    int getWidth() const { return width; }
+
 private:
     /* data */
     // The base point of the maze
