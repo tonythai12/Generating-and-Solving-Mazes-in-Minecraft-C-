@@ -79,7 +79,7 @@ int main(void){
             } else if (input == 2) {
                 mcpp::Coordinate basePoint;
                 std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
-                Maze maze(basePoint, 7, 5, NORMAL_MODE);
+                Maze maze(basePoint, 13, 13, NORMAL_MODE);
                 maze.generateMaze();
 
             } else if (input == 3) {

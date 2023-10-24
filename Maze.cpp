@@ -255,8 +255,8 @@ bool Maze::isInsideMaze(mcpp::Coordinate cell){
 }
 
 bool Maze::hasUnvisitedNeighbour(Cell cell) {
-    static int dx[] = {0, 1, 0, -1};
-    static int dz[] = {-1, 0, 1, 0};
+    static int dx[] = {0, 2, 0, -2};
+    static int dz[] = {-2, 0, 2, 0};
 
     for (int i = 0; i < 4; i++)
     {
@@ -287,19 +287,23 @@ void Maze::generateRecursiveMaze(std::vector<Cell> &cells, Cell cell) {
         switch (direction)
         {
         case 0:
-            newCell.coordinate = cell.coordinate + mcpp::Coordinate(1, 0, 0);
+            newCell.coordinate = cell.coordinate + mcpp::Coordinate(2, 0, 0);
+            tempCell.coordinate = cell.coordinate + mcpp::Coordinate(1, 0, 0);
             break;
 
         case 1:
-            newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 1);
+            newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 2);
+            tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 1);
             break;
 
         case 2:
-            newCell.coordinate = cell.coordinate + mcpp::Coordinate(1, 0, 0);
+            newCell.coordinate = cell.coordinate + mcpp::Coordinate(-2, 0, 0);
+            tempCell.coordinate = cell.coordinate + mcpp::Coordinate(-1, 0, 0);
             break;
 
         case 3:
-            newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -1);
+            newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -2);
+            tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -1);
             break;
 
         default:
@@ -307,10 +311,7 @@ void Maze::generateRecursiveMaze(std::vector<Cell> &cells, Cell cell) {
         }
 
         if(isInsideMaze(newCell.coordinate) && !visited(newCell)){
-            if(newCell.coordinate.x > cell.coordinate.x) {
-                
-            }
-            removeWall(newCell);
+            removeWall(tempCell);
             generateRecursiveMaze(cells, newCell);
         }
     }
