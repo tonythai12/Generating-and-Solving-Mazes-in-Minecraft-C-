@@ -445,6 +445,9 @@ void rebuildEnvironment(const mcpp::Coordinate& corner1,
     }
 }
 
+/*
+    Flattens the environment within the specified bounds. 
+*/
 void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
                        mcpp::MinecraftConnection& mc) {
 
