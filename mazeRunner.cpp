@@ -160,7 +160,7 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     mcpp::Coordinate basePoint = mcpp::Coordinate(x, y + 1, z);
 
     // Length and Width
-    unsigned int envLength, envWidth;
+    int envLength, envWidth;
     std::cout << "Enter the size of the environment (H W):" << std::endl;
     std::cin >> envLength;
     do {
@@ -184,30 +184,6 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
             envStructure[i][j] = readChar;
         }
     }
-
-    for (int i = 0; i < envLength; i++) {
-        for (int j = 0; j < envWidth; j++) {
-            if (envStructure[i][j] == 'x') {
-                mc->setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::BRICKS);
-            } else {
-                mc->setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::AIR);
-            }
-        }
-    }
-
-    //TODO: Maze Structure
-    // std::vector<std::string> maze;
-    // std::cout << "Enter the maze structure:" << std::endl;
-    // std::string row;
-    // for (int i = 0; i < envLength; i++) {
-    //     std::cin >> row;
-    //     if (row.size() != static_cast<size_t>(envWidth)) {
-    //         std::cout << "Invalid input. Row should have exactly " << envWidth<< " characters." << std::endl;
-    //         i--;
-    //     } else {
-    //         maze.push_back(row);
-    //     }
-    // }
 
     return terminalMaze;
 

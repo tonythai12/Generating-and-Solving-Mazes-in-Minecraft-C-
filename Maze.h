@@ -8,8 +8,8 @@ class Maze
 {
 
 public:
-    Maze(mcpp::Coordinate basePoint, unsigned int xlen, 
-                                        unsigned int zlen,
+    Maze(mcpp::Coordinate basePoint, int xlen, 
+                                     int zlen,
                                         bool mode);
     ~Maze();
 
