@@ -129,11 +129,14 @@ void ReadMazeFromTerminal() {
     mcpp::MinecraftConnection mc;
     int x, y, z;
     std::cout << "Enter the basePoint of maze:" << std::endl;
-    std::cin >> x >> y >> z;
+    std::cin >> x;
+    std::cin >> y;
+    std::cin >> z;
     mcpp::Coordinate basePoint = mcpp::Coordinate(x, y + 1, z);
 
     // Length and Width
     int envLength, envWidth;
+    std::cout << "Enter the size of the environment (H W):" << std::endl;
     std::cin >> envLength;
     do {
         std::cin >> envWidth;
@@ -142,40 +145,41 @@ void ReadMazeFromTerminal() {
         }
     } while (envWidth % 2 == 0);
     
-    
     char envStructure [envLength][envWidth];
     char readChar;
 
-    for (int i = 0; i < envLength; i++) {
-        for (int j = 0; j < envLength; j++) {
-            std::cin >> readChar;
-            envStructure[i][j] = readChar;
+    std::cout << "Enter the environment structure:" << std::endl;
 
-        }
-    }
     for (int i = 0; i < envLength; i++) {
         for (int j = 0; j < envWidth; j++) {
-        if (envStructure[i][j] == 'x') {
-            mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::BRICKS);
-        } else {
-            mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::AIR);
+            std::cin >> readChar;
+            envStructure[i][j] = readChar;
         }
     }
- }
+
+    for (int i = 0; i < envLength; i++) {
+        for (int j = 0; j < envWidth; j++) {
+            if (envStructure[i][j] == 'x') {
+                mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::BRICKS);
+            } else {
+                mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::AIR);
+            }
+        }
+    }
 
     //TODO: Maze Structure
-    std::vector<std::string> maze;
-    std::cout << "Enter the maze structure:" << std::endl;
-    std::string row;
-    for (int i = 0; i < envLength; i++) {
-        std::cin >> row;
-        if (row.size() != static_cast<size_t>(envWidth)) {
-            std::cout << "Invalid input. Row should have exactly " << envWidth<< " characters." << std::endl;
-            i--;
-        } else {
-            maze.push_back(row);
-        }
-    }
+    // std::vector<std::string> maze;
+    // std::cout << "Enter the maze structure:" << std::endl;
+    // std::string row;
+    // for (int i = 0; i < envLength; i++) {
+    //     std::cin >> row;
+    //     if (row.size() != static_cast<size_t>(envWidth)) {
+    //         std::cout << "Invalid input. Row should have exactly " << envWidth<< " characters." << std::endl;
+    //         i--;
+    //     } else {
+    //         maze.push_back(row);
+    //     }
+    // }
 
 }
 // Ravi
@@ -299,7 +303,6 @@ void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConn
 
     Part of the SolveMaze() function.
 */
-
 void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos) {
     bool moved = false;
     while (!moved) {
