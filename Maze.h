@@ -29,7 +29,7 @@ public:
 private:
     /* data */
     // Random length and width of the maze
-    unsigned int height;
+    unsigned int length;
     unsigned int width;
     unsigned int ylen;
 

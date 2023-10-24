@@ -93,14 +93,17 @@ int main(void){
 
             if (input == 1) {
                 SolveManually(mc);
+                //start = mc->getPlayerPosition();
             } else if (input == 2) {
-                mcpp::Coordinate coord = mc->getPlayerPosition();
-                int h = 7;
-                int w = 5;
-                mcpp::Coordinate coord2 = mcpp::Coordinate(coord.x + h, coord.y, coord.z + w);
-                auto savedEnv = getEnvironment(coord, mc, h, w);
-                flattenEnvironment(coord, coord2, mc);
-                rebuildEnvironment(coord, savedEnv, mc);
+                SolveMaze(mc);
+                //start = mc->getPlayerPosition();
+                // mcpp::Coordinate coord = mc->getPlayerPosition();
+                // int h = 7;
+                // int w = 5;
+                // mcpp::Coordinate coord2 = mcpp::Coordinate(coord.x + h, coord.y, coord.z + w);
+                // auto savedEnv = getEnvironment(coord, mc, h, w);
+                // flattenEnvironment(coord, coord2, mc);
+                // rebuildEnvironment(coord, savedEnv, mc);
                 continue;
             } else if (input == 3) {
                 printMainMenu();
@@ -136,14 +139,14 @@ int main(void){
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc) {
     // Base point
     int x, y, z;
-    std::cout << "Enter the basePoint of maze:" << std::endl;
+    std::cout << "Enter the basePoint of maze (X Y Z):" << std::endl;
     std::cin >> x;
     std::cin >> y;
     std::cin >> z;
     mcpp::Coordinate basePoint = mcpp::Coordinate(x, y + 1, z);
 
     // Length and Width
-    int envLength, envWidth;
+    unsigned int envLength, envWidth;
     std::cout << "Enter the size of the environment (H W):" << std::endl;
     std::cin >> envLength;
     do {

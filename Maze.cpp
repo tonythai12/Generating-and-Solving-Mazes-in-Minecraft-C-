@@ -7,7 +7,7 @@ Maze::Maze(mcpp::Coordinate basePoint, unsigned int xlen,
                                     bool mode)
 {
     this->basePoint = basePoint;
-    this->height = xlen;
+    this->length = xlen;
     this->width = zlen;
     this->mode = mode;
 }
@@ -21,7 +21,7 @@ void Maze::generateMazeStructure()
 {
     // Generate the maze
     // 1. Initialize the maze
-    for (unsigned int i = 0; i < height; i++)
+    for (unsigned int i = 0; i < length; i++)
     {
         std::vector<int> temp;
         for (unsigned int j = 0; j < width; j++)
@@ -38,7 +38,7 @@ void Maze::generateMazeStructure()
     std::uniform_int_distribution<> dis(0, 1);
 
     // 2.2 Generate the maze structure
-    for (unsigned int i = 0; i < height; i++)
+    for (unsigned int i = 0; i < length; i++)
     {
         for (unsigned int j = 0; j < width; j++)
         {
@@ -65,7 +65,7 @@ void Maze::generateMaze(){
 
     mcpp::MinecraftConnection mc;
     basePoint.y = mc.getHeight(basePoint.x, basePoint.z) + 1;
-    for(int i = 0; i < height; i++){
+    for(int i = 0; i < length; i++){
         for(int j = 0; j < width; j++){
             if (maze[i][j] == 1){
                 mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::BRICKS);
@@ -90,7 +90,7 @@ mcpp::Coordinate Maze::selectRandomStartingPoint(){
     // Array to store mccp::Coordinate of the starting point
     std::vector<mcpp::Coordinate> startingPoints;
 
-    for (int i = 0; i < height; i++)
+    for (int i = 0; i < length; i++)
     {
         for(int j = 0; j < width; j++)
         {

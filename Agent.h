@@ -39,7 +39,6 @@ public:
 
 private:
     /* data */
-    mcpp::MinecraftConnection mc;
     mcpp::Coordinate startLoc;
 
 };
