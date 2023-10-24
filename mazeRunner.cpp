@@ -48,8 +48,9 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coor
                                             mcpp::MinecraftConnection &mc, int &length, int &width);
 void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
                        mcpp::MinecraftConnection& mc);
-void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
-                       mcpp::MinecraftConnection& mc);
+void rebuildEnvironment(const mcpp::Coordinate& corner1, 
+                        const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment, 
+                        mcpp::MinecraftConnection& mc);
 
 int main(void){
 
@@ -91,7 +92,14 @@ int main(void){
             if (input == 1) {
                 SolveMaze();
             } else if (input == 2) {
-                // Placeholder for show escape route
+                // for testing
+                mcpp::Coordinate coord = mc.getPlayerPosition();
+                int h = 7;
+                int w = 5;
+                mcpp::Coordinate coord2 = mcpp::Coordinate(coord.x + h, coord.y, coord.z + w);
+                std::vector<std::vector<std::vector<mcpp::BlockType>>> savedEnv = getEnvironment(coord, mc, h, w);
+                flattenEnvironment(coord, coord2, mc);
+                // rebuildEnvironment(coord, savedEnv, mc);
                 continue;
             } else if (input == 3) {
                 printMainMenu();
@@ -435,24 +443,29 @@ void rebuildEnvironment(const mcpp::Coordinate& corner1,
 
 void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
                        mcpp::MinecraftConnection& mc) {
-    // Determine the floorLevel for the maze
-    int floorLevel = corner1.y + 1;
 
-    // Change every block above floorLevel to AIR
-    for (int x = corner1.x; x <= corner2.x; x++) {
-        for (int y = floorLevel + 1; y <= corner2.y; y++) {
-            for (int z = corner1.z; z <= corner2.z; z++) {
-                mcpp::Coordinate coord(x, y, z);
+    // Heights of the environment at (x, z) (as y-coords are different for each pair)
+    std::vector<std::vector<int>> heights = mc.getHeights(corner1, corner2);
+    int floorLevel = corner1.y;
+    
+    // Assume [x][z] for testing
+    for (int x = 0; x < heights.size(); x++) {
+        for (int z = 0; z < heights[x].size(); z++) {
+            int highestBlockY = heights[x][z];
+
+            // Set blocks above the floorLevel and up to the highest block to AIR
+            for (int y = floorLevel + 1; y <= highestBlockY; y++) {
+                mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
                 mc.setBlock(coord, mcpp::Blocks::AIR);
             }
-        }
-    }
 
-    // Change every block below floorLevel to GRASS
-    for (int x = corner1.x; x <= corner2.x; x++) {
-        for (int y = corner1.y; y <= floorLevel; y++) {
-            for (int z = corner1.z; z <= corner2.z; z++) {
-                mcpp::Coordinate coord(x, y, z);
+            // Set the block at floorLevel to GRASS
+            mcpp::Coordinate coord(corner1.x + x, floorLevel, corner1.z + z);
+            mc.setBlock(coord, mcpp::Blocks::GRASS);
+
+            // Set blocks below floorLevel to GRASS
+            for (int y = highestBlockY; y < floorLevel; y++) {
+                mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
                 mc.setBlock(coord, mcpp::Blocks::GRASS);
             }
         }
