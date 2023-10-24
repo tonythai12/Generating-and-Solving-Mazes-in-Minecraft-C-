@@ -101,6 +101,10 @@ int main(void){
                 if (terminalMaze) {
                     SolveManually(mc, terminalMaze);
                 }
+                else {
+                    std::cout << "Please generate a maze first." << std::endl;
+                }
+
             } else if (input == 2) {
                 SolveMaze(mc);
                 //start = mc->getPlayerPosition();
@@ -138,6 +142,9 @@ int main(void){
     }
 
     delete mc;
+    if (terminalMaze) {
+        delete terminalMaze;
+    }
     return EXIT_SUCCESS;
 
 }
@@ -499,5 +506,33 @@ void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate&
 }
 
 void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
+    // Initialise random seed
+    std::srand(std::time(0));
+
+    // Retrieve required maze data
+    mcpp::Coordinate basePoint = terminalMaze->getBasePoint();
+    int length = terminalMaze->getLength();
+    int width = terminalMaze->getWidth();
+
+    // Add all 'walkable' tiles to a vector
+    std::vector<mcpp::Coordinate> walkableCoords;
+    for (int i = 0; i < length; i++) {
+        for (int j = 0; j < width; j++) {
+            mcpp::Coordinate currentCoord = basePoint + mcpp::Coordinate(i, 0, j);
+            if (mc->getBlock(currentCoord) == mcpp::Blocks::AIR) {
+                walkableCoords.push_back(currentCoord);
+            }
+        }
+    }
+
+    // Set player position to a random walkable tile & allow them to solve manually
+    if (!walkableCoords.empty()) {
+        int randomIndex = std::rand() % walkableCoords.size();
+        mc->setPlayerPosition(walkableCoords[randomIndex]);
+
+    } else {
+        std::cout << "No walkable tile found!" << std::endl;
+    }
+
 
 }
