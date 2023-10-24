@@ -35,8 +35,8 @@ struct CoordDir {
     AgentDirection dir;
 };
 
-void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc); // option 1 in generate maze menu
-void GenerateRandomMaze(); // option 2 in generate maze menu
+std::unique_ptr<Maze> ReadMazeFromTerminal(mcpp::MinecraftConnection* mc);
+void GenerateRandomMaze();
 void SolveMaze(mcpp::MinecraftConnection* mc);
 void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
                 mcpp::MinecraftConnection* mc);
@@ -60,6 +60,7 @@ int main(void){
     //read Mode
 
     mcpp::MinecraftConnection* mc = new mcpp::MinecraftConnection();
+    std::unique_ptr<Maze> terminalMaze = nullptr;
     printStartText();
     printMainMenu();
     
@@ -67,12 +68,13 @@ int main(void){
 
     do {
         std::cin >> input;
+
         if (input == 1) {
             printGenerateMazeMenu();
             std::cin >> input;
 
             if (input == 1) {
-                ReadMazeFromTerminal(mc);
+                terminalMaze = ReadMazeFromTerminal(mc);
             } else if (input == 2) {
                 mcpp::Coordinate basePoint;
                 std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
@@ -136,7 +138,7 @@ int main(void){
 }
 
 // Tony
-void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc) {
+std::unique_ptr<Maze> ReadMazeFromTerminal(mcpp::MinecraftConnection* mc) {
     // Base point
     int x, y, z;
     std::cout << "Enter the basePoint of maze (X Y Z):" << std::endl;
@@ -157,6 +159,7 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc) {
     } while (envWidth % 2 == 0);
     
     char envStructure [envLength][envWidth];
+    auto maze = std::make_unique<Maze>(basePoint, envLength, envWidth, NORMAL_MODE);
     char readChar;
 
     std::cout << "Enter the environment structure:" << std::endl;
@@ -191,6 +194,8 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc) {
     //         maze.push_back(row);
     //     }
     // }
+
+    return maze;
 
 }
 // Ravi
