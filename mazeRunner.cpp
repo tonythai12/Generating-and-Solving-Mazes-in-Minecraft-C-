@@ -26,9 +26,9 @@ enum States{
 };
 
 /*
-    Custom data structure for storing an agent's coordinates and direction faced.
-    This struct is used in the AllVisited() function, to determine if a particular tile has been
-    visited more than N times.
+ *  Custom data structure for storing an agent's coordinates and direction faced.
+ *  This struct is used in the AllVisited() function, to determine if a particular tile has been
+ *  visited more than N times.
 */
 struct CoordDir {
     mcpp::Coordinate coord;
@@ -459,7 +459,7 @@ void rebuildEnvironment(const mcpp::Coordinate& corner1,
 
     for (int y = 0; y < yLen; y++) {
         for (int x = 0; x < xLen; x++) {
-            for (int z = 0; z < zLen; ++z) {
+            for (int z = 0; z < zLen; z++) {
                 mcpp::Coordinate newCoord(corner1.x + x, corner1.y + y, corner1.z + z);
                 mc->setBlock(newCoord, savedEnvironment[y][x][z]);
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -516,11 +516,21 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
 
     // Add all 'walkable' tiles to a vector
     std::vector<mcpp::Coordinate> walkableCoords;
-    for (int i = 0; i < length; i++) {
-        for (int j = 0; j < width; j++) {
-            mcpp::Coordinate currentCoord = basePoint + mcpp::Coordinate(i, 0, j);
-            if (mc->getBlock(currentCoord) == mcpp::Blocks::AIR) {
-                walkableCoords.push_back(currentCoord);
+
+    mcpp::Coordinate corner1 = mcpp::Coordinate(basePoint.x, basePoint.y, basePoint.z);
+    mcpp::Coordinate corner2 = mcpp::Coordinate(basePoint.x + length, basePoint.y, basePoint.z + width);
+    auto blocks = mc->getBlocks(corner1, corner2);
+
+    int yLen = blocks.size();
+    int xLen = blocks[0].size();
+    int zLen = blocks[0][0].size(); 
+
+    for (int y = 0; y < yLen; y++) {
+        for (int x = 0; x < xLen; x++) {
+            for (int z = 0; z < zLen; z++) {
+                if (mcpp::Blocks::AIR == blocks[y][x][z]) {
+                    walkableCoords.push_back(mcpp::Coordinate(basePoint.x + x, basePoint.y + y, basePoint.z + z));
+                }
             }
         }
     }
