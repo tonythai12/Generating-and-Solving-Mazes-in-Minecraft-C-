@@ -35,7 +35,7 @@ struct CoordDir {
     AgentDirection dir;
 };
 
-std::unique_ptr<Maze> ReadMazeFromTerminal(mcpp::MinecraftConnection* mc);
+Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze);
 void GenerateRandomMaze();
 void SolveMaze(mcpp::MinecraftConnection* mc);
 void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
@@ -52,7 +52,7 @@ void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate&
 void rebuildEnvironment(const mcpp::Coordinate& corner1, 
                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment, 
                         mcpp::MinecraftConnection* mc);
-void SolveManually(mcpp::MinecraftConnection* mc);
+void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze);
 
 int main(void){
 
@@ -60,7 +60,7 @@ int main(void){
     //read Mode
 
     mcpp::MinecraftConnection* mc = new mcpp::MinecraftConnection();
-    std::unique_ptr<Maze> terminalMaze = nullptr;
+    Maze* terminalMaze = nullptr;
     printStartText();
     printMainMenu();
     
@@ -74,14 +74,17 @@ int main(void){
             std::cin >> input;
 
             if (input == 1) {
-                terminalMaze = ReadMazeFromTerminal(mc);
+                terminalMaze = ReadMazeFromTerminal(mc, terminalMaze);
+
             } else if (input == 2) {
                 mcpp::Coordinate basePoint;
                 std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
                 Maze maze(basePoint, 7, 5, NORMAL_MODE);
                 maze.generateMaze();
+
             } else if (input == 3) {
                 printMainMenu();
+
             } else {
                 std::cout << "Invalid input. Please try again." << std::endl;
             }
@@ -89,13 +92,15 @@ int main(void){
         } else if (input == 2) {
             // Placeholder for build maze menu
             continue;
+
         } else if (input == 3) {
             printSolveMazeMenu();
             std::cin >> input;
 
             if (input == 1) {
-                SolveManually(mc);
-                //start = mc->getPlayerPosition();
+                if (terminalMaze) {
+                    SolveManually(mc, terminalMaze);
+                }
             } else if (input == 2) {
                 SolveMaze(mc);
                 //start = mc->getPlayerPosition();
@@ -138,7 +143,7 @@ int main(void){
 }
 
 // Tony
-std::unique_ptr<Maze> ReadMazeFromTerminal(mcpp::MinecraftConnection* mc) {
+Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     // Base point
     int x, y, z;
     std::cout << "Enter the basePoint of maze (X Y Z):" << std::endl;
@@ -159,7 +164,9 @@ std::unique_ptr<Maze> ReadMazeFromTerminal(mcpp::MinecraftConnection* mc) {
     } while (envWidth % 2 == 0);
     
     char envStructure [envLength][envWidth];
-    auto maze = std::make_unique<Maze>(basePoint, envLength, envWidth, NORMAL_MODE);
+    terminalMaze->setBasePoint(basePoint);
+    terminalMaze->setLength(envLength);
+    terminalMaze->setWidth(envWidth);
     char readChar;
 
     std::cout << "Enter the environment structure:" << std::endl;
@@ -195,7 +202,7 @@ std::unique_ptr<Maze> ReadMazeFromTerminal(mcpp::MinecraftConnection* mc) {
     //     }
     // }
 
-    return maze;
+    return terminalMaze;
 
 }
 // Ravi
@@ -491,6 +498,6 @@ void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate&
     }
 }
 
-void SolveManually(mcpp::MinecraftConnection* mc) {
+void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
 
 }
