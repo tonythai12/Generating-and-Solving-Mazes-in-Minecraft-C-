@@ -13,6 +13,19 @@ public:
                                         bool mode);
     ~Maze();
 
+     // struct to store the coordinates of the maze cells
+    struct Cell
+    {
+        mcpp::Coordinate coordinate;
+        bool isVisited = false;
+    };
+
+    // Directions
+    const int UP = 0;
+    const int RIGHT = 1;
+    const int DOWN = 2;
+    const int LEFT = 3;
+
     // Generate the maze structure
     void generateMazeStructure();
 
@@ -25,6 +38,25 @@ public:
     // Selecting random starting point in the maze
     mcpp::Coordinate selectRandomStartingPoint();
 
+    // return if the cell is at outer wall
+    Cell OuterWallCell(mcpp::Coordinate cell); 
+
+    // make way in the maze
+    void removeWall(Cell cell);
+
+    // return if the cell has unvisited neighbour
+    bool hasUnvisitedNeighbour(Cell cell);
+
+    // check if the cell is inside the maze
+    bool isInsideMaze(mcpp::Coordinate cell);
+
+    // get random direction
+    int getRandomDirection();
+
+    void generateRecursiveMaze(std::vector<Cell> &cells, Cell cell);
+
+    // check if the cell is visited
+    bool visited(Cell cell);
 
 private:
     /* data */
@@ -44,6 +76,15 @@ private:
 
     // BlockType
     mcpp::BlockType blockType = mcpp::Blocks::BRICKS;
+
+    // vector to store the coordinates of the maze cells
+    std::vector<Cell> cells;
+
+    // vector to store inner wall cells
+    std::vector<Cell> innerWallCells;
+
+    //  visited cells in the maze
+    std::vector<Cell> visitedCells;
 };
 
 
