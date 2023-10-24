@@ -21,7 +21,7 @@ void Maze::generateMazeStructure()
 {
     // Generate the maze
     // 1. Initialize the maze
-    for (int i = 0; i < height; i++)
+    for (int i = 0; i < length; i++)
     {
         std::vector<int> temp;
         for (int j = 0; j < width; j++)
@@ -32,7 +32,7 @@ void Maze::generateMazeStructure()
     }
 
     // Generate the maze structure
-    for (int i = 0; i < height; i++)
+    for (int i = 0; i < length; i++)
     {
         for (int j = 0; j < width; j++)
         {
@@ -69,7 +69,7 @@ void Maze::generateMaze(){
                 // Add the coordinate to cell vector and set isVisited to false
                 cells.push_back(Cell{basePoint + mcpp::Coordinate(i, 0, j), false});
 
-                if (i > 0 && i < height - 1 && j > 0 && j < width - 1) {
+                if (i > 0 && i < length - 1 && j > 0 && j < width - 1) {
                     innerWallCells.push_back(Cell{basePoint + mcpp::Coordinate(i, 0, j), false});
                 }
             }
@@ -82,7 +82,7 @@ void Maze::generateMaze(){
                 // Add the coordinate of the cell to the vector
                 cells.push_back(Cell{basePoint + mcpp::Coordinate(i, 0, j), false});
 
-                if (i > 0 && i < height - 1 && j > 0 && j < width - 1) {
+                if (i > 0 && i < length - 1 && j > 0 && j < width - 1) {
                     innerWallCells.push_back(Cell{basePoint + mcpp::Coordinate(i, 0, j), false});
                 }
             }
@@ -116,7 +116,7 @@ mcpp::Coordinate Maze::selectRandomStartingPoint(){
     std::vector<mcpp::Coordinate> startingPoints;
 
     // If there is 0 in the maze, then it is the starting point
-    for (int i = 0; i < height; i++)
+    for (int i = 0; i < length; i++)
     {
         for(int j = 0; j < width; j++)
         {
