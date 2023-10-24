@@ -35,29 +35,31 @@ struct CoordDir {
     AgentDirection dir;
 };
 
-void ReadMazeFromTerminal(); // option 1 in generate maze menu
+void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc); // option 1 in generate maze menu
 void GenerateRandomMaze(); // option 2 in generate maze menu
-void SolveMaze();
-void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
-void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc);
+void SolveMaze(mcpp::MinecraftConnection* mc);
+void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
+                mcpp::MinecraftConnection* mc);
+void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection* mc);
 void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 std::string coordDirToKey(const CoordDir& cd);
 bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles);
 std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coordinate &basePoint, 
-                                            mcpp::MinecraftConnection &mc, int &length, int &width);
+                                            mcpp::MinecraftConnection* mc, int &length, int &width);
 void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
-                       mcpp::MinecraftConnection& mc);
+                       mcpp::MinecraftConnection* mc);
 void rebuildEnvironment(const mcpp::Coordinate& corner1, 
                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment, 
-                        mcpp::MinecraftConnection& mc);
+                        mcpp::MinecraftConnection* mc);
+void SolveManually(mcpp::MinecraftConnection* mc);
 
 int main(void){
 
     // bool mode = NORMAL_MODE;
     //read Mode
 
-    mcpp::MinecraftConnection mc;
+    mcpp::MinecraftConnection* mc = new mcpp::MinecraftConnection();
     printStartText();
     printMainMenu();
     
@@ -70,7 +72,7 @@ int main(void){
             std::cin >> input;
 
             if (input == 1) {
-                ReadMazeFromTerminal();
+                ReadMazeFromTerminal(mc);
             } else if (input == 2) {
                 mcpp::Coordinate basePoint;
                 std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
@@ -90,10 +92,9 @@ int main(void){
             std::cin >> input;
 
             if (input == 1) {
-                SolveMaze();
+                SolveManually(mc);
             } else if (input == 2) {
-                // for testing
-                mcpp::Coordinate coord = mc.getPlayerPosition();
+                mcpp::Coordinate coord = mc->getPlayerPosition();
                 int h = 7;
                 int w = 5;
                 mcpp::Coordinate coord2 = mcpp::Coordinate(coord.x + h, coord.y, coord.z + w);
@@ -116,7 +117,7 @@ int main(void){
         }
     } while (input != 5);
 
-    mc.doCommand("time set day"); 
+    mc->doCommand("time set day"); 
 
     States curState = ST_Main;
 
@@ -126,15 +127,14 @@ int main(void){
         //Do something
     }
 
-
+    delete mc;
     return EXIT_SUCCESS;
 
 }
 
 // Tony
-void ReadMazeFromTerminal() {
+void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc) {
     // Base point
-    mcpp::MinecraftConnection mc;
     int x, y, z;
     std::cout << "Enter the basePoint of maze:" << std::endl;
     std::cin >> x;
@@ -168,9 +168,9 @@ void ReadMazeFromTerminal() {
     for (int i = 0; i < envLength; i++) {
         for (int j = 0; j < envWidth; j++) {
             if (envStructure[i][j] == 'x') {
-                mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::BRICKS);
+                mc->setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::BRICKS);
             } else {
-                mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::AIR);
+                mc->setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::AIR);
             }
         }
     }
@@ -201,12 +201,12 @@ void GenerateRandomMaze() {
 /*
     Solves the perfect or looped maze using the right-hand-follow algorithm.
 */
-void SolveMaze() {
-    mcpp::MinecraftConnection mc;
+void SolveMaze(mcpp::MinecraftConnection* mc) {
+    // mcpp::MinecraftConnection mc;
     int counter = 1;
 
     // Find player position
-    mcpp::Coordinate playerPos = mc.getPlayerPosition();
+    mcpp::Coordinate playerPos = mc->getPlayerPosition();
 
     // Initialise player @ playerPos
     Agent *player = new Agent(playerPos);
@@ -230,7 +230,7 @@ void SolveMaze() {
 
     while (!solvedMaze) {
         // Solve the current tile
-        SolveTile(player, dir, x, z, playerPos);
+        SolveTile(player, dir, x, z, playerPos, mc);
 
         // Update coordinates for the next tile to be solved
         UpdateCoordsAfterSolving(dir, x, z, playerPos);
@@ -289,14 +289,14 @@ void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z,
 
     Part of the SolveMaze() function.
 */
-void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection &mc) {
-    mc.setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
+void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection* mc) {
+    mc->setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
 
     // 1 second sleep delay
     std::this_thread::sleep_for(std::chrono::seconds(1)); 
 
     // Remove highlighted block
-    mc.setBlock(playerPos, mcpp::Blocks::AIR);
+    mc->setBlock(playerPos, mcpp::Blocks::AIR);
     std::this_thread::sleep_for(std::chrono::seconds(1)); 
 }
 
@@ -311,20 +311,21 @@ void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConn
 
     Part of the SolveMaze() function.
 */
-void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos) {
+void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
+                mcpp::MinecraftConnection* mc) {
     bool moved = false;
     while (!moved) {
         AgentDirection rightDir = player->turn(dir);
 
         // Try to turn right first
-        if (player->canMove(x, z, rightDir, playerPos)) {
+        if (player->canMove(x, z, rightDir, playerPos, mc)) {
             std::cout << "Turning right." << std::endl;
             dir = rightDir;
             moved = true;
         } 
 
         // If it can move straight, do so
-        else if (player->canMove(x, z, dir, playerPos)) {
+        else if (player->canMove(x, z, dir, playerPos, mc)) {
             std::cout << "Moving straight." << std::endl;
             moved = true;
         } 
@@ -334,7 +335,7 @@ void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordin
             // Can't move straight or right. Try to turn left
             for (int i = 0; i < 3; i++) {
                 dir = player->turn(dir);
-                if (player->canMove(x, z, dir, playerPos)) {
+                if (player->canMove(x, z, dir, playerPos, mc)) {
                     moved = true;
                     break;
                 }
@@ -397,12 +398,12 @@ bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<C
     Stored in a 3D vector, which will be used to restore the environment after solving the maze.
 */
 std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coordinate &basePoint, 
-                                            mcpp::MinecraftConnection &mc, int &length, int &width) {
+                                            mcpp::MinecraftConnection* mc, int &length, int &width) {
     
     // Calculate corners and then get heights
     mcpp::Coordinate corner1(basePoint.x, basePoint.y, basePoint.z);
     mcpp::Coordinate corner2(basePoint.x + length, basePoint.y, basePoint.z + width);
-    auto envHeights = mc.getHeights(corner1, corner2);
+    auto envHeights = mc->getHeights(corner1, corner2);
 
     // Find min and max y-values
     int minY = std::numeric_limits<int>::max();
@@ -417,7 +418,7 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coor
     // Get all blocks using the min/max y-values
     mcpp::Coordinate loc1 = mcpp::Coordinate(basePoint.x, minY, basePoint.z);
     mcpp::Coordinate loc2 = mcpp::Coordinate(basePoint.x + length, maxY, basePoint.z + width);
-    auto blocks = mc.getBlocks(loc1, loc2);
+    auto blocks = mc->getBlocks(loc1, loc2);
 
     return blocks;
 }
@@ -427,7 +428,7 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coor
 */
 void rebuildEnvironment(const mcpp::Coordinate& corner1, 
                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment, 
-                        mcpp::MinecraftConnection& mc) {
+                        mcpp::MinecraftConnection* mc) {
     
     // Format is [y][x][z]
     int yLen = savedEnvironment.size();
@@ -438,7 +439,7 @@ void rebuildEnvironment(const mcpp::Coordinate& corner1,
         for (int x = 0; x < xLen; x++) {
             for (int z = 0; z < zLen; ++z) {
                 mcpp::Coordinate newCoord(corner1.x + x, corner1.y + y, corner1.z + z);
-                mc.setBlock(newCoord, savedEnvironment[y][x][z]);
+                mc->setBlock(newCoord, savedEnvironment[y][x][z]);
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
         }
@@ -449,10 +450,10 @@ void rebuildEnvironment(const mcpp::Coordinate& corner1,
     Flattens the environment within the specified bounds. 
 */
 void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
-                       mcpp::MinecraftConnection& mc) {
+                       mcpp::MinecraftConnection* mc) {
 
     // Heights of the environment at (x, z) (as y-coords are different for each pair)
-    auto heights = mc.getHeights(corner1, corner2);
+    auto heights = mc->getHeights(corner1, corner2);
     int floorLevel = corner1.y;
     
     // Assume [x][z] for testing
@@ -463,21 +464,25 @@ void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate&
             // Set blocks above the floorLevel and up to the highest block to AIR
             for (int y = floorLevel + 1; y <= highestBlockY; y++) {
                 mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
-                mc.setBlock(coord, mcpp::Blocks::AIR);
+                mc->setBlock(coord, mcpp::Blocks::AIR);
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
 
             // Set the block at floorLevel to GRASS
             mcpp::Coordinate coord(corner1.x + x, floorLevel, corner1.z + z);
-            mc.setBlock(coord, mcpp::Blocks::GRASS);
+            mc->setBlock(coord, mcpp::Blocks::GRASS);
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
             // Set blocks below floorLevel to GRASS
             for (int y = highestBlockY; y < floorLevel; y++) {
                 mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
-                mc.setBlock(coord, mcpp::Blocks::GRASS);
+                mc->setBlock(coord, mcpp::Blocks::GRASS);
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
         }
     }
+}
+
+void SolveManually(mcpp::MinecraftConnection* mc) {
+
 }
