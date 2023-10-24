@@ -400,8 +400,8 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coor
                                             mcpp::MinecraftConnection &mc, int &length, int &width) {
     
     // Calculate corners and then get heights
-    mcpp::Coordinate corner1(basePoint.x, 0, basePoint.z);
-    mcpp::Coordinate corner2(basePoint.x + length, 0, basePoint.z + width);
+    mcpp::Coordinate corner1(basePoint.x, basePoint.y, basePoint.z);
+    mcpp::Coordinate corner2(basePoint.x + length, basePoint.y, basePoint.z + width);
     auto envHeights = mc.getHeights(corner1, corner2);
 
     // Find min and max y-values
@@ -415,8 +415,9 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coor
     }
 
     // Get all blocks using the min/max y-values
-    mcpp::Coordinate basePoint2 = mcpp::Coordinate(basePoint.x + length, basePoint.y, basePoint.z + width);
-    auto blocks = mc.getBlocks(basePoint, basePoint2);
+    mcpp::Coordinate loc1 = mcpp::Coordinate(basePoint.x, minY, basePoint.z);
+    mcpp::Coordinate loc2 = mcpp::Coordinate(basePoint.x + length, maxY, basePoint.z + width);
+    auto blocks = mc.getBlocks(loc1, loc2);
 
     return blocks;
 }
@@ -428,23 +429,20 @@ void rebuildEnvironment(const mcpp::Coordinate& corner1,
                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment, 
                         mcpp::MinecraftConnection& mc) {
     
-    // Assume [x][y][z]
-    int xLen = savedEnvironment.size();
-    int yLen = savedEnvironment[0].size();
+    // Format is [y][x][z]
+    int yLen = savedEnvironment.size();
+    int xLen = savedEnvironment[0].size();
     int zLen = savedEnvironment[0][0].size(); 
 
-    std::cout << "first degree " << xLen << std::endl;
-    std::cout << "second degree " << yLen << std::endl;
-    std::cout << "third degree " << zLen << std::endl;
-
-    // for (int x = 0; x < xLen; x++) {
-    //     for (int y = 0; y < yLen; y++) {
-    //         for (int z = 0; z < zLen; ++z) {
-    //             mcpp::Coordinate newCoord(corner1.x + x, corner1.y + y, corner1.z + z);
-    //             mc.setBlock(newCoord, savedEnvironment[x][y][z]);
-    //         }
-    //     }
-    // }
+    for (int y = 0; y < yLen; y++) {
+        for (int x = 0; x < xLen; x++) {
+            for (int z = 0; z < zLen; ++z) {
+                mcpp::Coordinate newCoord(corner1.x + x, corner1.y + y, corner1.z + z);
+                mc.setBlock(newCoord, savedEnvironment[y][x][z]);
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
+        }
+    }
 }
 
 void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
@@ -463,16 +461,19 @@ void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate&
             for (int y = floorLevel + 1; y <= highestBlockY; y++) {
                 mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
                 mc.setBlock(coord, mcpp::Blocks::AIR);
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
 
             // Set the block at floorLevel to GRASS
             mcpp::Coordinate coord(corner1.x + x, floorLevel, corner1.z + z);
             mc.setBlock(coord, mcpp::Blocks::GRASS);
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
             // Set blocks below floorLevel to GRASS
             for (int y = highestBlockY; y < floorLevel; y++) {
                 mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
                 mc.setBlock(coord, mcpp::Blocks::GRASS);
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
         }
     }
