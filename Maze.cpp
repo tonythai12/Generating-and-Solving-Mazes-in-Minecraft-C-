@@ -2,8 +2,8 @@
 #include <random>
 
 
-Maze::Maze(mcpp::Coordinate basePoint, unsigned int xlen, 
-           unsigned int zlen, bool mode)
+Maze::Maze(mcpp::Coordinate basePoint, int xlen, 
+        int zlen, bool mode)
     : basePoint(basePoint), length(xlen), width(zlen), mode(mode)
 {
 }
