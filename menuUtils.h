@@ -50,6 +50,7 @@ void printTeamInfo(void){
     //*************
 
     std::cout << std::endl;
+    printMainMenu();
 }
 
 void printExitMassage(void){
