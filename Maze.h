@@ -61,6 +61,9 @@ public:
     mcpp::Coordinate getBasePoint() const { return basePoint; }
     int getLength() const { return length; }
     int getWidth() const { return width; }
+    void setBasePoint(mcpp::Coordinate basePoint) { this->basePoint = basePoint; }
+    void setLength(int length) { this->length = length; }
+    void setWidth(int width) { this->width = width; }
 
 private:
     /* data */
