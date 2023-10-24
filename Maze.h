@@ -60,13 +60,12 @@ public:
 
 private:
     /* data */
+    // The base point of the maze
+    mcpp::Coordinate basePoint;
+
     // Random length and width of the maze
     unsigned int length;
     unsigned int width;
-    unsigned int ylen;
-
-    // The base point of the maze
-    mcpp::Coordinate basePoint;
 
     // Mode
     bool mode = false;
