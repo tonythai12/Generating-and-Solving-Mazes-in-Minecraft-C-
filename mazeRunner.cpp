@@ -97,9 +97,9 @@ int main(void){
                 int h = 7;
                 int w = 5;
                 mcpp::Coordinate coord2 = mcpp::Coordinate(coord.x + h, coord.y, coord.z + w);
-                std::vector<std::vector<std::vector<mcpp::BlockType>>> savedEnv = getEnvironment(coord, mc, h, w);
+                auto savedEnv = getEnvironment(coord, mc, h, w);
                 flattenEnvironment(coord, coord2, mc);
-                // rebuildEnvironment(coord, savedEnv, mc);
+                rebuildEnvironment(coord, savedEnv, mc);
                 continue;
             } else if (input == 3) {
                 printMainMenu();
@@ -416,7 +416,9 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coor
 
     // Get all blocks using the min/max y-values
     mcpp::Coordinate basePoint2 = mcpp::Coordinate(basePoint.x + length, basePoint.y, basePoint.z + width);
-    return mc.getBlocks(basePoint, basePoint2);
+    auto blocks = mc.getBlocks(basePoint, basePoint2);
+
+    return blocks;
 }
 
 /*
@@ -428,24 +430,28 @@ void rebuildEnvironment(const mcpp::Coordinate& corner1,
     
     // Assume [x][y][z]
     int xLen = savedEnvironment.size();
-    int yLen = savedEnvironment[0].size(); // Assumes non-empty nested vectors
-    int zLen = savedEnvironment[0][0].size(); // Assumes non-empty nested vectors
+    int yLen = savedEnvironment[0].size();
+    int zLen = savedEnvironment[0][0].size(); 
 
-    for (int x = 0; x < xLen; x++) {
-        for (int y = 0; y < yLen; y++) {
-            for (int z = 0; z < zLen; ++z) {
-                mcpp::Coordinate newCoord(corner1.x + x, corner1.y + y, corner1.z + z);
-                mc.setBlock(newCoord, savedEnvironment[x][y][z]);
-            }
-        }
-    }
+    std::cout << "first degree " << xLen << std::endl;
+    std::cout << "second degree " << yLen << std::endl;
+    std::cout << "third degree " << zLen << std::endl;
+
+    // for (int x = 0; x < xLen; x++) {
+    //     for (int y = 0; y < yLen; y++) {
+    //         for (int z = 0; z < zLen; ++z) {
+    //             mcpp::Coordinate newCoord(corner1.x + x, corner1.y + y, corner1.z + z);
+    //             mc.setBlock(newCoord, savedEnvironment[x][y][z]);
+    //         }
+    //     }
+    // }
 }
 
 void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
                        mcpp::MinecraftConnection& mc) {
 
     // Heights of the environment at (x, z) (as y-coords are different for each pair)
-    std::vector<std::vector<int>> heights = mc.getHeights(corner1, corner2);
+    auto heights = mc.getHeights(corner1, corner2);
     int floorLevel = corner1.y;
     
     // Assume [x][z] for testing
