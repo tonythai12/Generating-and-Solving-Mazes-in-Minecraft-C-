@@ -71,8 +71,8 @@ private:
     mcpp::Coordinate basePoint;
 
     // Random length and width of the maze
-    unsigned int length;
-    unsigned int width;
+    int length;
+    int width;
 
     // Mode
     bool mode = false;

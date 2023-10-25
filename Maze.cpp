@@ -83,7 +83,6 @@ void Maze::generateMaze(){
                 }
             }
         }
-        std::cout << std::endl;
     }
 
 
@@ -91,8 +90,14 @@ void Maze::generateMaze(){
     mcpp::Coordinate randomStart = Maze::selectRandomStartingPoint();
     Cell start{randomStart, true};
 
+    // print the starting point
+    mc.setBlock(randomStart, mcpp::Blocks::DIAMOND_BLOCK);
+
     // Select a random outer wall cell
     Cell outerWallCell = Maze::OuterWallCell(randomStart);
+
+    // print the outer wall cell
+    std::cout << "Outer wall cell: " << outerWallCell.coordinate.x << ", " << outerWallCell.coordinate.y << ", " << outerWallCell.coordinate.z << std::endl;
 
     visitedCells.push_back(outerWallCell);
     
@@ -116,9 +121,11 @@ mcpp::Coordinate Maze::selectRandomStartingPoint(){
     {
         for(int j = 0; j < width; j++)
         {
-            if (maze[i][j] == 0)
-            {
-                startingPoints.push_back(basePoint + mcpp::Coordinate(i, 0, j));
+            if (i == 1 || j == 1 || i == length - 2 || j == width - 2) {
+                if (maze[i][j] == 0)
+                {
+                    startingPoints.push_back(basePoint + mcpp::Coordinate(i, 0, j));
+                }
             }
         }
     }
@@ -137,7 +144,7 @@ Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
     bool isOuterWall = false;
     
     outerWallCell.coordinate = cell - mcpp::Coordinate(2, 0, 0);
-    for (int i = 0; i < cells.size(); i++)
+    for (int i = 0; i < static_cast<int>(cells.size()); i++)
     {
         if (outerWallCell.coordinate == cells.at(i).coordinate)
         {
@@ -157,7 +164,7 @@ Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
     }
 
     outerWallCell.coordinate = cell + mcpp::Coordinate(2, 0, 0);
-    for (int i = 0; i < cells.size(); i++)
+    for (int i = 0; i < static_cast<int>(cells.size()); i++)
     {
         if (outerWallCell.coordinate == cells.at(i).coordinate)
         {
@@ -177,7 +184,7 @@ Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
     }
 
     outerWallCell.coordinate = cell - mcpp::Coordinate(0, 0, 2);
-    for (int i = 0; i < cells.size(); i++)
+    for (int i = 0; i < static_cast<int>(cells.size()); i++)
     {
         if (outerWallCell.coordinate == cells.at(i).coordinate)
         {
@@ -197,7 +204,7 @@ Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
     }
 
     outerWallCell.coordinate = cell + mcpp::Coordinate(0, 0, 2);
-    for (int i = 0; i < cells.size(); i++)
+    for (int i = 0; i < static_cast<int>(cells.size()); i++)
     {
         if (outerWallCell.coordinate == cells.at(i).coordinate)
         {
@@ -227,7 +234,7 @@ void Maze::removeWall(Maze::Cell cell){
     mc.setBlock(cell.coordinate + mcpp::Coordinate(0, 2, 0), mcpp::Blocks::AIR);
 
     // Set the cell to visited
-    for (int i = 0; i < innerWallCells.size(); i++)
+    for (int i = 0; i < static_cast<int>(innerWallCells.size()); i++)
     {
         if (innerWallCells.at(i).coordinate == cell.coordinate)
         {
@@ -244,7 +251,7 @@ int Maze::getRandomDirection() {
 }
 
 bool Maze::isInsideMaze(mcpp::Coordinate cell){
-    for(int i = 0; i < innerWallCells.size(); i++){
+    for(int i = 0; i < static_cast<int>(innerWallCells.size()); i++){
         if (innerWallCells.at(i).coordinate == cell)
         {
             return true;
@@ -318,7 +325,7 @@ void Maze::generateRecursiveMaze(std::vector<Cell> &cells, Cell cell) {
 }
 
 bool Maze::visited(Cell cell) {
-    for (int i = 0; i < visitedCells.size(); i++)
+    for (int i = 0; i < static_cast<int>(visitedCells.size()); i++)
     {
         if (visitedCells.at(i).coordinate == cell.coordinate)
         {

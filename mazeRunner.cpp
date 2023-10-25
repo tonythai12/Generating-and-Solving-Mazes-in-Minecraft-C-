@@ -455,8 +455,8 @@ void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate&
     int floorLevel = corner1.y;
     
     // Assume [x][z] for testing
-    for (int x = 0; x < heights.size(); x++) {
-        for (int z = 0; z < heights[x].size(); z++) {
+    for (int x = 0; x < static_cast<int>(heights.size()); x++) {
+        for (int z = 0; z < static_cast<int>(heights[x].size()); z++) {
             int highestBlockY = heights[x][z];
 
             // Set blocks above the floorLevel and up to the highest block to AIR
