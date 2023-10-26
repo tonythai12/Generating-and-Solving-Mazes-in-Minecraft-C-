@@ -54,6 +54,7 @@ void rebuildEnvironment(const mcpp::Coordinate& corner1,
                         mcpp::MinecraftConnection* mc);
 void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze, Agent* player);
 int getValidInt(const std::string& errorMsg);
+bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth);
 
 int main(void) {
 
@@ -186,6 +187,20 @@ int getValidInt(const std::string& errorMsg) {
     }
 }
 
+bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth) {
+    bool isValid = true;
+
+    if (rows.size() != envLength) {
+        isValid = false;
+    } else {
+        for (const auto& row : rows) {
+            if (isValid && row.length() != envWidth) {
+                isValid = false;
+            }
+        }
+    }
+    return isValid;
+}
 // Tony
 Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     // Base point
@@ -222,15 +237,32 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     } while (envLength % 2 == 0 || envWidth % 2 == 0);
     
     char __attribute__ ((unused)) envStructure [envLength][envWidth];
+    std::vector<std::string> rows;
     terminalMaze = new Maze(basePoint, envLength, envWidth, NORMAL_MODE);
-    char readChar;
 
     std::cout << "Enter the environment structure:" << std::endl;
 
+    bool validMaze = false;
+    while (!validMaze) { // Outer loop to repeat until a valid maze is entered
+        std::cout << "Enter the environment structure:" << std::endl;
+        rows.clear();
+        
+        for (int i = 0; i < envLength; ++i) {
+            std::string row;
+            std::getline(std::cin, row);
+            rows.push_back(row);
+        }
+
+        if (validateMazeDimensions(rows, envLength, envWidth)) {
+            validMaze = true;  // Update the control variable to exit the loop
+        } else {
+            std::cout << "The dimensions of the maze structure you entered do not match the expected dimensions. Please re-enter." << std::endl;
+        }
+    }
+
     for (int i = 0; i < envLength; i++) {
         for (int j = 0; j < envWidth; j++) {
-            std::cin >> readChar;
-            envStructure[i][j] = readChar;
+            envStructure[i][j] = rows[i][j];
         }
     }
 
