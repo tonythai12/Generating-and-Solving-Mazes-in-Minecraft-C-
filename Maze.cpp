@@ -1,6 +1,9 @@
 #include "Maze.h"
 #include <random>
 #include <vector>
+// For sleep and time duration
+#include <thread>   
+#include <chrono> 
 
 
 Maze::Maze(mcpp::Coordinate basePoint, int xlen, int zlen, std::vector<std::vector<char>> mazeStructure)
@@ -355,14 +358,132 @@ void Maze::PrintMaze() {
 void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
     int zLen = mazeStructure.size();
     int xLen = mazeStructure[0].size();
+    int yLen = 3;  // Height of the maze
 
-    for (int i = 0; i < zLen; i++) {
-        for (int j = 0; j < xLen; j++) {
-            if (mazeStructure[i][j] == 'x') {
-                mc->setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::BRICKS);
-            } else {
-                mc->setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::AIR);
+    for (int y = 0; y < yLen; y++) { 
+        for (int i = 0; i < zLen; i++) {  
+            for (int j = 0; j < xLen; j++) {  
+                if (mazeStructure[i][j] == 'x') {
+                    mc->setBlock(basePoint + mcpp::Coordinate(i, y, j), mcpp::Blocks::BRICKS);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                } else {
+                    mc->setBlock(basePoint + mcpp::Coordinate(i, y, j), mcpp::Blocks::AIR);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                }
             }
         }
     }
+}
+
+void Maze::UndoMaze(mcpp::MinecraftConnection* mc) {
+    int zLen = mazeStructure.size();
+    int xLen = mazeStructure[0].size();
+    int yLen = 3;  // Height of the maze
+
+    for (int y = 0; y < yLen; y++) { 
+        for (int i = 0; i < zLen; i++) {  
+            for (int j = 0; j < xLen; j++) {  
+                if (mazeStructure[i][j] == 'x' || mazeStructure[i][j] == '.') {
+                    mc->setBlock(basePoint + mcpp::Coordinate(i, y, j), mcpp::Blocks::AIR);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                }
+            }
+        }
+    }
+}
+
+
+/*
+ *  Retrieves the blockTypes of the environment within the specified bounds.
+ *  Stored in a 3D vector, which will be used to restore the environment after solving the maze.
+ */
+std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp::MinecraftConnection* mc) {
+    
+    // Calculate corners and then get heights
+    mcpp::Coordinate corner1(basePoint.x, basePoint.y, basePoint.z);
+    mcpp::Coordinate corner2(basePoint.x + length, basePoint.y, basePoint.z + width);
+    auto envHeights = mc->getHeights(corner1, corner2);
+
+    // Find min and max y-values
+    int minY = std::numeric_limits<int>::max();
+    int maxY = std::numeric_limits<int>::min();
+    for (const auto& row : envHeights) {
+        for (int height : row) {
+            if (height < minY) minY = height;
+            if (height > maxY) maxY = height;
+        }
+    }
+
+    // Get all blocks using the min/max y-values
+    mcpp::Coordinate loc1 = mcpp::Coordinate(basePoint.x, minY, basePoint.z);
+    mcpp::Coordinate loc2 = mcpp::Coordinate(basePoint.x + length, maxY, basePoint.z + width);
+    auto blocks = mc->getBlocks(loc1, loc2);
+
+    return blocks;
+}
+
+/*
+    Flattens the environment within the specified bounds. 
+*/
+void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
+    // Calculate corners and then get heights
+    mcpp::Coordinate corner1(basePoint.x, basePoint.y, basePoint.z);
+    mcpp::Coordinate corner2(basePoint.x + length, basePoint.y, basePoint.z + width);
+
+    // Heights of the environment at (x, z) (as y-coords are different for each pair)
+    auto heights = mc->getHeights(corner1, corner2);
+    int floorLevel = corner1.y;
+    
+    // Assume [x][z] for testing
+    for (int x = 0; x < static_cast<int>(heights.size()); x++) {
+        for (int z = 0; z < static_cast<int>(heights[x].size()); z++) {
+            int highestBlockY = heights[x][z];
+
+            // Set blocks above the floorLevel and up to the highest block to AIR
+            for (int y = floorLevel + 1; y <= highestBlockY; y++) {
+                mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
+                mc->setBlock(coord, mcpp::Blocks::AIR);
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
+
+            // Set the block at floorLevel to GRASS
+            mcpp::Coordinate coord(corner1.x + x, floorLevel, corner1.z + z);
+            mc->setBlock(coord, mcpp::Blocks::GRASS);
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+            // Set blocks below floorLevel to GRASS
+            for (int y = highestBlockY; y < floorLevel; y++) {
+                mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
+                mc->setBlock(coord, mcpp::Blocks::GRASS);
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
+        }
+    }
+}
+
+/*
+    Rebuilds the environment after the user exits the program. Uses the 3D vector returned from getEnvironment().
+*/
+void Maze::rebuildEnvironment(mcpp::MinecraftConnection* mc,
+                        const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment) {
+    
+    // Format is [y][x][z]
+    int yLen = savedEnvironment.size();
+    int xLen = savedEnvironment[0].size();
+    int zLen = savedEnvironment[0][0].size(); 
+
+    for (int y = 0; y < yLen; y++) {
+        for (int x = 0; x < xLen; x++) {
+            for (int z = 0; z < zLen; z++) {
+                mcpp::Coordinate newCoord(basePoint.x + x, basePoint.y + y, basePoint.z + z);
+                mc->setBlock(newCoord, savedEnvironment[y][x][z]);
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
+        }
+    }
+}
+
+void Maze::FlattenAndBuild(mcpp::MinecraftConnection* mc) {
+    flattenEnvironment(mc);
+    GenerateMazeInMC(mc);
 }

@@ -64,6 +64,12 @@ public:
     void setLength(int length) { this->length = length; }
     void setWidth(int width) { this->width = width; }
     void GenerateMazeInMC(mcpp::MinecraftConnection* mc);
+    std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::MinecraftConnection* mc);
+    void flattenEnvironment(mcpp::MinecraftConnection* mc);
+    void rebuildEnvironment(mcpp::MinecraftConnection* mc,
+                        const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment);
+    void FlattenAndBuild(mcpp::MinecraftConnection* mc);
+    void UndoMaze(mcpp::MinecraftConnection* mc);
 
 private:
     /* data */
