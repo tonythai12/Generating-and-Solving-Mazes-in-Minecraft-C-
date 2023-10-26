@@ -36,15 +36,15 @@ struct CoordDir {
 
 Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze);
 void GenerateRandomMaze();
-void SolveMaze(mcpp::MinecraftConnection* mc, Agent* player);
-void SolveTile(Agent* player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
+void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player);
+void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
                 mcpp::MinecraftConnection* mc);
 void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection* mc);
 void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 std::string coordDirToKey(const CoordDir& cd);
 bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles);
-void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze, Agent* player);
+void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player);
 int getValidInt(const std::string& errorMsg);
 bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth);
 
@@ -155,9 +155,6 @@ int main(void) {
     }
     printExitMassage();
 
-
-
-    delete mc;
     if (terminalMaze) {
         terminalMaze->UndoMaze(mc);
         terminalMaze->flattenEnvironment(mc);
@@ -167,6 +164,7 @@ int main(void) {
     if (player) {
         delete player;
     }
+    delete mc;
     mc = nullptr;
     terminalMaze = nullptr;
     player = nullptr;
@@ -284,7 +282,7 @@ void GenerateRandomMaze() {
 /*
     Solves the perfect or looped maze using the right-hand-follow algorithm.
 */
-void SolveMaze(mcpp::MinecraftConnection* mc, Agent* player) {
+void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player) {
     // mcpp::MinecraftConnection mc;
     int counter = 1;
 
@@ -389,7 +387,7 @@ void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConn
 
     Part of the SolveMaze() function.
 */
-void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
+void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
                 mcpp::MinecraftConnection* mc) {
     bool moved = false;
     while (!moved) {
@@ -472,7 +470,7 @@ bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<C
 
 }
 
-void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze, Agent* player) {
+void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player) {
     // Initialise random seed
     std::srand(std::time(0));
 
