@@ -344,6 +344,8 @@ void Maze::PrintMaze() {
     int xLen = mazeStructure[0].size();
 
     std::cout << "**Printing Maze**" << std::endl;
+    std::cout << "Basepoint: (" << basePoint.x << ", " << basePoint.y << ", " << basePoint.z << ")" << std::endl;
+    std::cout << "Structure:" << std::endl;
 
     for (int i = 0; i < zLen; i++) {
         for (int j = 0; j < xLen; j++) {
