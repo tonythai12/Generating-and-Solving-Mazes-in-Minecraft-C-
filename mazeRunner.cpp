@@ -93,9 +93,11 @@ int main(void) {
         while (curState == ST_GetMaze) {
             printGenerateMazeMenu();
             std::cin >> input;
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-            if (input == 1) {
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Invalid input. Please enter an integer between 1 and 3." << std::endl;
+            } else if (input == 1) {
                 ReadMazeFromTerminal(mc, terminalMaze);
                 curState = ST_Main;
             } else if (input == 2) {
