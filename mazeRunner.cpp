@@ -24,13 +24,6 @@ enum States{
     ST_Creators,
     ST_Exit
 };
-enum MenuState {
-    MAIN_MENU,
-    GENERATE_MAZE_MENU,
-    SOLVE_MAZE_MENU,
-    TEAM_INFO,
-    EXIT
-};
 
 /*
  *  Custom data structure for storing an agent's coordinates and direction faced.
@@ -69,7 +62,7 @@ int main(void) {
     mcpp::MinecraftConnection* mc = new mcpp::MinecraftConnection();
     Maze* terminalMaze = nullptr;
     Agent* player = nullptr;
-    
+
     printStartText();
     
     int input;
