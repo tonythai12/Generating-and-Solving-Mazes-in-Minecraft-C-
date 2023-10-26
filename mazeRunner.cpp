@@ -74,8 +74,11 @@ int main(void) {
             printMainMenu();
             std::cin >> input;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-            if (input == 1) {
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Input Error: Enter an integer between 1 and 5 ...." << std::endl;
+            } else if (input == 1) {
                 curState = ST_GetMaze;
             } else if (input == 2) {
                 // Placeholder for build maze menu
@@ -86,7 +89,7 @@ int main(void) {
             } else if (input == 5) {
                 curState = ST_Exit;
             } else {
-                std::cout << "Invalid input. Please try again." << std::endl;
+                std::cout << "Input Error: Enter a number between 1 and 5 ...." << std::endl;
             }
         }
 
@@ -96,7 +99,7 @@ int main(void) {
             if (std::cin.fail()) {
                 std::cin.clear();
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::cout << "Invalid input. Please enter an integer between 1 and 3." << std::endl;
+                std::cout << "Input Error: Enter an integer between 1 and 3 ...." << std::endl;
             } else if (input == 1) {
                 ReadMazeFromTerminal(mc, terminalMaze);
                 curState = ST_Main;
@@ -117,8 +120,12 @@ int main(void) {
             printSolveMazeMenu();
             std::cin >> input;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Input Error: Enter an integer between 1 and 3 ...." << std::endl;
 
-            if (input == 1) {
+            } else if (input == 1) {
                 if (terminalMaze) {
                     SolveManually(mc, terminalMaze, player);
                 } else {
@@ -135,7 +142,7 @@ int main(void) {
             } else if (input == 3) {
                 curState = ST_Main;
             } else {
-                std::cout << "Invalid input. Please try again." << std::endl;
+                std::cout << "Input Error: Enter a number between 1 and 5 ...." << std::endl;
             }
         }
 
