@@ -108,8 +108,9 @@ int main(void) {
             } else if (input == 2) {
                 mcpp::Coordinate basePoint;
                 std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
-                Maze maze(basePoint, 13, 13, NORMAL_MODE);
-                maze.generateMaze();
+                // @ravisidhu007 change the following to match the new maze constructor
+                // Maze maze(basePoint, 13, 13, NORMAL_MODE);
+                // maze.generateMaze();
                 curState = ST_Main;
             } else if (input == 3) {
                 curState = ST_Main;
@@ -236,11 +237,8 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
 
     } while (envLength % 2 == 0 || envWidth % 2 == 0);
     
-    char __attribute__ ((unused)) envStructure [envLength][envWidth];
+    std::vector<std::vector<char>> mazeStructure;
     std::vector<std::string> rows;
-    terminalMaze = new Maze(basePoint, envLength, envWidth, NORMAL_MODE);
-
-    std::cout << "Enter the environment structure:" << std::endl;
 
     bool validMaze = false;
     while (!validMaze) { // Outer loop to repeat until a valid maze is entered
@@ -259,12 +257,17 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
             std::cout << "The dimensions of the maze structure you entered do not match the expected dimensions. Please re-enter." << std::endl;
         }
     }
+    // Resize 2d vector into correct dimensions
+    mazeStructure.resize(envLength, std::vector<char>(envWidth)); 
 
     for (int i = 0; i < envLength; i++) {
         for (int j = 0; j < envWidth; j++) {
-            envStructure[i][j] = rows[i][j];
+            mazeStructure[i][j] = rows[i][j];
         }
     }
+    terminalMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
+    std::cout << "Maze read successfully" << std::endl;
+    terminalMaze->PrintMaze();
 
     return terminalMaze;
 }

@@ -1,10 +1,10 @@
 #include "Maze.h"
 #include <random>
+#include <vector>
 
 
-Maze::Maze(mcpp::Coordinate basePoint, int xlen, 
-        int zlen, bool mode)
-    : basePoint(basePoint), length(xlen), width(zlen), mode(mode)
+Maze::Maze(mcpp::Coordinate basePoint, int xlen, int zlen, std::vector<std::vector<char>> mazeStructure)
+    : basePoint(basePoint), length(xlen), width(zlen), mazeStructure(mazeStructure) //mode(mode)
 {
 }
 
@@ -334,4 +334,35 @@ bool Maze::visited(Cell cell) {
     }
 
     return false;
+}
+
+void Maze::PrintMaze() {
+    int zLen = mazeStructure.size();
+    int xLen = mazeStructure[0].size();
+
+    std::cout << "**Printing Maze**" << std::endl;
+
+    for (int i = 0; i < zLen; i++) {
+        for (int j = 0; j < xLen; j++) {
+            std::cout << mazeStructure[i][j];
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << "**End Printing Maze**" << std::endl;
+}
+
+void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
+    int zLen = mazeStructure.size();
+    int xLen = mazeStructure[0].size();
+
+    for (int i = 0; i < zLen; i++) {
+        for (int j = 0; j < xLen; j++) {
+            if (mazeStructure[i][j] == 'x') {
+                mc->setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::BRICKS);
+            } else {
+                mc->setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::AIR);
+            }
+        }
+    }
 }
