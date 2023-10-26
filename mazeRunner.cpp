@@ -201,19 +201,22 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     std::cout << "Enter the length and width of maze:" << std::endl;
 
     do {
-        envLength = getValidInt("Input Error: Enter an odd-numbered integer ....");
-        envWidth = getValidInt("Input Error: Enter an odd-numbered integer ....");
+        envLength = getValidInt("Input Error: Enter an odd-numbered integer. ");
+        envWidth = getValidInt("Input Error: Enter an odd-numbered integer. ");
+        bool isNotOddInput = false;
 
-        if (envLength % 2 == 0) {
-            std::cout << "Input Error: Length must be an odd-numbered integer ...." << std::endl;
+        if (envLength % 2 == 0 || envLength <= 0) {
+            std::cout << "Input Error: Length must be a positive odd integer. ";
+            isNotOddInput = true;
         }
         
-        if (envWidth % 2 == 0) {
-            std::cout << "Input Error: Width must be an odd-numbered integer ...." << std::endl;
+        if (envWidth % 2 == 0 || envWidth <= 0) {
+            std::cout << "Input Error: Width must be an odd-numbered integer. ";
+            isNotOddInput = true;
         }
 
-        if (envLength % 2 == 0 || envWidth % 2 == 0) {
-            std::cout << "Please re-enter both length and width." << std::endl;
+        if (isNotOddInput) {
+            std::cout << "Please re-enter both length and width:" << std::endl;
         }
 
     } while (envLength % 2 == 0 || envWidth % 2 == 0);
