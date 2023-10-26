@@ -69,91 +69,10 @@ int main(void) {
     mcpp::MinecraftConnection* mc = new mcpp::MinecraftConnection();
     Maze* terminalMaze = nullptr;
     Agent* player = nullptr;
-
-    std::vector<std::string> inputErrorMessages;
-    inputErrorMessages.push_back("Invalid input. Please enter an integer from 1 - 3.");
-    inputErrorMessages.push_back("Invalid input. Please enter an integer from 1 - 5.");
+    
     printStartText();
-    printMainMenu();
     
     int input;
-
-    // do {
-    //     std::cin >> input;
-
-    //     if (input == 1) {
-    //         printGenerateMazeMenu();
-    //         std::cin >> input;
-
-    //         if (input == 1) {
-    //             terminalMaze = ReadMazeFromTerminal(mc, terminalMaze);
-
-    //         } else if (input == 2) {
-    //             mcpp::Coordinate basePoint;
-    //             std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
-    //             Maze maze(basePoint, 13, 13, NORMAL_MODE);
-    //             maze.generateMaze();
-
-    //         } else if (input == 3) {
-    //             printMainMenu();
-
-    //         } else {
-    //             std::cout << "Input Error: Enter a number between 1 and 3 ...." << std::endl;
-    //             printGenerateMazeMenu();
-    //             std::cin >> input;
-    //         }
-
-    //     } else if (input == 2) {
-    //         // Placeholder for build maze menu
-    //         continue;
-
-    //     } else if (input == 3) {
-    //         printSolveMazeMenu();
-    //         std::cin >> input;
-
-    //         if (input == 1) {
-    //             if (terminalMaze) {
-    //                 SolveManually(mc, terminalMaze, player);
-    //             }
-    //             else {
-    //                 std::cout << "Please generate a maze first." << std::endl;
-    //                 printSolveMazeMenu();
-    //                 std::cin >> input;
-    //             }
-
-    //         } else if (input == 2) {
-    //             if (player) {
-    //                 SolveMaze(mc, player);
-    //             } else {
-    //                 std::cout << "Please initialise a player first." << std::endl;
-    //                 printSolveMazeMenu();
-    //                 std::cin >> input;
-    //             }
-    //             //start = mc->getPlayerPosition();
-    //             // mcpp::Coordinate coord = mc->getPlayerPosition();
-    //             // int h = 7;
-    //             // int w = 5;
-    //             // mcpp::Coordinate coord2 = mcpp::Coordinate(coord.x + h, coord.y, coord.z + w);
-    //             // auto savedEnv = getEnvironment(coord, mc, h, w);
-    //             // flattenEnvironment(coord, coord2, mc);
-    //             // rebuildEnvironment(coord, savedEnv, mc);
-    //             continue;
-    //         } else if (input == 3) {
-    //             printMainMenu();
-    //         } else {
-    //             std::cout << "Input Error: Enter a number between 1 and 3 ...." << std::endl;
-    //             printSolveMazeMenu();
-    //             std::cin >> input;
-    //         }
-    //     } else if (input == 4) {
-    //         printTeamInfo();
-    //     } else if (input == 5) {
-    //         printExitMassage();
-    //     } else {
-    //         // Re-prompts the user for input repeatedly
-    //         std::cout << "Input Error: Enter a number between 1 and 5 ...." << std::endl;
-    //     }
-    // } while (input != 5);
 
     States curState = ST_Main;
 
