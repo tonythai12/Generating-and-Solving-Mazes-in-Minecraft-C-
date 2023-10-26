@@ -170,7 +170,7 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
         }
     } while (envWidth % 2 == 0);
     
-    char envStructure [envLength][envWidth];
+    char __attribute__ ((unused)) envStructure [envLength][envWidth];
     terminalMaze->setBasePoint(basePoint);
     terminalMaze->setLength(envLength);
     terminalMaze->setWidth(envWidth);
@@ -186,7 +186,6 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     }
 
     return terminalMaze;
-
 }
 // Ravi
 void GenerateRandomMaze() {
