@@ -34,7 +34,7 @@ struct CoordDir {
     AgentDirection dir;
 };
 
-Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze);
+Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze);
 void GenerateRandomMaze();
 void SolveMaze(mcpp::MinecraftConnection* mc, Agent* player);
 void SolveTile(Agent* player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
@@ -154,14 +154,14 @@ int main(void) {
         }
     }
     printExitMassage();
-    terminalMaze->UndoMaze(mc);
-    terminalMaze->flattenEnvironment(mc);
-    terminalMaze->rebuildEnvironment(mc, environment);
 
 
 
     delete mc;
     if (terminalMaze) {
+        terminalMaze->UndoMaze(mc);
+        terminalMaze->flattenEnvironment(mc);
+        terminalMaze->rebuildEnvironment(mc, environment);
         delete terminalMaze;
     }
     if (player) {
@@ -205,7 +205,7 @@ bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength,
     return isValid;
 }
 // Tony
-Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
+Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze) {
     // Base point
     int x, y, z;
     std::cout << "Enter the basePoint of maze:" << std::endl;
