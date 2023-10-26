@@ -53,6 +53,7 @@ void rebuildEnvironment(const mcpp::Coordinate& corner1,
                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment, 
                         mcpp::MinecraftConnection* mc);
 void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze, Agent* player);
+int getValidInt(const std::string& errorMsg);
 
 int main(void) {
 
@@ -169,26 +170,53 @@ int main(void) {
 
 }
 
+int getValidInt(const std::string& errorMsg) {
+    int input;
+    while (true) {
+        std::cin >> input;
+
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << errorMsg << std::endl;
+        } else {
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the buffer
+            return input;
+        }
+    }
+}
+
 // Tony
 Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     // Base point
     int x, y, z;
-    std::cout << "Enter the basePoint of maze (X Y Z):" << std::endl;
-    std::cin >> x;
-    std::cin >> y;
-    std::cin >> z;
+    std::cout << "Enter the basePoint of maze:" << std::endl;
+    x = getValidInt("Input Error: Enter an integer:");
+    y = getValidInt("Input Error: Enter an integer:");
+    z = getValidInt("Input Error: Enter an integer:");
     mcpp::Coordinate basePoint = mcpp::Coordinate(x, y + 1, z);
 
     // Length and Width
     int envLength, envWidth;
-    std::cout << "Enter the size of the environment (H W):" << std::endl;
-    std::cin >> envLength;
+    std::cout << "Enter the length and width of maze:" << std::endl;
+
     do {
-        std::cin >> envWidth;
-        if (envWidth % 2 == 0) {
-            std::cout << "Width must be an odd number. Please re-enter:" << std::endl;
+        envLength = getValidInt("Input Error: Enter an odd-numbered integer ....");
+        envWidth = getValidInt("Input Error: Enter an odd-numbered integer ....");
+
+        if (envLength % 2 == 0) {
+            std::cout << "Input Error: Length must be an odd-numbered integer ...." << std::endl;
         }
-    } while (envWidth % 2 == 0);
+        
+        if (envWidth % 2 == 0) {
+            std::cout << "Input Error: Width must be an odd-numbered integer ...." << std::endl;
+        }
+
+        if (envLength % 2 == 0 || envWidth % 2 == 0) {
+            std::cout << "Please re-enter both length and width." << std::endl;
+        }
+
+    } while (envLength % 2 == 0 || envWidth % 2 == 0);
     
     char __attribute__ ((unused)) envStructure [envLength][envWidth];
     terminalMaze = new Maze(basePoint, envLength, envWidth, NORMAL_MODE);
@@ -256,8 +284,6 @@ void SolveMaze(mcpp::MinecraftConnection* mc, Agent* player) {
         // now work out exit condition
         solvedMaze = AllVisited(playerPos, dir, visitedTiles);
     }
-
-    delete player;
 }
 /*
     Prints the coordinates of the solved tile in the console.
