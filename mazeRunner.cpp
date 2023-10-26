@@ -80,7 +80,7 @@ int main(void){
             } else if (input == 2) {
                 mcpp::Coordinate basePoint;
                 std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
-                Maze maze(basePoint, 7, 5, NORMAL_MODE);
+                Maze maze(basePoint, 13, 13, NORMAL_MODE);
                 maze.generateMaze();
 
             } else if (input == 3) {
@@ -181,7 +181,7 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
         }
     } while (envWidth % 2 == 0);
     
-    char envStructure [envLength][envWidth];
+    char __attribute__ ((unused)) envStructure [envLength][envWidth];
     terminalMaze = new Maze(basePoint, envLength, envWidth, NORMAL_MODE);
     char readChar;
 
@@ -195,7 +195,6 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     }
 
     return terminalMaze;
-
 }
 // Ravi
 void GenerateRandomMaze() {
@@ -461,8 +460,8 @@ void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate&
     int floorLevel = corner1.y;
     
     // Assume [x][z] for testing
-    for (int x = 0; x < heights.size(); x++) {
-        for (int z = 0; z < heights[x].size(); z++) {
+    for (int x = 0; x < static_cast<int>(heights.size()); x++) {
+        for (int z = 0; z < static_cast<int>(heights[x].size()); z++) {
             int highestBlockY = heights[x][z];
 
             // Set blocks above the floorLevel and up to the highest block to AIR
