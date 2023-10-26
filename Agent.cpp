@@ -46,6 +46,14 @@ AgentDirection Agent::turn(AgentDirection dir) {
     return static_cast<AgentDirection>((dir + 1) % 4);
 }
 
+void Agent::setStartLoc(mcpp::Coordinate &startLoc) {
+    this->startLoc = startLoc;
+}
+
+mcpp::Coordinate Agent::getStartLoc() {
+    return startLoc;
+}
+
 Agent::~Agent()
 {
     std::cout << "Agent destroyed" << std::endl;
