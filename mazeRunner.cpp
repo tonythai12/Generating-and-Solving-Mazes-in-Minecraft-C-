@@ -29,7 +29,7 @@ enum States{
  *  Custom data structure for storing an agent's coordinates and direction faced.
  *  This struct is used in the AllVisited() function, to determine if a particular tile has been
  *  visited more than N times.
-*/
+ */
 struct CoordDir {
     mcpp::Coordinate coord;
     AgentDirection dir;
@@ -37,8 +37,8 @@ struct CoordDir {
 
 Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze);
 void GenerateRandomMaze();
-void SolveMaze(mcpp::MinecraftConnection* mc);
-void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
+void SolveMaze(mcpp::MinecraftConnection* mc, Agent* player);
+void SolveTile(Agent* player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
                 mcpp::MinecraftConnection* mc);
 void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection* mc);
 void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
@@ -52,7 +52,7 @@ void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate&
 void rebuildEnvironment(const mcpp::Coordinate& corner1, 
                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment, 
                         mcpp::MinecraftConnection* mc);
-void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze);
+void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze, Agent* player);
 
 int main(void){
 
@@ -61,6 +61,7 @@ int main(void){
 
     mcpp::MinecraftConnection* mc = new mcpp::MinecraftConnection();
     Maze* terminalMaze = nullptr;
+    Agent* player = nullptr;
     printStartText();
     printMainMenu();
     
@@ -99,14 +100,18 @@ int main(void){
 
             if (input == 1) {
                 if (terminalMaze) {
-                    SolveManually(mc, terminalMaze);
+                    SolveManually(mc, terminalMaze, player);
                 }
                 else {
                     std::cout << "Please generate a maze first." << std::endl;
                 }
 
             } else if (input == 2) {
-                SolveMaze(mc);
+                if (player) {
+                    SolveMaze(mc, player);
+                } else {
+                    std::cout << "Please initialise a player first." << std::endl;
+                }
                 //start = mc->getPlayerPosition();
                 // mcpp::Coordinate coord = mc->getPlayerPosition();
                 // int h = 7;
@@ -145,6 +150,12 @@ int main(void){
     if (terminalMaze) {
         delete terminalMaze;
     }
+    if (player) {
+        delete player;
+    }
+    mc = nullptr;
+    terminalMaze = nullptr;
+    player = nullptr;
     return EXIT_SUCCESS;
 
 }
@@ -171,9 +182,7 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     } while (envWidth % 2 == 0);
     
     char __attribute__ ((unused)) envStructure [envLength][envWidth];
-    terminalMaze->setBasePoint(basePoint);
-    terminalMaze->setLength(envLength);
-    terminalMaze->setWidth(envWidth);
+    terminalMaze = new Maze(basePoint, envLength, envWidth, NORMAL_MODE);
     char readChar;
 
     std::cout << "Enter the environment structure:" << std::endl;
@@ -198,15 +207,12 @@ void GenerateRandomMaze() {
 /*
     Solves the perfect or looped maze using the right-hand-follow algorithm.
 */
-void SolveMaze(mcpp::MinecraftConnection* mc) {
+void SolveMaze(mcpp::MinecraftConnection* mc, Agent* player) {
     // mcpp::MinecraftConnection mc;
     int counter = 1;
 
     // Find player position
-    mcpp::Coordinate playerPos = mc->getPlayerPosition();
-
-    // Initialise player @ playerPos
-    Agent *player = new Agent(playerPos);
+    mcpp::Coordinate playerPos = player->getStartLoc();
 
     // Initialise variables for x and z coordinates
     int x = playerPos.x;
@@ -480,7 +486,7 @@ void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate&
     }
 }
 
-void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
+void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze, Agent* player) {
     // Initialise random seed
     std::srand(std::time(0));
 
@@ -513,11 +519,10 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     // Set player position to a random walkable tile & allow them to solve manually
     if (!walkableCoords.empty()) {
         int randomIndex = std::rand() % walkableCoords.size();
-        mc->setPlayerPosition(walkableCoords[randomIndex]);
-
+        mcpp::Coordinate walkableTile = walkableCoords[randomIndex];
+        mc->setPlayerPosition(walkableTile);
+        player = new Agent(walkableTile);
     } else {
         std::cout << "No walkable tile found!" << std::endl;
     }
-
-
 }
