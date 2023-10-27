@@ -9,12 +9,8 @@ Welcome to MineCraft MazeRunner!
 5) Exit
 
 Enter Menu item to continue: 
-
-Team members:
-	 [1] Keenan Phillips (s3602528@student.rmit.edu.au)
-	 [2] Tony Thai (s4002970@student.rmit.edu.au)
-	 [3] Ravikaran Singh (s3940606@student.rmit.edu.au)
-
+h
+Input Error: Enter an integer between 1 and 5 ....
 
 ------------- MAIN MENU -------------
 1) Generate Maze
@@ -24,6 +20,6 @@ Team members:
 5) Exit
 
 Enter Menu item to continue: 
+5
 
 The End!
-

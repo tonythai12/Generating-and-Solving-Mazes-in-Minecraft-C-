@@ -8,9 +8,8 @@ class Maze
 {
 
 public:
-    Maze(mcpp::Coordinate basePoint, int xlen, 
-                                     int zlen,
-                                        bool mode);
+    Maze(mcpp::Coordinate basePoint, int xlen, int zlen,
+        std::vector<std::vector<char>> mazeStructure);
     ~Maze();
 
      // struct to store the coordinates of the maze cells
@@ -33,7 +32,7 @@ public:
     void generateMaze();
 
     // Print the maze
-    void printMaze();
+    void PrintMaze();
 
     // Selecting random starting point in the maze
     mcpp::Coordinate selectRandomStartingPoint();
@@ -64,6 +63,13 @@ public:
     void setBasePoint(mcpp::Coordinate basePoint) { this->basePoint = basePoint; }
     void setLength(int length) { this->length = length; }
     void setWidth(int width) { this->width = width; }
+    void GenerateMazeInMC(mcpp::MinecraftConnection* mc);
+    std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::MinecraftConnection* mc);
+    void flattenEnvironment(mcpp::MinecraftConnection* mc);
+    void rebuildEnvironment(mcpp::MinecraftConnection* mc,
+                        const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment);
+    void FlattenAndBuild(mcpp::MinecraftConnection* mc);
+    void UndoMaze(mcpp::MinecraftConnection* mc);
 
 private:
     /* data */
@@ -71,11 +77,11 @@ private:
     mcpp::Coordinate basePoint;
 
     // Random length and width of the maze
-    unsigned int length;
-    unsigned int width;
+    int length;
+    int width;
 
     // Mode
-    bool mode = false;
+    //bool mode = false;
 
     // The maze
     std::vector<std::vector<int>> maze;
@@ -91,6 +97,9 @@ private:
 
     //  visited cells in the maze
     std::vector<Cell> visitedCells;
+
+    // Maze structure
+    std::vector<std::vector<char>> mazeStructure;
 };
 
 

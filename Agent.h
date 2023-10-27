@@ -36,6 +36,8 @@ public:
     bool canMove(int x, int z, AgentDirection dir, mcpp::Coordinate &loc, mcpp::MinecraftConnection* mc);
     AgentDirection turn(AgentDirection dir);
     ~Agent();
+    void setStartLoc(mcpp::Coordinate &startLoc);
+    mcpp::Coordinate getStartLoc();
 
 private:
     /* data */

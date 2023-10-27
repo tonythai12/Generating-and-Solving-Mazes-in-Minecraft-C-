@@ -70,5 +70,6 @@
         "queue": "cpp",
         "__tree": "cpp",
         "map": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "enabled"
 }

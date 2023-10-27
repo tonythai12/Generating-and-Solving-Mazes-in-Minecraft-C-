@@ -5,7 +5,6 @@
 #include "menuUtils.h"
 #include "Maze.h"
 #include "Agent.h"
-
 // For sleep and time duration
 #include <thread>   
 #include <chrono> 
@@ -29,164 +28,248 @@ enum States{
  *  Custom data structure for storing an agent's coordinates and direction faced.
  *  This struct is used in the AllVisited() function, to determine if a particular tile has been
  *  visited more than N times.
-*/
+ */
 struct CoordDir {
     mcpp::Coordinate coord;
     AgentDirection dir;
 };
 
-Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze);
+Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze);
 void GenerateRandomMaze();
-void SolveMaze(mcpp::MinecraftConnection* mc);
-void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
+void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player);
+void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
                 mcpp::MinecraftConnection* mc);
 void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection* mc);
 void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 std::string coordDirToKey(const CoordDir& cd);
 bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles);
-std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coordinate &basePoint, 
-                                            mcpp::MinecraftConnection* mc, int &length, int &width);
-void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
-                       mcpp::MinecraftConnection* mc);
-void rebuildEnvironment(const mcpp::Coordinate& corner1, 
-                        const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment, 
-                        mcpp::MinecraftConnection* mc);
-void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze);
+void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player);
+int getValidInt(const std::string& errorMsg);
+bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth);
 
-int main(void){
+int main(void) {
 
     // bool mode = NORMAL_MODE;
     //read Mode
 
     mcpp::MinecraftConnection* mc = new mcpp::MinecraftConnection();
     Maze* terminalMaze = nullptr;
+    Agent* player = nullptr;
+    std::vector<std::vector<std::vector<mcpp::BlockType>>> environment;
+
     printStartText();
-    printMainMenu();
     
     int input;
 
-    do {
-        std::cin >> input;
+    States curState = ST_Main;
 
-        if (input == 1) {
+    while (curState != ST_Exit) {
+        if (curState == ST_Main) {
+            printMainMenu();
+            std::cin >> input;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Input Error: Enter an integer between 1 and 5 ...." << std::endl;
+            } else if (input == 1) {
+                curState = ST_GetMaze;
+            } else if (input == 2) {
+                if (terminalMaze) {
+                    environment = terminalMaze->getEnvironment(mc);
+                    terminalMaze->FlattenAndBuild(mc);
+                } else {
+                    std::cout << "Please generate a maze first." << std::endl;
+                }
+                curState = ST_Main;
+            } else if (input == 3) {
+                curState = ST_SolveMaze;
+            } else if (input == 4) {
+                curState = ST_Creators;
+            } else if (input == 5) {
+                curState = ST_Exit;
+            } else {
+                std::cout << "Input Error: Enter a number between 1 and 5 ...." << std::endl;
+            }
+        }
+
+        while (curState == ST_GetMaze) {
             printGenerateMazeMenu();
             std::cin >> input;
-
-            if (input == 1) {
-                terminalMaze = ReadMazeFromTerminal(mc, terminalMaze);
-
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Input Error: Enter an integer between 1 and 3 ...." << std::endl;
+            } else if (input == 1) {
+                ReadMazeFromTerminal(mc, terminalMaze);
+                curState = ST_Main;
             } else if (input == 2) {
                 mcpp::Coordinate basePoint;
                 std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
-                Maze maze(basePoint, 7, 5, NORMAL_MODE);
-                maze.generateMaze();
-
+                // @ravisidhu007 change the following to match the new maze constructor
+                // Maze maze(basePoint, 13, 13, NORMAL_MODE);
+                // maze.generateMaze();
+                curState = ST_Main;
             } else if (input == 3) {
-                printMainMenu();
-
+                curState = ST_Main;
             } else {
-                std::cout << "Invalid input. Please try again." << std::endl;
+                std::cout << "Input Error: Enter a number between 1 and 3 ...." << std::endl;
             }
+        }
 
-        } else if (input == 2) {
-            // Placeholder for build maze menu
-            continue;
-
-        } else if (input == 3) {
+        while (curState == ST_SolveMaze) {
             printSolveMazeMenu();
             std::cin >> input;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Input Error: Enter an integer between 1 and 3 ...." << std::endl;
 
-            if (input == 1) {
+            } else if (input == 1) {
                 if (terminalMaze) {
-                    SolveManually(mc, terminalMaze);
-                }
-                else {
+                    SolveManually(mc, terminalMaze, player);
+                } else {
                     std::cout << "Please generate a maze first." << std::endl;
                 }
-
+                curState = ST_Main;
             } else if (input == 2) {
-                SolveMaze(mc);
-                //start = mc->getPlayerPosition();
-                // mcpp::Coordinate coord = mc->getPlayerPosition();
-                // int h = 7;
-                // int w = 5;
-                // mcpp::Coordinate coord2 = mcpp::Coordinate(coord.x + h, coord.y, coord.z + w);
-                // auto savedEnv = getEnvironment(coord, mc, h, w);
-                // flattenEnvironment(coord, coord2, mc);
-                // rebuildEnvironment(coord, savedEnv, mc);
-                continue;
+                if (player) {
+                    SolveMaze(mc, player);
+                } else {
+                    std::cout << "Please initialise a player first." << std::endl;
+                }
+                curState = ST_Main;
             } else if (input == 3) {
-                printMainMenu();
+                curState = ST_Main;
             } else {
-                std::cout << "Invalid input. Please try again." << std::endl;
+                std::cout << "Input Error: Enter a number between 1 and 5 ...." << std::endl;
             }
-        } else if (input == 4) {
-            printTeamInfo();
-        } else if (input == 5) {
-            printExitMassage();
-        } else {
-            // Re-prompts the user for input repeatedly
-            std::cout << "Invalid input. Please try again." << std::endl;
         }
-    } while (input != 5);
 
-    mc->doCommand("time set day"); 
-
-    States curState = ST_Main;
-
-    //State machine for menu        
-    while (curState != ST_Exit)
-    {
-        //Do something
+        if (curState == ST_Creators) {
+            printTeamInfo();
+            curState = ST_Main;
+        }
     }
+    printExitMassage();
 
-    delete mc;
     if (terminalMaze) {
+        // terminalMaze->UndoMaze(mc);
+        terminalMaze->flattenEnvironment(mc);
+        terminalMaze->rebuildEnvironment(mc, environment);
         delete terminalMaze;
     }
+    if (player) {
+        delete player;
+    }
+    delete mc;
+    mc = nullptr;
+    terminalMaze = nullptr;
+    player = nullptr;
     return EXIT_SUCCESS;
 
 }
 
+int getValidInt(const std::string& errorMsg) {
+    int input;
+    while (true) {
+        std::cin >> input;
+
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << errorMsg << std::endl;
+        } else {
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the buffer
+            return input;
+        }
+    }
+}
+
+bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth) {
+    bool isValid = true;
+
+    if (rows.size() != envLength) {
+        isValid = false;
+    } else {
+        for (const auto& row : rows) {
+            if (isValid && row.length() != envWidth) {
+                isValid = false;
+            }
+        }
+    }
+    return isValid;
+}
 // Tony
-Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
+Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze) {
     // Base point
     int x, y, z;
-    std::cout << "Enter the basePoint of maze (X Y Z):" << std::endl;
-    std::cin >> x;
-    std::cin >> y;
-    std::cin >> z;
+    std::cout << "Enter the basePoint of maze:" << std::endl;
+    x = getValidInt("Input Error: Enter an integer:");
+    y = getValidInt("Input Error: Enter an integer:");
+    z = getValidInt("Input Error: Enter an integer:");
     mcpp::Coordinate basePoint = mcpp::Coordinate(x, y + 1, z);
 
     // Length and Width
     int envLength, envWidth;
-    std::cout << "Enter the size of the environment (H W):" << std::endl;
-    std::cin >> envLength;
-    do {
-        std::cin >> envWidth;
-        if (envWidth % 2 == 0) {
-            std::cout << "Width must be an odd number. Please re-enter:" << std::endl;
-        }
-    } while (envWidth % 2 == 0);
-    
-    char envStructure [envLength][envWidth];
-    terminalMaze->setBasePoint(basePoint);
-    terminalMaze->setLength(envLength);
-    terminalMaze->setWidth(envWidth);
-    char readChar;
+    std::cout << "Enter the length and width of maze:" << std::endl;
 
-    std::cout << "Enter the environment structure:" << std::endl;
+    do {
+        envLength = getValidInt("Input Error: Enter an odd-numbered integer. ");
+        envWidth = getValidInt("Input Error: Enter an odd-numbered integer. ");
+        bool isNotOddInput = false;
+
+        if (envLength % 2 == 0 || envLength <= 0) {
+            std::cout << "Input Error: Length must be a positive odd integer. ";
+            isNotOddInput = true;
+        }
+        
+        if (envWidth % 2 == 0 || envWidth <= 0) {
+            std::cout << "Input Error: Width must be an odd-numbered integer. ";
+            isNotOddInput = true;
+        }
+
+        if (isNotOddInput) {
+            std::cout << "Please re-enter both length and width:" << std::endl;
+        }
+
+    } while (envLength % 2 == 0 || envWidth % 2 == 0);
+    
+    std::vector<std::vector<char>> mazeStructure;
+    std::vector<std::string> rows;
+
+    bool validMaze = false;
+    while (!validMaze) { // Outer loop to repeat until a valid maze is entered
+        std::cout << "Enter the environment structure:" << std::endl;
+        rows.clear();
+        
+        for (int i = 0; i < envLength; ++i) {
+            std::string row;
+            std::getline(std::cin, row);
+            rows.push_back(row);
+        }
+
+        if (validateMazeDimensions(rows, envLength, envWidth)) {
+            validMaze = true;  // Update the control variable to exit the loop
+        } else {
+            std::cout << "The dimensions of the maze structure you entered do not match the expected dimensions. Please re-enter." << std::endl;
+        }
+    }
+    // Resize 2d vector into correct dimensions
+    mazeStructure.resize(envLength, std::vector<char>(envWidth)); 
 
     for (int i = 0; i < envLength; i++) {
         for (int j = 0; j < envWidth; j++) {
-            std::cin >> readChar;
-            envStructure[i][j] = readChar;
+            mazeStructure[i][j] = rows[i][j];
         }
     }
+    terminalMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
+    std::cout << "Maze read successfully" << std::endl;
+    terminalMaze->PrintMaze();
 
     return terminalMaze;
-
 }
 // Ravi
 void GenerateRandomMaze() {
@@ -199,15 +282,12 @@ void GenerateRandomMaze() {
 /*
     Solves the perfect or looped maze using the right-hand-follow algorithm.
 */
-void SolveMaze(mcpp::MinecraftConnection* mc) {
+void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player) {
     // mcpp::MinecraftConnection mc;
     int counter = 1;
 
     // Find player position
-    mcpp::Coordinate playerPos = mc->getPlayerPosition();
-
-    // Initialise player @ playerPos
-    Agent *player = new Agent(playerPos);
+    mcpp::Coordinate playerPos = player->getStartLoc();
 
     // Initialise variables for x and z coordinates
     int x = playerPos.x;
@@ -242,8 +322,6 @@ void SolveMaze(mcpp::MinecraftConnection* mc) {
         // now work out exit condition
         solvedMaze = AllVisited(playerPos, dir, visitedTiles);
     }
-
-    delete player;
 }
 /*
     Prints the coordinates of the solved tile in the console.
@@ -309,7 +387,7 @@ void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConn
 
     Part of the SolveMaze() function.
 */
-void SolveTile(Agent *player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
+void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
                 mcpp::MinecraftConnection* mc) {
     bool moved = false;
     while (!moved) {
@@ -391,97 +469,8 @@ bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<C
     return isSolved;
 
 }
-/*
-    Retrieves the blockTypes of the environment within the specified bounds.
-    Stored in a 3D vector, which will be used to restore the environment after solving the maze.
-*/
-std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::Coordinate &basePoint, 
-                                            mcpp::MinecraftConnection* mc, int &length, int &width) {
-    
-    // Calculate corners and then get heights
-    mcpp::Coordinate corner1(basePoint.x, basePoint.y, basePoint.z);
-    mcpp::Coordinate corner2(basePoint.x + length, basePoint.y, basePoint.z + width);
-    auto envHeights = mc->getHeights(corner1, corner2);
 
-    // Find min and max y-values
-    int minY = std::numeric_limits<int>::max();
-    int maxY = std::numeric_limits<int>::min();
-    for (const auto& row : envHeights) {
-        for (int height : row) {
-            if (height < minY) minY = height;
-            if (height > maxY) maxY = height;
-        }
-    }
-
-    // Get all blocks using the min/max y-values
-    mcpp::Coordinate loc1 = mcpp::Coordinate(basePoint.x, minY, basePoint.z);
-    mcpp::Coordinate loc2 = mcpp::Coordinate(basePoint.x + length, maxY, basePoint.z + width);
-    auto blocks = mc->getBlocks(loc1, loc2);
-
-    return blocks;
-}
-
-/*
-    Rebuilds the environment after the user exits the program. Uses the 3D vector returned from getEnvironment().
-*/
-void rebuildEnvironment(const mcpp::Coordinate& corner1, 
-                        const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment, 
-                        mcpp::MinecraftConnection* mc) {
-    
-    // Format is [y][x][z]
-    int yLen = savedEnvironment.size();
-    int xLen = savedEnvironment[0].size();
-    int zLen = savedEnvironment[0][0].size(); 
-
-    for (int y = 0; y < yLen; y++) {
-        for (int x = 0; x < xLen; x++) {
-            for (int z = 0; z < zLen; z++) {
-                mcpp::Coordinate newCoord(corner1.x + x, corner1.y + y, corner1.z + z);
-                mc->setBlock(newCoord, savedEnvironment[y][x][z]);
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            }
-        }
-    }
-}
-
-/*
-    Flattens the environment within the specified bounds. 
-*/
-void flattenEnvironment(const mcpp::Coordinate& corner1, const mcpp::Coordinate& corner2, 
-                       mcpp::MinecraftConnection* mc) {
-
-    // Heights of the environment at (x, z) (as y-coords are different for each pair)
-    auto heights = mc->getHeights(corner1, corner2);
-    int floorLevel = corner1.y;
-    
-    // Assume [x][z] for testing
-    for (int x = 0; x < heights.size(); x++) {
-        for (int z = 0; z < heights[x].size(); z++) {
-            int highestBlockY = heights[x][z];
-
-            // Set blocks above the floorLevel and up to the highest block to AIR
-            for (int y = floorLevel + 1; y <= highestBlockY; y++) {
-                mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
-                mc->setBlock(coord, mcpp::Blocks::AIR);
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            }
-
-            // Set the block at floorLevel to GRASS
-            mcpp::Coordinate coord(corner1.x + x, floorLevel, corner1.z + z);
-            mc->setBlock(coord, mcpp::Blocks::GRASS);
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
-
-            // Set blocks below floorLevel to GRASS
-            for (int y = highestBlockY; y < floorLevel; y++) {
-                mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
-                mc->setBlock(coord, mcpp::Blocks::GRASS);
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            }
-        }
-    }
-}
-
-void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
+void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player) {
     // Initialise random seed
     std::srand(std::time(0));
 
@@ -493,8 +482,8 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     // Add all 'walkable' tiles to a vector
     std::vector<mcpp::Coordinate> walkableCoords;
 
-    mcpp::Coordinate corner1 = mcpp::Coordinate(basePoint.x, basePoint.y, basePoint.z);
-    mcpp::Coordinate corner2 = mcpp::Coordinate(basePoint.x + length, basePoint.y, basePoint.z + width);
+    mcpp::Coordinate corner1 = mcpp::Coordinate(basePoint.x, basePoint.y + 1, basePoint.z);
+    mcpp::Coordinate corner2 = mcpp::Coordinate(basePoint.x + length, basePoint.y + 1, basePoint.z + width);
     auto blocks = mc->getBlocks(corner1, corner2);
 
     int yLen = blocks.size();
@@ -504,8 +493,8 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     for (int y = 0; y < yLen; y++) {
         for (int x = 0; x < xLen; x++) {
             for (int z = 0; z < zLen; z++) {
-                if (mcpp::Blocks::AIR == blocks[y][x][z]) {
-                    walkableCoords.push_back(mcpp::Coordinate(basePoint.x + x, basePoint.y + y, basePoint.z + z));
+                if (blocks[y][x][z] == mcpp::Blocks::AIR) {
+                    walkableCoords.push_back(mcpp::Coordinate(basePoint.x + x, basePoint.y, basePoint.z + z));
                 }
             }
         }
@@ -514,11 +503,10 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze* terminalMaze) {
     // Set player position to a random walkable tile & allow them to solve manually
     if (!walkableCoords.empty()) {
         int randomIndex = std::rand() % walkableCoords.size();
-        mc->setPlayerPosition(walkableCoords[randomIndex]);
-
+        mcpp::Coordinate walkableTile = walkableCoords[randomIndex];
+        mc->setPlayerPosition(walkableTile);
+        player = new Agent(walkableTile);
     } else {
         std::cout << "No walkable tile found!" << std::endl;
     }
-
-
 }
