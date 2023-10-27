@@ -191,11 +191,11 @@ int getValidInt(const std::string& errorMsg) {
 bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth) {
     bool isValid = true;
 
-    if (rows.size() != envLength) {
+    if (static_cast<int>(rows.size()) != envLength) {
         isValid = false;
     } else {
         for (const auto& row : rows) {
-            if (isValid && row.length() != envWidth) {
+            if (isValid && static_cast<int>(row.length()) != envWidth) {
                 isValid = false;
             }
         }
