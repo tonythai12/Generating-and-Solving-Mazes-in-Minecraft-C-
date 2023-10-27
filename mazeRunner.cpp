@@ -156,7 +156,7 @@ int main(void) {
     printExitMassage();
 
     if (terminalMaze) {
-        terminalMaze->UndoMaze(mc);
+        // terminalMaze->UndoMaze(mc);
         terminalMaze->flattenEnvironment(mc);
         terminalMaze->rebuildEnvironment(mc, environment);
         delete terminalMaze;
@@ -482,8 +482,8 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& p
     // Add all 'walkable' tiles to a vector
     std::vector<mcpp::Coordinate> walkableCoords;
 
-    mcpp::Coordinate corner1 = mcpp::Coordinate(basePoint.x, basePoint.y, basePoint.z);
-    mcpp::Coordinate corner2 = mcpp::Coordinate(basePoint.x + length, basePoint.y, basePoint.z + width);
+    mcpp::Coordinate corner1 = mcpp::Coordinate(basePoint.x, basePoint.y + 1, basePoint.z);
+    mcpp::Coordinate corner2 = mcpp::Coordinate(basePoint.x + length, basePoint.y + 1, basePoint.z + width);
     auto blocks = mc->getBlocks(corner1, corner2);
 
     int yLen = blocks.size();
@@ -493,8 +493,8 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& p
     for (int y = 0; y < yLen; y++) {
         for (int x = 0; x < xLen; x++) {
             for (int z = 0; z < zLen; z++) {
-                if (mcpp::Blocks::AIR == blocks[y][x][z]) {
-                    walkableCoords.push_back(mcpp::Coordinate(basePoint.x + x, basePoint.y + y, basePoint.z + z));
+                if (blocks[y][x][z] == mcpp::Blocks::AIR) {
+                    walkableCoords.push_back(mcpp::Coordinate(basePoint.x + x, basePoint.y, basePoint.z + z));
                 }
             }
         }
