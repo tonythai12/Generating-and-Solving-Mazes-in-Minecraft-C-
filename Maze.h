@@ -19,12 +19,6 @@ public:
         bool isVisited = false;
     };
 
-    // Directions
-    const int UP = 0;
-    const int RIGHT = 1;
-    const int DOWN = 2;
-    const int LEFT = 3;
-
     // Generate the maze structure
     void generateMazeStructure();
 
