@@ -177,7 +177,7 @@ Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
     }
 
     outerWallCell.coordinate = cell - mcpp::Coordinate(0, 0, 2);
-    for (int i = 0; i < cells.size(); i++)
+    for (int i = 0; i < (int)cells.size(); i++)
     {
         if (outerWallCell.coordinate == cells.at(i).coordinate)
         {
@@ -227,7 +227,7 @@ void Maze::removeWall(Maze::Cell cell){
     mc.setBlock(cell.coordinate + mcpp::Coordinate(0, 2, 0), mcpp::Blocks::AIR);
 
     // Set the cell to visited
-    for (int i = 0; i < innerWallCells.size(); i++)
+    for (int i = 0; i < (int)innerWallCells.size(); i++)
     {
         if (innerWallCells.at(i).coordinate == cell.coordinate)
         {
@@ -244,7 +244,7 @@ int Maze::getRandomDirection() {
 }
 
 bool Maze::isInsideMaze(mcpp::Coordinate cell){
-    for(int i = 0; i < innerWallCells.size(); i++){
+    for(int i = 0; i < (int)innerWallCells.size(); i++){
         if (innerWallCells.at(i).coordinate == cell)
         {
             return true;
@@ -317,7 +317,7 @@ void Maze::generateRecursiveMaze(std::vector<Cell> &cells, Cell cell) {
 }
 
 bool Maze::visited(Cell cell) {
-    for (int i = 0; i < visitedCells.size(); i++)
+    for (int i = 0; i < (int)visitedCells.size(); i++)
     {
         if (visitedCells.at(i).coordinate == cell.coordinate)
         {
