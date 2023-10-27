@@ -187,7 +187,7 @@ Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
     }
 
     outerWallCell.coordinate = cell - mcpp::Coordinate(0, 0, 2);
-    for (int i = 0; i < static_cast<int>(cells.size()); i++)
+    for (int i = 0; i < (int)static_cast<int>(cells.size()); i++)
     {
         if (outerWallCell.coordinate == cells.at(i).coordinate)
         {
@@ -370,6 +370,7 @@ void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(50));
                 } else {
                     mc->setBlock(basePoint + mcpp::Coordinate(i, y + 1, j), mcpp::Blocks::AIR);
+                    walkableCoords.push_back(basePoint + mcpp::Coordinate(i, y + 1, j));
                     std::this_thread::sleep_for(std::chrono::milliseconds(50));
                 }
             }

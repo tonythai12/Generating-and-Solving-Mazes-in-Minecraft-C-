@@ -157,7 +157,7 @@ int main(void) {
     printExitMassage();
 
     if (terminalMaze) {
-        terminalMaze->UndoMaze(mc);
+        // terminalMaze->UndoMaze(mc);
         terminalMaze->flattenEnvironment(mc);
         terminalMaze->rebuildEnvironment(mc, environment);
         delete terminalMaze;
@@ -192,11 +192,11 @@ int getValidInt(const std::string& errorMsg) {
 bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth) {
     bool isValid = true;
 
-    if (rows.size() != envLength) {
+    if (static_cast<int>(rows.size()) != envLength) {
         isValid = false;
     } else {
         for (const auto& row : rows) {
-            if (isValid && row.length() != envWidth) {
+            if (isValid && static_cast<int>(row.length()) != envWidth) {
                 isValid = false;
             }
         }
@@ -475,39 +475,16 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& p
     // Initialise random seed
     std::srand(std::time(0));
 
-    // Retrieve required maze data
-    mcpp::Coordinate basePoint = terminalMaze->getBasePoint();
-    int length = terminalMaze->getLength();
-    int width = terminalMaze->getWidth();
-
-    // Add all 'walkable' tiles to a vector
-    std::vector<mcpp::Coordinate> walkableCoords;
-
-    mcpp::Coordinate corner1 = mcpp::Coordinate(basePoint.x, basePoint.y, basePoint.z);
-    mcpp::Coordinate corner2 = mcpp::Coordinate(basePoint.x + length, basePoint.y, basePoint.z + width);
-    auto blocks = mc->getBlocks(corner1, corner2);
-
-    int yLen = blocks.size();
-    int xLen = blocks[0].size();
-    int zLen = blocks[0][0].size(); 
-
-    for (int y = 0; y < yLen; y++) {
-        for (int x = 0; x < xLen; x++) {
-            for (int z = 0; z < zLen; z++) {
-                if (mcpp::Blocks::AIR == blocks[y][x][z]) {
-                    walkableCoords.push_back(mcpp::Coordinate(basePoint.x + x, basePoint.y + y, basePoint.z + z));
-                }
-            }
-        }
-    }
+    // Get all walkable tiles from private member variable
+    std::vector<mcpp::Coordinate> coords = terminalMaze->getWalkableCoords();
 
     // Set player position to a random walkable tile & allow them to solve manually
-    if (!walkableCoords.empty()) {
-        int randomIndex = std::rand() % walkableCoords.size();
-        mcpp::Coordinate walkableTile = walkableCoords[randomIndex];
+    if (!coords.empty()) {
+        int randomIndex = std::rand() % coords.size();
+        mcpp::Coordinate walkableTile = coords[randomIndex];
         mc->setPlayerPosition(walkableTile);
         player = new Agent(walkableTile);
     } else {
-        std::cout << "No walkable tile found!" << std::endl;
+        std::cout << "No walkable tile found! Please generate another maze." << std::endl;
     }
 }
