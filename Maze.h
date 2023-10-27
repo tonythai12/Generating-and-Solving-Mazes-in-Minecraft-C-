@@ -63,6 +63,7 @@ public:
     void setBasePoint(mcpp::Coordinate basePoint) { this->basePoint = basePoint; }
     void setLength(int length) { this->length = length; }
     void setWidth(int width) { this->width = width; }
+    std::vector<mcpp::Coordinate> getWalkableCoords() const { return walkableCoords; }
     void GenerateMazeInMC(mcpp::MinecraftConnection* mc);
     std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::MinecraftConnection* mc);
     void flattenEnvironment(mcpp::MinecraftConnection* mc);
@@ -100,6 +101,9 @@ private:
 
     // Maze structure
     std::vector<std::vector<char>> mazeStructure;
+
+    // Walkable coords for player to be teleported to
+    std::vector<mcpp::Coordinate> walkableCoords;
 };
 
 

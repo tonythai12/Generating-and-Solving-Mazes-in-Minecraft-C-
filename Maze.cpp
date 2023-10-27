@@ -370,6 +370,7 @@ void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(50));
                 } else {
                     mc->setBlock(basePoint + mcpp::Coordinate(i, y + 1, j), mcpp::Blocks::AIR);
+                    walkableCoords.push_back(basePoint + mcpp::Coordinate(i, y + 1, j));
                     std::this_thread::sleep_for(std::chrono::milliseconds(50));
                 }
             }
