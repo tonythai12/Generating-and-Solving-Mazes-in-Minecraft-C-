@@ -402,21 +402,6 @@ void Maze::UndoMaze(mcpp::MinecraftConnection* mc) {
  *  Stored in a 3D vector, which will be used to restore the environment after solving the maze.
  */
 std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp::MinecraftConnection* mc) {
-    
-    // // Calculate corners and then get heights
-    // mcpp::Coordinate corner1(basePoint.x, basePoint.y, basePoint.z);
-    // mcpp::Coordinate corner2(basePoint.x + length, basePoint.y, basePoint.z + width);
-    // auto envHeights = mc->getHeights(corner1, corner2);
-
-    // // Find min and max y-values
-    // int minY = std::numeric_limits<int>::max();
-    // int maxY = std::numeric_limits<int>::min();
-    // for (const auto& row : envHeights) {
-    //     for (int height : row) {
-    //         if (height < minY) minY = height;
-    //         if (height > maxY) maxY = height;
-    //     }
-    // }
 
     // Get all blocks using the min/max y-values
     mcpp::Coordinate loc1 = mcpp::Coordinate(basePoint.x, basePoint.y, basePoint.z);
