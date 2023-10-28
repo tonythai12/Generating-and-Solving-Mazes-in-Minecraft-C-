@@ -416,9 +416,9 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp
     Flattens the environment within the specified bounds. 
 */
 void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
-    // Calculate corners and then get heights
-    mcpp::Coordinate corner1(basePoint.x, basePoint.y, basePoint.z);
-    mcpp::Coordinate corner2(basePoint.x + length, basePoint.y, basePoint.z + width);
+    // Calculate corners and then get heights (2 block buffer around all sides)
+    mcpp::Coordinate corner1(basePoint.x - 2, basePoint.y, basePoint.z - 2);
+    mcpp::Coordinate corner2(basePoint.x + length + 2, basePoint.y, basePoint.z + width + 1); 
 
     // Heights of the environment at (x, z) (as y-coords are different for each pair)
     auto heights = mc->getHeights(corner1, corner2);
@@ -452,6 +452,7 @@ void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
         }
     }
 }
+
 
 /*
     Rebuilds the environment after the user exits the program. Uses the 3D vector returned from getEnvironment().
