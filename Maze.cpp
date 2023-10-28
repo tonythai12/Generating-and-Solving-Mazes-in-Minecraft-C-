@@ -368,7 +368,7 @@ void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
         for (int i = 0; i < zLen; i++) {  
             for (int j = 0; j < xLen; j++) {  
                 if (mazeStructure[i][j] == 'x') {
-                    mc->setBlock(basePoint + mcpp::Coordinate(i, y + 1, j), mcpp::Blocks::BRICKS);
+                    mc->setBlock(basePoint + mcpp::Coordinate(i, y + 1, j), mcpp::Blocks::ACACIA_WOOD_PLANK);
                     //StoreOldBlock(mc, basePoint + mcpp::Coordinate(i, y + 1, j));
                     std::this_thread::sleep_for(std::chrono::milliseconds(50));
                 } else {
