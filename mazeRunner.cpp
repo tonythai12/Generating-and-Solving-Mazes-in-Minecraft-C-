@@ -158,7 +158,7 @@ int main(void) {
 
     if (terminalMaze) {
         // terminalMaze->UndoMaze(mc);
-        terminalMaze->flattenEnvironment(mc);
+        terminalMaze->RestoreOldBlocksFirst(mc);
         terminalMaze->rebuildEnvironment(mc, environment);
         delete terminalMaze;
     }
@@ -322,7 +322,7 @@ void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player) {
         HighlightSolvedBlock(playerPos, mc);
 
         // now work out exit condition
-        // solvedMaze = AllVisited(playerPos, dir, visitedTiles);
+        solvedMaze = AllVisited(playerPos, dir, visitedTiles);
     }
 }
 /*
@@ -410,7 +410,7 @@ void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordi
         else {
             std::cout << "Cannot move straight or right. Trying to turn left." << std::endl;
 
-            // Can't move straight or right. Try to turn left
+            // Store the original direction just in-case
             AgentDirection originalDir = dir;
             
             // Force it to turn right 3 times (effectively left turn relative to current dir)
@@ -453,6 +453,8 @@ bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<C
     visitedTiles.push_back(currentTile);
 
     bool isSolved = false;
+
+
 
     std::map<std::string, int> tileCounter;
     int N = 2;
