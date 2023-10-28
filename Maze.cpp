@@ -362,6 +362,8 @@ void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
     int xLen = mazeStructure[0].size();
     int yLen = 3;  // Height of the maze
 
+    mc->setPlayerPosition(basePoint + mcpp::Coordinate(0, 10, 10));
+
     for (int y = 0; y < yLen; y++) { 
         for (int i = 0; i < zLen; i++) {  
             for (int j = 0; j < xLen; j++) {  
