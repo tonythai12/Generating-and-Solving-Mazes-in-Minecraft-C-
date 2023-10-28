@@ -417,12 +417,14 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp
 */
 void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
     // Calculate corners and then get heights (2 block buffer around all sides)
-    mcpp::Coordinate corner1(basePoint.x - 2, basePoint.y, basePoint.z - 2);
+    mcpp::Coordinate corner1(basePoint.x - 2, basePoint.y, basePoint.z - 1);
     mcpp::Coordinate corner2(basePoint.x + length + 2, basePoint.y, basePoint.z + width + 1); 
 
     // Heights of the environment at (x, z) (as y-coords are different for each pair)
     auto heights = mc->getHeights(corner1, corner2);
     int floorLevel = corner1.y;
+    mcpp::Coordinate blockToGet(corner1.x, mc->getHeight(corner1.x, corner1.z), corner1.z);
+    mcpp::BlockType basePointBlock = mc->getBlock(blockToGet);
     
     // Assume [x][z] for testing
     for (int x = 0; x < static_cast<int>(heights.size()); x++) {
@@ -436,17 +438,17 @@ void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
 
-            // Set the block at floorLevel to GRASS
+            // Set the block at floorLevel to BlockType at basePoint
             mcpp::Coordinate coord(corner1.x + x, floorLevel, corner1.z + z);
             StoreOldBlock(mc, coord);
-            mc->setBlock(coord, mcpp::Blocks::GRASS);
+            mc->setBlock(coord, basePointBlock);
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
-            // Set blocks below floorLevel to GRASS
+            // Set blocks below floorLevel to BlockType at basePoint
             for (int y = highestBlockY; y < floorLevel; y++) {
                 mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
                 StoreOldBlock(mc, coord);
-                mc->setBlock(coord, mcpp::Blocks::GRASS);
+                mc->setBlock(coord, basePointBlock);
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
         }
