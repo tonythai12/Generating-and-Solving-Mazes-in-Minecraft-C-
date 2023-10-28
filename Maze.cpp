@@ -376,6 +376,11 @@ void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
             }
         }
     }
+
+    for (const auto& coord : walkableCoords) {
+        std::cout << coord.x << ", " << coord.y << ", " << coord.z << std::endl;
+    }
+
 }
 
 void Maze::UndoMaze(mcpp::MinecraftConnection* mc) {

@@ -480,7 +480,9 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& p
     // Set player position to a random walkable tile & allow them to solve manually
     if (!coords.empty()) {
         int randomIndex = std::rand() % coords.size();
+        std::cout << "Random index: " << randomIndex << std::endl;
         mcpp::Coordinate walkableTile = coords[randomIndex];
+        std::cout << "Teleporting to: " << walkableTile.x << ", " << walkableTile.y << ", " << walkableTile.z << std::endl;
         mc->setPlayerPosition(walkableTile);
         player = new Agent(walkableTile);
     } else {
