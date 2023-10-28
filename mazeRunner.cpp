@@ -47,6 +47,7 @@ bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vecto
 void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player);
 int getValidInt(const std::string& errorMsg);
 bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth);
+void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection dir);
 
 int main(void) {
 
@@ -288,6 +289,7 @@ void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player) {
 
     // Find player position
     mcpp::Coordinate playerPos = player->getStartLoc();
+    AgentDirection dir = UP; // placeholder
 
     // Initialise variables for x and z coordinates
     int x = playerPos.x;
@@ -297,7 +299,7 @@ void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player) {
     bool solvedMaze = false;
 
     // Initialise direction
-    AgentDirection dir = UP;
+    InitialisePlayer(mc, playerPos, dir);
 
     /* 
         Using a vector instead of a linked list to store all visitedTiles due always appending to the end
@@ -320,7 +322,7 @@ void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player) {
         HighlightSolvedBlock(playerPos, mc);
 
         // now work out exit condition
-        solvedMaze = AllVisited(playerPos, dir, visitedTiles);
+        // solvedMaze = AllVisited(playerPos, dir, visitedTiles);
     }
 }
 /*
@@ -409,17 +411,20 @@ void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordi
             std::cout << "Cannot move straight or right. Trying to turn left." << std::endl;
 
             // Can't move straight or right. Try to turn left
-            for (int i = 0; i < 3; i++) {
+            AgentDirection originalDir = dir;
+            
+            // Force it to turn right 3 times (effectively left turn relative to current dir)
+            for (int i = 0; i < 3; ++i) {
                 dir = player->turn(dir);
-                if (player->canMove(x, z, dir, playerPos, mc)) {
-                    moved = true;
-                    break;
-                }
             }
 
-            // If it still can't move, it means it has to turn around
-            if (!moved) {
+            // Now check if it can move in this new direction
+            if (player->canMove(x, z, dir, playerPos, mc)) {
+                moved = true;
+            } else {
+                // If it still can't move, revert to original direction and then turn around
                 std::cout << "Turning around." << std::endl;
+                dir = originalDir;
                 dir = player->turn(dir);
                 dir = player->turn(dir);
                 moved = true;
@@ -487,5 +492,26 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& p
         player = new Agent(walkableTile);
     } else {
         std::cout << "No walkable tile found! Please generate another maze." << std::endl;
+    }
+}
+
+void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection dir) {
+    mcpp::BlockType blockTypeEast = mc->getBlock(mcpp::Coordinate(startLoc.x + 1, startLoc.y, startLoc.z));
+    mcpp::BlockType blockTypeWest = mc->getBlock(mcpp::Coordinate(startLoc.x - 1, startLoc.y, startLoc.z));
+    mcpp::BlockType blockTypeNorth = mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z - 1));
+    mcpp::BlockType blockTypeSouth = mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z + 1));
+
+    if (blockTypeEast == mcpp::Blocks::BRICKS) {
+        // Wall is to the Right, so face North (up)
+        dir = UP;
+    } else if (blockTypeWest == mcpp::Blocks::BRICKS) {
+        // Wall is to the Left, so face South (down)
+        dir = DOWN;
+    } else if (blockTypeNorth == mcpp::Blocks::BRICKS) {
+        // Wall is to the North, so face West (left)
+        dir = LEFT;
+    } else if (blockTypeSouth == mcpp::Blocks::BRICKS) {
+        // Wall is to the South, so face East (right)
+        dir = RIGHT;
     }
 }
