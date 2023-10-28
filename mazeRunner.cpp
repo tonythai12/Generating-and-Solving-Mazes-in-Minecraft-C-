@@ -43,11 +43,13 @@ void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConn
 void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
 std::string coordDirToKey(const CoordDir& cd);
-bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles);
+bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir>&        
+                visitedTiles, mcpp::MinecraftConnection* mc);
 void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player);
 int getValidInt(const std::string& errorMsg);
 bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth);
 void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection dir);
+bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, AgentDirection dir);
 
 int main(void) {
 
@@ -157,7 +159,6 @@ int main(void) {
     printExitMassage();
 
     if (terminalMaze) {
-        // terminalMaze->UndoMaze(mc);
         terminalMaze->RestoreOldBlocksFirst(mc);
         terminalMaze->rebuildEnvironment(mc, environment);
         delete terminalMaze;
@@ -322,7 +323,12 @@ void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player) {
         HighlightSolvedBlock(playerPos, mc);
 
         // now work out exit condition
-        solvedMaze = AllVisited(playerPos, dir, visitedTiles);
+        solvedMaze = AllVisited(playerPos, dir, visitedTiles, mc);
+
+        if (solvedMaze) {
+            std::cout << "Maze solved!" << std::endl;
+            mc->postToChat("Maze solved!");
+        }
     }
 }
 /*
@@ -448,13 +454,14 @@ std::string coordDirToKey(const CoordDir& cd) {
     
     Used as an exit condition for SolveMaze().
 */
-bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<CoordDir> &visitedTiles) {
+bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<CoordDir> &  
+                visitedTiles, mcpp::MinecraftConnection* mc) {
     CoordDir currentTile {coord, dir};
     visitedTiles.push_back(currentTile);
 
     bool isSolved = false;
 
-
+    isSolved = CheckIfSolved(coord, mc, dir);
 
     std::map<std::string, int> tileCounter;
     int N = 2;
@@ -476,6 +483,58 @@ bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<C
     return isSolved;
 
 }
+
+bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, AgentDirection dir) {
+    bool solved = true; // Initially assume it's solved
+    std::vector<mcpp::Coordinate> front_coords;
+
+    if (dir == UP) {
+        front_coords = {
+            mcpp::Coordinate(coord.x + 1, coord.y, coord.z),
+            mcpp::Coordinate(coord.x + 1, coord.y, coord.z + 1),
+            mcpp::Coordinate(coord.x + 1, coord.y, coord.z - 1),
+            mcpp::Coordinate(coord.x, coord.y, coord.z + 1),
+            mcpp::Coordinate(coord.x, coord.y, coord.z - 1)
+        };
+    } else if (dir == RIGHT) {
+        front_coords = {
+            mcpp::Coordinate(coord.x, coord.y, coord.z + 1),
+            mcpp::Coordinate(coord.x + 1, coord.y, coord.z + 1),
+            mcpp::Coordinate(coord.x - 1, coord.y, coord.z + 1),
+            mcpp::Coordinate(coord.x + 1, coord.y, coord.z),
+            mcpp::Coordinate(coord.x - 1, coord.y, coord.z)
+        };
+    } else if (dir == DOWN) {
+        front_coords = {
+            mcpp::Coordinate(coord.x - 1, coord.y, coord.z),
+            mcpp::Coordinate(coord.x - 1, coord.y, coord.z + 1),
+            mcpp::Coordinate(coord.x - 1, coord.y, coord.z - 1),
+            mcpp::Coordinate(coord.x, coord.y, coord.z + 1),
+            mcpp::Coordinate(coord.x, coord.y, coord.z - 1)
+        };
+    } else if (dir == LEFT) {
+        front_coords = {
+            mcpp::Coordinate(coord.x, coord.y, coord.z - 1),
+            mcpp::Coordinate(coord.x + 1, coord.y, coord.z - 1),
+            mcpp::Coordinate(coord.x - 1, coord.y, coord.z - 1),
+            mcpp::Coordinate(coord.x + 1, coord.y, coord.z),
+            mcpp::Coordinate(coord.x - 1, coord.y, coord.z)
+        };
+    } else {
+        std::cout << "Error: Unable to find the solution to the maze. Exiting ... " << std::endl;
+    }
+
+    for (const auto& front_coord : front_coords) {
+        mcpp::BlockType block = mc->getBlock(front_coord);
+        if (!(block == mcpp::Blocks::AIR)) {
+            solved = false; // One of the blocks is not air, not solved
+        }
+    }
+    
+    return solved;
+}
+
+
 
 void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player) {
     // Initialise random seed

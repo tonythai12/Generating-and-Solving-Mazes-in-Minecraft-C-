@@ -13,6 +13,7 @@ Maze::Maze(mcpp::Coordinate basePoint, int xlen, int zlen, std::vector<std::vect
 
 Maze::~Maze()
 {
+    std::cout << "Maze destructor successfully called." << std::endl;
 }
 
 void Maze::generateMazeStructure()

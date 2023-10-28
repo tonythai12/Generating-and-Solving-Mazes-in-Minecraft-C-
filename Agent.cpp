@@ -76,5 +76,5 @@ void Agent::InitialisePlayer(mcpp::MinecraftConnection* mc) {
 
 Agent::~Agent()
 {
-    std::cout << "Agent destroyed" << std::endl;
+    std::cout << "Agent destructor successfully called." << std::endl;
 }
