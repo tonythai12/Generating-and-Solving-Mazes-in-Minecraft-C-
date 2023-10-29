@@ -31,7 +31,7 @@ struct CoordDir {
     AgentDirection dir;
 };
 
-void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze);
+void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes);
 void GenerateRandomMaze();
 void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode);
 void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
@@ -49,6 +49,8 @@ void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc,
                         , bool mode);
 bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, AgentDirection dir);
 bool validateMazeCharacters(const std::vector<std::string>& rows);
+void CleanUp(std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment,
+             Maze*& maze, mcpp::MinecraftConnection* mc);
 
 int main(int argc, char* argv[]) {
 
@@ -66,12 +68,11 @@ int main(int argc, char* argv[]) {
     Maze* terminalMaze = nullptr;
     Agent* player = nullptr;
     std::vector<std::vector<std::vector<mcpp::BlockType>>> environment;
-    bool environmentSaved = false;
+    std::vector<Maze*> generatedMazes;
 
     printStartText();
     
     int input;
-    int mazeCounter = 0;
 
     States curState = ST_Main;
 
@@ -88,12 +89,19 @@ int main(int argc, char* argv[]) {
                 curState = ST_GetMaze;
             } else if (input == 2) {
                 if (terminalMaze) {
-                    // Ensures that the environment is only saved once, useful if generating multiple mazes
-                    if (!environmentSaved) {
-                        environment = terminalMaze->getEnvironment(mc);
-                        environmentSaved = true; 
+                    Maze* mazeToBuild = generatedMazes.back();  // The last maze generated
+                    for (Maze* oldMaze : generatedMazes) {
+                        if (oldMaze != mazeToBuild) {
+                            std::cout << "Cleaning up and restoring existing environment." << std::endl;
+                            CleanUp(environment, oldMaze, mc);
+                            delete oldMaze;
+                            std::cout << "Cleanup and restore successful. Now building new maze." << std::endl;
+                        }
                     }
-                    terminalMaze->FlattenAndBuild(mc);
+                    generatedMazes.clear();
+                    generatedMazes.push_back(mazeToBuild);
+                    environment = mazeToBuild->getEnvironment(mc);
+                    mazeToBuild->FlattenAndBuild(mc);
                 } else {
                     std::cout << "Please generate a maze first." << std::endl;
                 }
@@ -117,7 +125,7 @@ int main(int argc, char* argv[]) {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 std::cout << "Input Error: Enter an integer between 1 and 3 ...." << std::endl;
             } else if (input == 1) {
-                ReadMazeFromTerminal(mc, terminalMaze);
+                ReadMazeFromTerminal(mc, terminalMaze, generatedMazes);
                 curState = ST_Main;
             } else if (input == 2) {
                 mcpp::Coordinate basePoint;
@@ -170,20 +178,29 @@ int main(int argc, char* argv[]) {
     }
     printExitMassage();
 
-    if (terminalMaze) {
-        terminalMaze->RestoreOldBlocksFirst(mc);
-        terminalMaze->rebuildEnvironment(mc, environment);
-        delete terminalMaze;
-    }
+    CleanUp(environment, terminalMaze, mc);
+    
     if (player) {
         delete player;
     }
+    delete terminalMaze;
     delete mc;
     mc = nullptr;
     terminalMaze = nullptr;
     player = nullptr;
     return EXIT_SUCCESS;
 
+}
+
+void CleanUp(std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment,
+             Maze*& maze, mcpp::MinecraftConnection* mc) {
+    if (maze) {
+        maze->RestoreOldBlocksFirst(mc);
+        maze->rebuildEnvironment(mc, environment);
+        environment.clear();
+    } else {
+        std::cout << "Error: Maze is a nullptr. Unable to clean up." << std::endl;
+    }
 }
 
 std::vector<int> getValidInts(const std::string& errorMsg) {
@@ -240,8 +257,9 @@ bool validateMazeCharacters(const std::vector<std::string>& rows) {
     return valid;
 }
 // Tony
-void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze) {
+void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes) {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     std::vector<int> inputs;
 
     do {
@@ -309,9 +327,11 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze) {
             mazeStructure[i][j] = rows[i][j];
         }
     }
-    terminalMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
+    Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
+    generatedMazes.push_back(newMaze);
     std::cout << "Maze read successfully" << std::endl;
-    terminalMaze->PrintMaze();
+    terminalMaze = newMaze;
+    newMaze->PrintMaze();
 }
 // Ravi
 void GenerateRandomMaze() {
