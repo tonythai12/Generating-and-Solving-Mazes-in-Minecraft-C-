@@ -3,8 +3,9 @@
 #include <vector>
 // For sleep and time duration
 #include <thread>   
-#include <chrono> 
+#include <chrono>
 
+#define BUFFER 2
 
 Maze::Maze(mcpp::Coordinate basePoint, int xlen, int zlen, std::vector<std::vector<char>> mazeStructure)
     : basePoint(basePoint), length(xlen), width(zlen), mazeStructure(mazeStructure) //mode(mode)
@@ -370,34 +371,16 @@ void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
                     //StoreOldBlock(mc, basePoint + mcpp::Coordinate(i, y + 1, j));
                     std::this_thread::sleep_for(std::chrono::milliseconds(50));
                 } else {
-                    mc->setBlock(basePoint + mcpp::Coordinate(i, y + 1, j), mcpp::Blocks::AIR);
-                    //StoreOldBlock(mc, basePoint + mcpp::Coordinate(i, y + 1, j));
-                    walkableCoords.push_back(basePoint + mcpp::Coordinate(i, y + 1, j));
-                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                    if (!(mc->getBlock(basePoint + mcpp::Coordinate(i, y + 1, j)) == mcpp::Blocks::AIR)) {
+                        mc->setBlock(basePoint + mcpp::Coordinate(i, y + 1, j), mcpp::Blocks::AIR);
+                        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                    }
+                    walkableCoords.push_back(basePoint + mcpp::Coordinate(i, 1, j));
                 }
             }
         }
     }
 }
-
-void Maze::UndoMaze(mcpp::MinecraftConnection* mc) {
-    int zLen = mazeStructure.size();
-    int xLen = mazeStructure[0].size();
-    int yLen = 3;  // Height of the maze
-
-    for (int y = 0; y < yLen; y++) { 
-        for (int i = 0; i < zLen; i++) {  
-            for (int j = 0; j < xLen; j++) {  
-                if (mazeStructure[i][j] == 'x' || mazeStructure[i][j] == '.') {
-                    mc->setBlock(basePoint + mcpp::Coordinate(i, y, j), mcpp::Blocks::AIR);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-                }
-            }
-        }
-    }
-}
-
-
 /*
  *  Retrieves the blockTypes of the environment within the specified bounds.
  *  Stored in a 3D vector, which will be used to restore the environment after solving the maze.
@@ -405,8 +388,8 @@ void Maze::UndoMaze(mcpp::MinecraftConnection* mc) {
 std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp::MinecraftConnection* mc) {
 
     // Get all blocks using the min/max y-values
-    mcpp::Coordinate loc1 = mcpp::Coordinate(basePoint.x, basePoint.y, basePoint.z);
-    mcpp::Coordinate loc2 = mcpp::Coordinate(basePoint.x + length, basePoint.y + 6, basePoint.z + width);
+    mcpp::Coordinate loc1 = mcpp::Coordinate(basePoint.x - BUFFER, basePoint.y, basePoint.z - BUFFER);
+    mcpp::Coordinate loc2 = mcpp::Coordinate(basePoint.x + length + BUFFER, basePoint.y + 6, basePoint.z + width + BUFFER);
     auto blocks = mc->getBlocks(loc1, loc2);
 
     return blocks;
@@ -417,24 +400,24 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp
 */
 void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
     // Calculate corners and then get heights (2 block buffer around all sides)
-    mcpp::Coordinate corner1(basePoint.x - 2, basePoint.y, basePoint.z - 1);
-    mcpp::Coordinate corner2(basePoint.x + length + 2, basePoint.y, basePoint.z + width + 1); 
+    mcpp::Coordinate corner1(basePoint.x - BUFFER, basePoint.y, basePoint.z - BUFFER);
+    mcpp::Coordinate corner2(basePoint.x + length + BUFFER, basePoint.y, basePoint.z + width + BUFFER); 
 
-    mc->setPlayerPosition(basePoint + mcpp::Coordinate(0, 10, 10));
+    mc->setPlayerPosition(basePoint + mcpp::Coordinate(0, 10, 0));
 
     // Heights of the environment at (x, z) (as y-coords are different for each pair)
     auto heights = mc->getHeights(corner1, corner2);
     int floorLevel = corner1.y;
-    mcpp::Coordinate blockToGet(corner1.x, mc->getHeight(corner1.x, corner1.z), corner1.z);
-    mcpp::BlockType basePointBlock = mc->getBlock(blockToGet);
+    mcpp::Coordinate blockCoordToGet(corner1.x, mc->getHeight(corner1.x, corner1.z), corner1.z);
+    mcpp::BlockType basePointBlock = mc->getBlock(blockCoordToGet);
     
-    // Assume [x][z] for testing
+    // Assume [x][z] format
     for (int x = 0; x < static_cast<int>(heights.size()); x++) {
         for (int z = 0; z < static_cast<int>(heights[x].size()); z++) {
             int highestBlockY = heights[x][z];
 
             // Set blocks above the floorLevel and up to the highest block to AIR
-            for (int y = floorLevel; y <= highestBlockY; y++) {
+            for (int y = floorLevel + 1; y <= highestBlockY; y++) {
                 mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
                 mc->setBlock(coord, mcpp::Blocks::AIR);
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -442,9 +425,11 @@ void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
 
             // Set the block at floorLevel to BlockType at basePoint
             mcpp::Coordinate coord(corner1.x + x, floorLevel, corner1.z + z);
-            StoreOldBlock(mc, coord);
-            mc->setBlock(coord, basePointBlock);
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            if (!(basePointBlock == mc->getBlock(coord))) {
+                StoreOldBlock(mc, coord);
+                mc->setBlock(coord, basePointBlock);
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
 
             // Set blocks below floorLevel to BlockType at basePoint
             for (int y = highestBlockY; y < floorLevel; y++) {
@@ -485,11 +470,11 @@ void Maze::FlattenAndBuild(mcpp::MinecraftConnection* mc) {
     GenerateMazeInMC(mc);
 }
 
-void Maze::StoreOldBlock(mcpp::MinecraftConnection* mc, mcpp::Coordinate coord) {
-    GeneratedBlock newBlock;
-    newBlock.originalType = mc->getBlock(coord);
-    newBlock.coordinate = coord;
-    generatedBlocks.push_back(newBlock);
+void Maze::StoreOldBlock(mcpp::MinecraftConnection* mc, mcpp::Coordinate& coord) {
+    GeneratedBlock oldBlock;
+    oldBlock.originalType = mc->getBlock(coord);
+    oldBlock.coordinate = coord;
+    generatedBlocks.push_back(oldBlock);
 }
 
 void Maze::RestoreOldBlocksFirst(mcpp::MinecraftConnection* mc) {

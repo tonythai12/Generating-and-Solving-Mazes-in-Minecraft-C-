@@ -75,7 +75,7 @@ public:
                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment);
     void FlattenAndBuild(mcpp::MinecraftConnection* mc);
     void UndoMaze(mcpp::MinecraftConnection* mc);
-    void StoreOldBlock(mcpp::MinecraftConnection* mc, mcpp::Coordinate coord);
+    void StoreOldBlock(mcpp::MinecraftConnection* mc, mcpp::Coordinate& coord);
     void RestoreOldBlocksFirst(mcpp::MinecraftConnection* mc);
 
 private:
