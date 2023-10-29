@@ -33,7 +33,7 @@ struct CoordDir {
 
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze);
 void GenerateRandomMaze();
-void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode);
+void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player);
 void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
                 mcpp::MinecraftConnection* mc);
 void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection* mc);
@@ -42,24 +42,24 @@ void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::C
 std::string coordDirToKey(const CoordDir& cd);
 bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir>&        
                 visitedTiles, mcpp::MinecraftConnection* mc);
-void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player, bool mode);
+void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player);
 std::vector<int> getValidInts(const std::string& errorMsg);
 bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth);
-void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection dir, bool mode);
+void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection& dir);
 bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, AgentDirection dir);
 bool validateMazeCharacters(const std::vector<std::string>& rows);
 
 int main(int argc, char* argv[]) {
 
-    bool mode = NORMAL_MODE;
+    // bool mode = NORMAL_MODE;
     
-    // Check for testing mode
-    for (int i = 1; i < argc; i++) {  
-        std::string arg = argv[i];
-        if (arg == "-testmode") {
-            mode = TESTING_MODE;
-        }
-    }
+    // // Check for testing mode
+    // for (int i = 1; i < argc; i++) {  
+    //     std::string arg = argv[i];
+    //     if (arg == "-testmode") {
+    //         mode = TESTING_MODE;
+    //     }
+    // }
 
     mcpp::MinecraftConnection* mc = new mcpp::MinecraftConnection();
     Maze* terminalMaze = nullptr;
@@ -137,14 +137,14 @@ int main(int argc, char* argv[]) {
 
             } else if (input == 1) {
                 if (terminalMaze) {
-                    SolveManually(mc, terminalMaze, player, mode);
+                    SolveManually(mc, terminalMaze, player);
                 } else {
                     std::cout << "Please generate a maze first." << std::endl;
                 }
                 curState = ST_Main;
             } else if (input == 2) {
                 if (player) {
-                    SolveMaze(mc, player, mode);
+                    SolveMaze(mc, player);
                 } else {
                     std::cout << "Please initialise a player first." << std::endl;
                 }
@@ -318,7 +318,7 @@ void GenerateRandomMaze() {
 /*
     Solves the perfect or looped maze using the right-hand-follow algorithm.
 */
-void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode) {
+void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player) {
     // mcpp::MinecraftConnection mc;
     int counter = 1;
 
@@ -334,7 +334,7 @@ void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode) {
     bool solvedMaze = false;
 
     // Initialise player
-    InitialisePlayer(mc, playerPos, dir, mode);
+    InitialisePlayer(mc, playerPos, dir);
 
     /* 
         Using a vector instead of a linked list to store all visitedTiles due always appending to the end
@@ -491,24 +491,21 @@ bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<C
     bool isSolved = false;
 
     isSolved = CheckIfSolved(coord, mc, dir);
+    std::map<std::string, int> tileCounter;
+    int N = 2;
 
-    while (!isSolved) {
-        std::map<std::string, int> tileCounter;
-        int N = 2;
+    // Count occurrences of each tile with direction
+    for (const auto& tile : visitedTiles) {
+        std::string key = coordDirToKey(tile);
+        tileCounter[key]++;
+    }
 
-        // Count occurrences of each tile with direction
-        for (const auto& tile : visitedTiles) {
-            std::string key = coordDirToKey(tile);
-            tileCounter[key]++;
-        }
-
-        // Check if any tile with direction has been visited more than N times
-        for (const auto& entry : tileCounter) {
-            if (entry.second > N) {
-                mc->postToChat("Detected loop in maze. Solving algorithm stopped.");
+    // Check if any tile with direction has been visited more than N times
+    for (const auto& entry : tileCounter) {
+        if (entry.second > N) {
+            mc->postToChat("Detected loop in maze. Solving algorithm stopped.");
                 std::cout << "Detected loop in maze. Solving algorithm stopped." << std::endl;
                 isSolved = true; // Exit condition
-            }
         }
     }
     return isSolved;
@@ -569,82 +566,43 @@ bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, Agent
     return solved;
 }
 
-
-
-void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player, bool mode) {
+void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player) {
     // Initialise random seed
     std::srand(std::time(0));
 
     // Get all walkable tiles from private member variable
     std::vector<mcpp::Coordinate> coords = terminalMaze->getWalkableCoords();
-    mcpp::Coordinate walkableTile;
 
     // Set player position to a random walkable tile & allow them to solve manually
     if (!coords.empty()) {
-        int randomIndex = std::rand() % static_cast<int>(coords.size());
-        if (mode == NORMAL_MODE) {
-            walkableTile = coords[randomIndex];
-        } else if (mode == TESTING_MODE) {
-            walkableTile = coords[0];
-            // Loop through to find the coordinate closest to the lower-right edge (highest x,z values)
-            for (const auto& coord : coords) {
-                if (coord.x >= walkableTile.x && coord.z >= walkableTile.z) {
-                    walkableTile = coord;
-                }
-            }
-        }
-
+        int randomIndex = std::rand() % coords.size();
         std::cout << "Random index: " << randomIndex << std::endl;
+        mcpp::Coordinate walkableTile = coords[randomIndex];
         std::cout << "Teleporting to: " << walkableTile.x << ", " << walkableTile.y << ", " << walkableTile.z << std::endl;
         mc->setPlayerPosition(walkableTile);
         player = new Agent(walkableTile);
-
     } else {
         std::cout << "No walkable tile found! Please generate another maze." << std::endl;
     }
 }
 
-void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection dir, bool mode) {
-        if (mode == NORMAL_MODE) {
-            mcpp::BlockType blockTypeEast = mc->getBlock(mcpp::Coordinate(startLoc.x + 1, startLoc.y, startLoc.z));
-            mcpp::BlockType blockTypeWest = mc->getBlock(mcpp::Coordinate(startLoc.x - 1, startLoc.y, startLoc.z));
-            mcpp::BlockType blockTypeNorth = mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z - 1));
-            mcpp::BlockType blockTypeSouth = mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z + 1));
+void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection& dir) {
+    mcpp::BlockType blockTypeEast = mc->getBlock(mcpp::Coordinate(startLoc.x + 1, startLoc.y, startLoc.z));
+    mcpp::BlockType blockTypeWest = mc->getBlock(mcpp::Coordinate(startLoc.x - 1, startLoc.y, startLoc.z));
+    mcpp::BlockType blockTypeNorth = mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z - 1));
+    mcpp::BlockType blockTypeSouth = mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z + 1));
 
-            if (blockTypeEast == mcpp::Blocks::BRICKS) {
-                // Wall is to the Right, so face North (up)
-                dir = UP;
-            } else if (blockTypeWest == mcpp::Blocks::BRICKS) {
-                // Wall is to the Left, so face South (down)
-                dir = DOWN;
-            } else if (blockTypeNorth == mcpp::Blocks::BRICKS) {
-                // Wall is to the North, so face West (left)
-                dir = LEFT;
-            } else if (blockTypeSouth == mcpp::Blocks::BRICKS) {
-                // Wall is to the South, so face East (right)
-                dir = RIGHT;
-            }
-        } else {
-            // Start by facing East (right - positive x-axis)
-            dir = RIGHT; 
-            mcpp::BlockType blockTypes[] = {
-                mc->getBlock(mcpp::Coordinate(startLoc.x + 1, startLoc.y, startLoc.z)), // East
-                mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z + 1)), // South
-                mc->getBlock(mcpp::Coordinate(startLoc.x - 1, startLoc.y, startLoc.z)), // West
-                mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z - 1))  // North
-            };
-            AgentDirection directions[] = { RIGHT, DOWN, LEFT, UP };
-
-            bool foundWall = false;
-
-            while (!foundWall) {
-                for (int i = 0; i < 4; i++) {
-                    if (blockTypes[i] == mcpp::Blocks::ACACIA_WOOD_PLANK) {
-                        dir = directions[i];
-                        foundWall = true;
-                    }
-                }
-            }
-        }
-        
+    if (blockTypeEast == mcpp::Blocks::BRICKS) {
+        // Wall is to the Right, so face North (up)
+        dir = UP;
+    } else if (blockTypeWest == mcpp::Blocks::BRICKS) {
+        // Wall is to the Left, so face South (down)
+        dir = DOWN;
+    } else if (blockTypeNorth == mcpp::Blocks::BRICKS) {
+        // Wall is to the North, so face West (left)
+        dir = LEFT;
+    } else if (blockTypeSouth == mcpp::Blocks::BRICKS) {
+        // Wall is to the South, so face East (right)
+        dir = RIGHT;
+    }
 }
