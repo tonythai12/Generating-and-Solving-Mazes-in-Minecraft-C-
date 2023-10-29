@@ -372,7 +372,7 @@ void GenerateRandomMaze() {
     std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
     Maze maze(basePoint, 13, 13, mazeStructure);
     maze.generateMaze();
-    mazeStructure = maze.getMazeStructure();
+    maze.updateMazeStructure();
     maze.PrintMaze();   
 }
 
