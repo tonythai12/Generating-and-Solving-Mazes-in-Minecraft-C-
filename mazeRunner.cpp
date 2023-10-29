@@ -34,7 +34,7 @@ struct CoordDir {
     AgentDirection dir;
 };
 
-Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze);
+void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze);
 void GenerateRandomMaze();
 void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player);
 void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
@@ -46,7 +46,7 @@ std::string coordDirToKey(const CoordDir& cd);
 bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir>&        
                 visitedTiles, mcpp::MinecraftConnection* mc);
 void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player);
-int getValidInt(const std::string& errorMsg);
+std::vector<int> getValidInts(const std::string& errorMsg);
 bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth);
 void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection dir);
 bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, AgentDirection dir);
@@ -174,18 +174,31 @@ int main(void) {
 
 }
 
-int getValidInt(const std::string& errorMsg) {
-    int input;
-    while (true) {
-        std::cin >> input;
+std::vector<int> getValidInts(const std::string& errorMsg) {
+    std::string line;
+    std::vector<int> inputs;
 
-        if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    while (true) {
+        std::getline(std::cin, line);
+        std::stringstream ss(line);
+
+        int temp;
+        bool fail = false;
+
+
+        while (ss >> temp) {
+            inputs.push_back(temp);
+        }
+
+        if (ss.fail() && !ss.eof()) {
+            // Parsing failed before reaching end of string
+            fail = true;
+        }
+
+        if (fail) {
             std::cout << errorMsg << std::endl;
         } else {
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the buffer
-            return input;
+            return inputs;
         }
     }
 }
@@ -205,30 +218,33 @@ bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength,
     return isValid;
 }
 // Tony
-Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze) {
-    // Base point
-    int x, y, z;
-    std::cout << "Enter the basePoint of maze:" << std::endl;
-    x = getValidInt("Input Error: Enter an integer:");
-    y = getValidInt("Input Error: Enter an integer:");
-    z = getValidInt("Input Error: Enter an integer:");
-    mcpp::Coordinate basePoint = mcpp::Coordinate(x, y + 1, z);
-
-    // Length and Width
-    int envLength, envWidth;
-    std::cout << "Enter the length and width of maze:" << std::endl;
+void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze) {
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::vector<int> inputs;
 
     do {
-        envLength = getValidInt("Input Error: Enter an odd-numbered integer. ");
-        envWidth = getValidInt("Input Error: Enter an odd-numbered integer. ");
+        std::cout << "Enter the basePoint of maze:" << std::endl;
+        inputs = getValidInts("Input Error: Enter 3 integers (e.g., \"103 105 100\").\nEnter the basePoint of the maze:");
+        if (inputs.size() != 3) {
+            std::cout << "Input Error: You must enter exactly 3 integers for the basePoint." << std::endl;
+        }
+    } while (inputs.size() != 3);
+    
+    mcpp::Coordinate basePoint = mcpp::Coordinate(inputs[0], inputs[1] + 1, inputs[2]);
+    
+    std::cout << "Enter the length and width of maze:" << std::endl;
+    inputs.clear();
+
+    do {
+        inputs = getValidInts("Input Error: Enter an odd-numbered integer. ");
         bool isNotOddInput = false;
 
-        if (envLength % 2 == 0 || envLength <= 0) {
+        if (inputs[0] % 2 == 0 || inputs[0] <= 0) {
             std::cout << "Input Error: Length must be a positive odd integer. ";
             isNotOddInput = true;
         }
         
-        if (envWidth % 2 == 0 || envWidth <= 0) {
+        if (inputs[1] % 2 == 0 || inputs[1] <= 0) {
             std::cout << "Input Error: Width must be an odd-numbered integer. ";
             isNotOddInput = true;
         }
@@ -237,7 +253,9 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze) {
             std::cout << "Please re-enter both length and width:" << std::endl;
         }
 
-    } while (envLength % 2 == 0 || envWidth % 2 == 0);
+    } while (inputs[0] % 2 == 0 || inputs[1] % 2 == 0);
+    
+    int envLength = inputs[0], envWidth = inputs[1];
     
     std::vector<std::vector<char>> mazeStructure;
     std::vector<std::string> rows;
@@ -270,8 +288,6 @@ Maze* ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze) {
     terminalMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
     std::cout << "Maze read successfully" << std::endl;
     terminalMaze->PrintMaze();
-
-    return terminalMaze;
 }
 // Ravi
 void GenerateRandomMaze() {
@@ -324,11 +340,6 @@ void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player) {
 
         // now work out exit condition
         solvedMaze = AllVisited(playerPos, dir, visitedTiles, mc);
-
-        if (solvedMaze) {
-            std::cout << "Maze solved!" << std::endl;
-            mc->postToChat("Maze solved!");
-        }
     }
 }
 /*
@@ -463,25 +474,26 @@ bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<C
 
     isSolved = CheckIfSolved(coord, mc, dir);
 
-    std::map<std::string, int> tileCounter;
-    int N = 2;
+    while (!isSolved) {
+        std::map<std::string, int> tileCounter;
+        int N = 2;
 
-    // Count occurrences of each tile with direction
-    for (const auto& tile : visitedTiles) {
-        std::string key = coordDirToKey(tile);
-        tileCounter[key]++;
-    }
+        // Count occurrences of each tile with direction
+        for (const auto& tile : visitedTiles) {
+            std::string key = coordDirToKey(tile);
+            tileCounter[key]++;
+        }
 
-    // Check if any tile with direction has been visited more than N times
-    for (const auto& entry : tileCounter) {
-        if (entry.second > N) {
-            isSolved = true; // Exit condition
-            break;
+        // Check if any tile with direction has been visited more than N times
+        for (const auto& entry : tileCounter) {
+            if (entry.second > N) {
+                mc->postToChat("Detected loop in maze. Solving algorithm stopped.");
+                std::cout << "Detected loop in maze. Solving algorithm stopped." << std::endl;
+                isSolved = true; // Exit condition
+            }
         }
     }
-
     return isSolved;
-
 }
 
 bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, AgentDirection dir) {
@@ -529,6 +541,11 @@ bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, Agent
         if (!(block == mcpp::Blocks::AIR)) {
             solved = false; // One of the blocks is not air, not solved
         }
+    }
+
+    if (solved) {
+        std::cout << "Maze solved!" << std::endl;
+        mc->postToChat("Maze solved!");
     }
     
     return solved;
