@@ -66,10 +66,12 @@ int main(int argc, char* argv[]) {
     Maze* terminalMaze = nullptr;
     Agent* player = nullptr;
     std::vector<std::vector<std::vector<mcpp::BlockType>>> environment;
+    bool environmentSaved = false;
 
     printStartText();
     
     int input;
+    int mazeCounter = 0;
 
     States curState = ST_Main;
 
@@ -86,7 +88,11 @@ int main(int argc, char* argv[]) {
                 curState = ST_GetMaze;
             } else if (input == 2) {
                 if (terminalMaze) {
-                    environment = terminalMaze->getEnvironment(mc);
+                    // Ensures that the environment is only saved once, useful if generating multiple mazes
+                    if (!environmentSaved) {
+                        environment = terminalMaze->getEnvironment(mc);
+                        environmentSaved = true; 
+                    }
                     terminalMaze->FlattenAndBuild(mc);
                 } else {
                     std::cout << "Please generate a maze first." << std::endl;
