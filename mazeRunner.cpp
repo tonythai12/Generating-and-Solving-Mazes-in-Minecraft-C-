@@ -24,7 +24,7 @@ enum States{
 /*
  *  Custom data structure for storing an agent's coordinates and direction faced.
  *  This struct is used in the AllVisited() function, to determine if a particular tile has been
- *  visited more than N times.
+ *  visited more than N times. Used as a failsafe to detect loops in the maze.
  */
 struct CoordDir {
     mcpp::Coordinate coord;
@@ -191,7 +191,14 @@ int main(int argc, char* argv[]) {
     return EXIT_SUCCESS;
 
 }
-
+/** 
+ * Cleans up the existing MineCraft environment by restoring the old blocks and then rebuilding the
+ * environment from the environment vector. This is used when the user wants to generate a new maze
+ * without restarting the program OR when they are exiting the program.
+ * @param environment: The vector that stores the old blocks.
+ * @param maze: The maze that is being cleaned up.
+ * @param mc: The MineCraft connection.
+ */
 void CleanUp(std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment,
              Maze*& maze, mcpp::MinecraftConnection* mc) {
     if (maze) {
@@ -203,6 +210,12 @@ void CleanUp(std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment
     }
 }
 
+/** 
+ * Checks if any given input is a valid integer. If not, it will print an error message and ask the
+ * user to re-enter the input.
+ * @param errorMsg: the error message to be printed if the input is invalid.
+ * @return A vector of integers that the user has entered.
+ */
 std::vector<int> getValidInts(const std::string& errorMsg) {
     std::string line;
     std::vector<int> inputs;
@@ -231,6 +244,14 @@ std::vector<int> getValidInts(const std::string& errorMsg) {
     }
 }
 
+/**
+ * Validates the dimensions of the maze. It checks if the number of rows is equal to the length of
+ * the maze and if the number of columns is equal to the width of the maze.
+ * @param rows The rows of the maze
+ * @param envLength The length of the maze
+ * @param envWidth The width of the maze
+ * @return True if the dimensions are valid, false otherwise.
+*/
 bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth) {
     bool isValid = true;
 
@@ -245,6 +266,12 @@ bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength,
     }
     return isValid;
 }
+
+/**
+ * Validates the characters of the maze. It checks if the characters are either 'x' or '.'.
+ * @param rows A vector of rows of the maze
+ * @return True if the characters are valid, false otherwise.
+*/
 bool validateMazeCharacters(const std::vector<std::string>& rows) {
     bool valid = true; // Initially assume that it's valid, then check for invalid characters
     for (const auto& row : rows) {
@@ -256,7 +283,15 @@ bool validateMazeCharacters(const std::vector<std::string>& rows) {
     }
     return valid;
 }
-// Tony
+
+/**
+ * Allows the user to read the maze from the terminal. It will ask the user to enter the basePoint,
+ * length, width and the structure of the maze. It will then store the maze in the terminalMaze
+ * variable and add it to the generatedMazes vector.
+ * @param mc: The MineCraft connection
+ * @param terminalMaze: The maze that is being read from the terminal
+ * @param generatedMazes: A vector of mazes that have been generated
+*/
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes) {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
@@ -341,8 +376,12 @@ void GenerateRandomMaze() {
     
 }
 
-/*
-    Solves the perfect or looped maze using the right-hand-follow algorithm.
+/**
+ * Initialises and sets the player's starting location and direction based on the maze's outer walls. 
+ * Then uses helper functions to show the escape route.
+ * @param mc: The MineCraft connection
+ * @param player: The player that is being initialised
+ * @param mode: The mode that the program is running in, as this affects the algorithm
 */
 void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode) {
     // mcpp::MinecraftConnection mc;
@@ -361,12 +400,6 @@ void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode) {
 
     // Initialise player
     InitialisePlayer(mc, playerPos, dir, mode);
-
-    /* 
-        Using a vector instead of a linked list to store all visitedTiles due always appending to the end
-        of the vector. Further, we are occasionally checking all elements. No insertions or deletions
-        are occuring in arbitrary positions. As such, a vector would be more time and space efficient.
-    */
     std::vector<CoordDir> visitedTiles;
 
     while (!solvedMaze) {
@@ -386,10 +419,10 @@ void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode) {
         solvedMaze = AllVisited(playerPos, dir, visitedTiles, mc);
     }
 }
-/*
-    Prints the coordinates of the solved tile in the console.
-
-    Part of the SolveMaze() function.
+/**
+ * Prints the coordinates of the solved tile in the console. Part of the SolveMaze() function.
+ * @param counter: The number of steps taken to solve the maze
+ * @param playerPos: The player's current position
 */
 void PrintSteps(int &counter, const mcpp::Coordinate &playerPos) {
     std::cout << "Step [" << counter << "]: (" << playerPos.x << ", " << playerPos.y << 
@@ -397,12 +430,15 @@ void PrintSteps(int &counter, const mcpp::Coordinate &playerPos) {
     counter++;
 }
 
-/* 
-    After a tile has been solved, this function increments or decrements the 'x' or 'z' coordinate, 
-    depending on the direction that the agent is facing. Through this, the agent is able to move.
-
-    Part of the SolveMaze() function.
-*/
+/**
+ * After a tile has been solved, this function increments or decrements the 'x' or 'z' coordinate, 
+ * depending on the direction that the agent is facing. Through this, the agent is able to move.
+ * Part of the SolveMaze function.
+ * @param dir: The direction that the agent is facing
+ * @param x: The x coordinate of the agent
+ * @param z: The z coordinate of the agent
+ * @param playerPos: The player's current position
+ */
 void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, 
                             mcpp::Coordinate &playerPos) {
 
@@ -422,11 +458,12 @@ void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z,
     playerPos.z = z;      
 }
 
-/*
-    Highlights the solved tile with a lime carpet block for 1 second.
-    It then removes the lime carpet block by generating an air block in place of it.
-
-    Part of the SolveMaze() function.
+/**
+ * Highlights the solved tile with a lime carpet block for 1 second.
+ * It then removes the lime carpet block by generating an air block in place of it.
+ * Part of the SolveMaze() function.
+ * @param playerPos: The player's current position
+ * @param mc: The MineCraft connection
 */
 void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection* mc) {
     mc->setBlock(playerPos, mcpp::Blocks::LIME_CARPET);
@@ -439,17 +476,20 @@ void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConn
     std::this_thread::sleep_for(std::chrono::seconds(1)); 
 }
 
-/*
-    Solves the current tile by turning right, straight, left, or turning around. This is achieved
-    through the right-hand wall-follower algorithm.
-
-    If it can turn right it will. If not, it moves straight. If it can't move straight, 
-    it will try to turn left. If it can't turn left, it will turn around. 
-
-    This function will continue to execute until AllVisited() is true.
-
-    Part of the SolveMaze() function.
-*/
+/**
+ * Solves the current tile by turning right, straight, left, or turning around. This is achieved
+ * through the right-hand wall-follower algorithm.
+ * If it can turn right it will. If not, it moves straight. If it can't move straight, 
+ * it will try to turn left. If it can't turn left, it will turn around. 
+ * This function will continue to execute until AllVisited returns true.
+ * Part of the SolveMaze function.
+ * @param player: The player that is being initialised
+ * @param dir: The direction that the agent is facing
+ * @param x: The x coordinate of the agent
+ * @param z: The z coordinate of the agent
+ * @param playerPos: The player's current position
+ * @param mc: The MineCraft connection
+ */
 void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
                 mcpp::MinecraftConnection* mc) {
     bool moved = false;
@@ -494,21 +534,28 @@ void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordi
     }
 }
 
-/*
-    Converts a CoordDir struct to a string, which is used as a key in a map.
-    This is used in the AllVisited() function.
-*/
+/**
+ * Converts a CoordDir struct to a string, which is used as a key in a map.
+ * This is used in the AllVisited function.
+ * @param cd: The CoordDir struct that is being converted to a string
+ * @return A string that is used as a key in a map
+ */
 std::string coordDirToKey(const CoordDir& cd) {
     return std::to_string(cd.coord.x) + "_" + std::to_string(cd.coord.y) + "_" 
     + std::to_string(cd.coord.z) + "_" + std::to_string(cd.dir);
 }
 
-/*
-    Checks if a tile has been visited more than N times with the same agent direction. 
-    If so, it returns true. Otherwise, it returns false. 
-    
-    Used as an exit condition for SolveMaze().
-*/
+/**
+ * Checks if a tile has been visited more than N times with the same agent direction.
+ * If so, it returns true. Otherwise, it returns false. 
+ * Used as an exit condition for SolveMaze.
+ * @param coord: The coordinate of the tile that is being checked
+ * @param dir: The direction that the agent is facing
+ * @param visitedTiles: A vector of CoordDir structs that stores the coordinates and directions of
+ *                     the tiles that have been visited
+ * @param mc: The MineCraft connection
+ * @return True if the tile has been visited more than N times OR if CheckIfSolved returns true, false otherwise.
+ */
 bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<CoordDir> &  
                 visitedTiles, mcpp::MinecraftConnection* mc) {
     CoordDir currentTile {coord, dir};
@@ -537,6 +584,14 @@ bool AllVisited(mcpp::Coordinate coord, const AgentDirection &dir, std::vector<C
     return isSolved;
 }
 
+/**
+ * Checks if the maze has been solved. It does this by checking if the blocks in front of the agent
+ * are all air blocks.
+ * @param coord: The coordinate of the tile that is being checked
+ * @param mc: The MineCraft connection
+ * @param dir: The direction that the agent is facing
+ * @return True if the maze has been solved, false otherwise.
+*/
 bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, AgentDirection dir) {
     bool solved = true; // Initially assume it's solved
     std::vector<mcpp::Coordinate> front_coords;
@@ -592,6 +647,13 @@ bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, Agent
     return solved;
 }
 
+/**
+ * Teleports the user to a random walkable tile in the maze. Through this, a new Agent is created.
+ * @param mc: The MineCraft connection
+ * @param terminalMaze: The maze that is being solved
+ * @param player: The player that is being initialised
+ * @param mode: The mode that the program is running in, as this affects the algorithm
+ */
 void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player, bool mode) {
     // Initialise random seed for normal mode
     if (mode == NORMAL_MODE) {
@@ -625,7 +687,15 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& p
         std::cout << "No walkable tile found! Please generate another maze." << std::endl;
     }
 }
-
+/**
+ * Initialises the player's starting location and direction based on the maze's outer walls. Will
+ * orient the Agent with its right hand touching a wall. If used in TESTING_MODE, it will orient the
+ * player in the positive x-direction, with the right hand touching a wall.
+ * @param mc: The MineCraft connection
+ * @param startLoc: The player's starting location
+ * @param dir: The direction that the agent is facing
+ * @param mode: The mode that the program is running in, as this affects the algorithm
+ */
 void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection& dir
                         , bool mode) {
     if (mode == NORMAL_MODE) {
