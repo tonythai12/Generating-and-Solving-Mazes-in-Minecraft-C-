@@ -362,8 +362,6 @@ void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
     int xLen = mazeStructure[0].size();
     int yLen = 3;  // Height of the maze
 
-    mc->setPlayerPosition(basePoint + mcpp::Coordinate(0, 10, 10));
-
     for (int y = 0; y < yLen; y++) { 
         for (int i = 0; i < zLen; i++) {  
             for (int j = 0; j < xLen; j++) {  
@@ -421,6 +419,8 @@ void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
     // Calculate corners and then get heights (2 block buffer around all sides)
     mcpp::Coordinate corner1(basePoint.x - 2, basePoint.y, basePoint.z - 1);
     mcpp::Coordinate corner2(basePoint.x + length + 2, basePoint.y, basePoint.z + width + 1); 
+
+    mc->setPlayerPosition(basePoint + mcpp::Coordinate(0, 10, 10));
 
     // Heights of the environment at (x, z) (as y-coords are different for each pair)
     auto heights = mc->getHeights(corner1, corner2);
