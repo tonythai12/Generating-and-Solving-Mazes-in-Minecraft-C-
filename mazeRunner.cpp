@@ -34,17 +34,17 @@ struct CoordDir {
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes);
 void GenerateRandomMaze();
 void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode);
-void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos,
+void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate& playerPos,
                 mcpp::MinecraftConnection* mc);
-void HighlightSolvedBlock(const mcpp::Coordinate &playerPos, mcpp::MinecraftConnection* mc);
-void PrintSteps(int &counter, const mcpp::Coordinate &playerPos);
-void UpdateCoordsAfterSolving(const AgentDirection &dir, int &x, int &z, mcpp::Coordinate &playerPos);
+void HighlightSolvedBlock(const mcpp::Coordinate& playerPos, mcpp::MinecraftConnection* mc);
+void PrintSteps(int &counter, const mcpp::Coordinate& playerPos);
+void UpdateCoordsAfterSolving(const AgentDirection& dir, int& x, int& z, mcpp::Coordinate& playerPos);
 std::string coordDirToKey(const CoordDir& cd);
-bool AllVisited(const mcpp::Coordinate cd, const AgentDirection &dir, std::vector<CoordDir>&        
+bool AllVisited(const mcpp::Coordinate cd, const AgentDirection& dir, std::vector<CoordDir>&        
                 visitedTiles, mcpp::MinecraftConnection* mc);
 void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player, bool mode);
 std::vector<int> getValidInts(const std::string& errorMsg);
-bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth);
+bool validateMazeDimensions(const std::vector<std::string>& rows, int& envLength, int& envWidth);
 void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection& dir
                         , bool mode);
 bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, AgentDirection dir);
@@ -253,7 +253,7 @@ std::vector<int> getValidInts(const std::string& errorMsg) {
  * @param envWidth The width of the maze
  * @return True if the dimensions are valid, false otherwise.
 */
-bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth) {
+bool validateMazeDimensions(const std::vector<std::string>& rows, int& envLength, int& envWidth) {
     bool isValid = true;
 
     if (static_cast<int>(rows.size()) != envLength) {
