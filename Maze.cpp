@@ -24,11 +24,14 @@ void Maze::generateMazeStructure()
     for (int i = 0; i < length; i++)
     {
         std::vector<int> temp;
+        std::vector<char> temp2;
         for (int j = 0; j < width; j++)
         {
             temp.push_back(0);
+            temp2.push_back(' ');
         }
         maze.push_back(temp);
+        mazeStructure.push_back(temp2);
     }
 
     // Generate the maze structure
@@ -89,21 +92,12 @@ void Maze::generateMaze(){
         }
     }
 
-
     // Select a random starting point
     mcpp::Coordinate randomStart = Maze::selectRandomStartingPoint();
     Cell start{randomStart, true};
 
-    // print the starting point
-    mc.setBlock(randomStart, mcpp::Blocks::DIAMOND_BLOCK);
-
     // Select a random outer wall cell
     Cell outerWallCell = Maze::OuterWallCell(randomStart);
-
-    // print the outer wall cell
-    std::cout << "Outer wall cell: " << outerWallCell.coordinate.x << ", " << outerWallCell.coordinate.y << ", " << outerWallCell.coordinate.z << std::endl;
-
-    visitedCells.push_back(outerWallCell);
     
     // Make way in the maze
     removeWall(outerWallCell);
@@ -144,91 +138,44 @@ mcpp::Coordinate Maze::selectRandomStartingPoint(){
 }
 
 Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
+    const mcpp::Coordinate offsets[] = {
+        mcpp::Coordinate(2, 0, 0),
+        mcpp::Coordinate(-2, 0, 0),
+        mcpp::Coordinate(0, 0, 2),
+        mcpp::Coordinate(0, 0, -2),
+    };
+
     Cell outerWallCell;
-    bool isOuterWall = false;
-    
-    outerWallCell.coordinate = cell - mcpp::Coordinate(2, 0, 0);
-    for (int i = 0; i < static_cast<int>(cells.size()); i++)
-    {
-        if (outerWallCell.coordinate == cells.at(i).coordinate)
-        {
-            isOuterWall = false;
-            break;
-        }
-        else
-        {
-            isOuterWall = true;
-        }
-    }
 
-    if (isOuterWall)
-    {
-        outerWallCell.coordinate = cell - mcpp::Coordinate(1, 0, 0);
-        return outerWallCell;
-    }
+    for (int i = 0; i < 4; i++) {
+        bool isOuterWall = true;
+        outerWallCell.coordinate = cell + offsets[i];
 
-    outerWallCell.coordinate = cell + mcpp::Coordinate(2, 0, 0);
-    for (int i = 0; i < static_cast<int>(cells.size()); i++)
-    {
-        if (outerWallCell.coordinate == cells.at(i).coordinate)
-        {
-            isOuterWall = false;
-            break;
+        for (int j = 0; j < static_cast<int>(cells.size()); j++) {
+            if (outerWallCell.coordinate == cells.at(j).coordinate) {
+                isOuterWall = false;
+            }
         }
-        else
-        {
-            isOuterWall = true;
-        }
-    }
 
-    if (isOuterWall)
-    {
-        outerWallCell.coordinate = cell + mcpp::Coordinate(1, 0, 0);
-        return outerWallCell;
-    }
+        if(isOuterWall) {
+            if(i == 0) {
+                outerWallCell.coordinate = cell + mcpp::Coordinate(1, 0, 0);
+            }
+            else if (i == 1) {
+                outerWallCell.coordinate = cell - mcpp::Coordinate(1, 0, 0);
+            }
+            else if (i == 2) {
+                outerWallCell.coordinate = cell + mcpp::Coordinate(0, 0, 1);
+            }
+            else if (i == 3) {
+                outerWallCell.coordinate = cell - mcpp::Coordinate(0, 0, 1);
+            }
 
-    outerWallCell.coordinate = cell - mcpp::Coordinate(0, 0, 2);
-    for (int i = 0; i < (int)static_cast<int>(cells.size()); i++)
-    {
-        if (outerWallCell.coordinate == cells.at(i).coordinate)
-        {
-            isOuterWall = false;
-            break;
+            return outerWallCell;
         }
-        else
-        {
-            isOuterWall = true;
-        }
-    }
-
-    if (isOuterWall)
-    {
-        outerWallCell.coordinate = cell - mcpp::Coordinate(0, 0, 1);
-        return outerWallCell;
-    }
-
-    outerWallCell.coordinate = cell + mcpp::Coordinate(0, 0, 2);
-    for (int i = 0; i < static_cast<int>(cells.size()); i++)
-    {
-        if (outerWallCell.coordinate == cells.at(i).coordinate)
-        {
-            isOuterWall = false;
-            break;
-        }
-        else
-        {
-            isOuterWall = true;
-        }
-    }
-
-    if (isOuterWall)
-    {
-        outerWallCell.coordinate = cell + mcpp::Coordinate(0, 0, 1);
-        return outerWallCell;
     }
 
     return outerWallCell;
-
 }
 
 void Maze::removeWall(Maze::Cell cell){
@@ -246,7 +193,6 @@ void Maze::removeWall(Maze::Cell cell){
             break;
         }
     }
-
     
 }
 

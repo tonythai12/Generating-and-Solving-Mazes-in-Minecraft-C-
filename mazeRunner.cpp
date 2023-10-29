@@ -128,11 +128,12 @@ int main(int argc, char* argv[]) {
                 ReadMazeFromTerminal(mc, terminalMaze, generatedMazes);
                 curState = ST_Main;
             } else if (input == 2) {
+                std::vector<std::vector<char>> mazeStructure;
                 mcpp::Coordinate basePoint;
                 std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
                 // @ravisidhu007 change the following to match the new maze constructor
-                // Maze maze(basePoint, 13, 13, NORMAL_MODE);
-                // maze.generateMaze();
+                Maze maze(basePoint, 13, 13, mazeStructure);
+                maze.generateMaze();
                 curState = ST_Main;
             } else if (input == 3) {
                 curState = ST_Main;
