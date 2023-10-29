@@ -52,6 +52,9 @@ public:
 
     void generateRecursiveMaze(std::vector<Cell> &cells, Cell cell);
 
+    // get the mazeStructure
+    std::vector<std::vector<char>> getMazeStructure();
+
     // check if the cell is visited
     bool visited(Cell cell);
 

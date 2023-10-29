@@ -128,12 +128,7 @@ int main(int argc, char* argv[]) {
                 ReadMazeFromTerminal(mc, terminalMaze, generatedMazes);
                 curState = ST_Main;
             } else if (input == 2) {
-                std::vector<std::vector<char>> mazeStructure;
-                mcpp::Coordinate basePoint;
-                std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
-                // @ravisidhu007 change the following to match the new maze constructor
-                Maze maze(basePoint, 13, 13, mazeStructure);
-                maze.generateMaze();
+                GenerateRandomMaze();
                 curState = ST_Main;
             } else if (input == 3) {
                 curState = ST_Main;
@@ -336,10 +331,14 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
 }
 // Ravi
 void GenerateRandomMaze() {
-    //TODO: Generate maze and print in console
-
-    // dummy maze for solving, assume generated
-    
+    // generate random maze and printing it
+    std::vector<std::vector<char>> mazeStructure;
+    mcpp::Coordinate basePoint;
+    std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
+    Maze maze(basePoint, 13, 13, mazeStructure);
+    maze.generateMaze();
+    mazeStructure = maze.getMazeStructure();
+    maze.PrintMaze();   
 }
 
 /*

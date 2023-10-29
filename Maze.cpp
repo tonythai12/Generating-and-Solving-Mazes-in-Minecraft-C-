@@ -107,6 +107,29 @@ void Maze::generateMaze(){
 
 }
 
+// Get Maze Structure
+std::vector<std::vector<char>> Maze::getMazeStructure() {
+
+    mcpp::MinecraftConnection mc;
+
+    for (int i = 0; i < length; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+           if(mc.getBlock(basePoint + mcpp::Coordinate(i, 0, j)) == mcpp::Blocks::BRICKS)
+           {
+               mazeStructure[i][j] = 'X';
+           }
+           else
+           {
+               mazeStructure[i][j] = ' ';
+           }
+        }
+    }
+    
+    return mazeStructure;
+}
+
 mcpp::Coordinate Maze::selectRandomStartingPoint(){
     
     mcpp::Coordinate randomStart;
@@ -146,6 +169,7 @@ Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
     };
 
     Cell outerWallCell;
+    mcpp::Coordinate temp;
 
     for (int i = 0; i < 4; i++) {
         bool isOuterWall = true;
@@ -159,21 +183,21 @@ Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
 
         if(isOuterWall) {
             if(i == 0) {
-                outerWallCell.coordinate = cell + mcpp::Coordinate(1, 0, 0);
+                temp = cell + mcpp::Coordinate(1, 0, 0);
             }
             else if (i == 1) {
-                outerWallCell.coordinate = cell - mcpp::Coordinate(1, 0, 0);
+                temp = cell - mcpp::Coordinate(1, 0, 0);
             }
             else if (i == 2) {
-                outerWallCell.coordinate = cell + mcpp::Coordinate(0, 0, 1);
+                temp = cell + mcpp::Coordinate(0, 0, 1);
             }
             else if (i == 3) {
-                outerWallCell.coordinate = cell - mcpp::Coordinate(0, 0, 1);
+                temp = cell - mcpp::Coordinate(0, 0, 1);
             }
-
-            return outerWallCell;
         }
     }
+
+    outerWallCell.coordinate = temp;
 
     return outerWallCell;
 }
