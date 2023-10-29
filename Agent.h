@@ -38,10 +38,14 @@ public:
     ~Agent();
     void setStartLoc(mcpp::Coordinate &startLoc);
     mcpp::Coordinate getStartLoc();
+    void InitialisePlayer(mcpp::MinecraftConnection* mc);
+    AgentDirection getDirection() {return dir;}
+    void setDirection(AgentDirection dir) {this->dir = dir;}
 
 private:
     /* data */
     mcpp::Coordinate startLoc;
+    AgentDirection dir;
 
 };
 

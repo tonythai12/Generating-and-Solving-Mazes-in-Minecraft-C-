@@ -53,8 +53,28 @@ void Agent::setStartLoc(mcpp::Coordinate &startLoc) {
 mcpp::Coordinate Agent::getStartLoc() {
     return startLoc;
 }
+void Agent::InitialisePlayer(mcpp::MinecraftConnection* mc) {
+    mcpp::BlockType blockTypeEast = mc->getBlock(mcpp::Coordinate(startLoc.x + 1, startLoc.y, startLoc.z));
+    mcpp::BlockType blockTypeWest = mc->getBlock(mcpp::Coordinate(startLoc.x - 1, startLoc.y, startLoc.z));
+    mcpp::BlockType blockTypeNorth = mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z - 1));
+    mcpp::BlockType blockTypeSouth = mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z + 1));
+
+    if (blockTypeEast == mcpp::Blocks::BRICKS) {
+        // Wall is to the Right, so face North (up)
+        dir = UP;
+    } else if (blockTypeWest == mcpp::Blocks::BRICKS) {
+        // Wall is to the Left, so face South (down)
+        dir = DOWN;
+    } else if (blockTypeNorth == mcpp::Blocks::BRICKS) {
+        // Wall is to the North, so face West (left)
+        dir = LEFT;
+    } else if (blockTypeSouth == mcpp::Blocks::BRICKS) {
+        // Wall is to the South, so face East (right)
+        dir = RIGHT;
+    }
+}
 
 Agent::~Agent()
 {
-    std::cout << "Agent destroyed" << std::endl;
+    std::cout << "Agent destructor successfully called." << std::endl;
 }
