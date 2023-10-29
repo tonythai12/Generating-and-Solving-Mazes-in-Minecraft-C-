@@ -310,6 +310,9 @@ bool Maze::visited(Cell cell) {
     return false;
 }
 
+/**
+ * Prints the maze structure to the console.
+ */
 void Maze::PrintMaze() {
     int zLen = mazeStructure.size();
     int xLen = mazeStructure[0].size();
@@ -327,7 +330,11 @@ void Maze::PrintMaze() {
 
     std::cout << "**End Printing Maze**" << std::endl;
 }
-
+/**
+ * Builds the maze in MineCraft. Accesses the mazeStructure vector to determine where to place blocks.
+ * Also stores the coordinates of the walkable blocks in a vector, which will be used to solve the maze.
+ * @param mc The MinecraftConnection object.
+*/
 void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
     int zLen = mazeStructure.size();
     int xLen = mazeStructure[0].size();
@@ -351,10 +358,13 @@ void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
         }
     }
 }
-/*
- *  Retrieves the blockTypes of the environment within the specified bounds.
- *  Stored in a 3D vector, which will be used to restore the environment after solving the maze.
- */
+
+/**
+ * Gets and stores the environment within the specified bounds. Used to rebuild the environment after 
+ * the user either exits the program, or builds a new maze.
+ * @param mc The MinecraftConnection object.
+ * @return A 3D vector containing the environment within the specified bounds.
+*/
 std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp::MinecraftConnection* mc) {
 
     // Get all blocks using the min/max y-values
@@ -365,8 +375,9 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp
     return blocks;
 }
 
-/*
-    Flattens the environment within the specified bounds. 
+/**
+ * Flattens the environment within the specified bounds. Used to build the maze on a level-field.
+ * @param mc The MinecraftConnection object.
 */
 void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
     // Calculate corners and then get heights (2 block buffer around all sides)
@@ -413,8 +424,11 @@ void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
 }
 
 
-/*
-    Rebuilds the environment after the user exits the program. Uses the 3D vector returned from getEnvironment().
+/**
+ * Rebuilds the environment within the specified bounds. Used to rebuild the environment after
+ * the user either exits the program, or builds a new maze.
+ * @param mc The MinecraftConnection object.
+ * @param savedEnvironment A 3D vector containing the environment within the specified bounds.
 */
 void Maze::rebuildEnvironment(mcpp::MinecraftConnection* mc,
                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment) {
@@ -435,11 +449,21 @@ void Maze::rebuildEnvironment(mcpp::MinecraftConnection* mc,
     }
 }
 
+/**
+ * Flattens the environment within the specified bounds, and then builds the maze.
+ * @param mc The MinecraftConnection object.
+*/
 void Maze::FlattenAndBuild(mcpp::MinecraftConnection* mc) {
     flattenEnvironment(mc);
     GenerateMazeInMC(mc);
 }
 
+/**
+ * If program is generating blocks outside of the bounds of getEnvironment, this function can be used
+ * to store the old block type and coordinate, so that it can be restored later.
+ * @param mc The MinecraftConnection object.
+ * @param coord The coordinate of the block to be stored.
+*/
 void Maze::StoreOldBlock(mcpp::MinecraftConnection* mc, mcpp::Coordinate& coord) {
     GeneratedBlock oldBlock;
     oldBlock.originalType = mc->getBlock(coord);
@@ -447,8 +471,12 @@ void Maze::StoreOldBlock(mcpp::MinecraftConnection* mc, mcpp::Coordinate& coord)
     generatedBlocks.push_back(oldBlock);
 }
 
+/**
+ * Restores the old blocks to their original type. Used to restore the environment after the user
+ * either exits the program, or builds a new maze.
+ * @param mc The MinecraftConnection object.
+*/
 void Maze::RestoreOldBlocksFirst(mcpp::MinecraftConnection* mc) {
-
     for (const auto& block : generatedBlocks) {
         // Set block.coordinate to block.originalType
         mc->setBlock(block.coordinate, block.originalType);
