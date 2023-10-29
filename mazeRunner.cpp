@@ -1,14 +1,11 @@
 #include <iostream>
-
 #include <mcpp/mcpp.h>
-
 #include "menuUtils.h"
 #include "Maze.h"
 #include "Agent.h"
 // For sleep and time duration
 #include <thread>   
 #include <chrono> 
-
 // For tracking tiles that have been solved (for looped mazes)
 #include <map>
 #include <algorithm>
@@ -52,10 +49,17 @@ void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc,
 bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, AgentDirection dir);
 bool validateMazeCharacters(const std::vector<std::string>& rows);
 
-int main(void) {
+int main(int argc, char* argv[]) {
 
-    // bool mode = NORMAL_MODE;
-    //read Mode
+    bool mode = NORMAL_MODE;
+    
+    // Check for testing mode
+    for (int i = 1; i < argc; i++) {  
+        std::string arg = argv[i];
+        if (arg == "-testmode") {
+            mode = TESTING_MODE;
+        }
+    }
 
     mcpp::MinecraftConnection* mc = new mcpp::MinecraftConnection();
     Maze* terminalMaze = nullptr;
