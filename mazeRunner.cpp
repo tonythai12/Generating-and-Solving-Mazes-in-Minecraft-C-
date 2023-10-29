@@ -50,6 +50,7 @@ std::vector<int> getValidInts(const std::string& errorMsg);
 bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength, int envWidth);
 void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection dir);
 bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, AgentDirection dir);
+bool validateMazeCharacters(const std::vector<std::string>& rows);
 
 int main(void) {
 
@@ -217,6 +218,17 @@ bool validateMazeDimensions(const std::vector<std::string>& rows, int envLength,
     }
     return isValid;
 }
+bool validateMazeCharacters(const std::vector<std::string>& rows) {
+    bool valid = true; // Initially assume that it's valid, then check for invalid characters
+    for (const auto& row : rows) {
+        for (char c : row) {
+            if (c != 'x' && c != '.') {
+                return false;
+            }
+        }
+    }
+    return valid;
+}
 // Tony
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze) {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -271,10 +283,12 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze) {
             rows.push_back(row);
         }
 
-        if (validateMazeDimensions(rows, envLength, envWidth)) {
+        if (validateMazeDimensions(rows, envLength, envWidth) && validateMazeCharacters(rows)) {
             validMaze = true;  // Update the control variable to exit the loop
         } else {
-            std::cout << "The dimensions of the maze structure you entered do not match the expected dimensions. Please re-enter." << std::endl;
+            std::cout << "Invalid maze structure. Please ensure that dimensions are correct";
+            std::cout << " and only 'x' and '.' characters are used." << std::endl;
+            std::cout << "'x' represents a wall, and '.' represents a walkable tile." << std::endl;
         }
     }
     // Resize 2d vector into correct dimensions
