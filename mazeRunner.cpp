@@ -72,6 +72,10 @@ bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, Agent
 bool validateMazeCharacters(const std::vector<std::string>& rows);
 void CleanUp(std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment,
              Maze*& maze, mcpp::MinecraftConnection* mc);
+void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes,
+                   std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment);
+void ShowShortestPath(mcpp::MinecraftConnection* mc, std::vector<mcpp::Coordinate> path);
+std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Agent*& player);
 
 int main(int argc, char* argv[]) {
 
@@ -109,23 +113,7 @@ int main(int argc, char* argv[]) {
             } else if (input == 1) {
                 curState = ST_GetMaze;
             } else if (input == 2) {
-                if (terminalMaze) {
-                    Maze* mazeToBuild = generatedMazes.back();  // The last maze generated
-                    for (Maze* oldMaze : generatedMazes) {
-                        if (oldMaze != mazeToBuild) {
-                            std::cout << "Cleaning up and restoring existing environment." << std::endl;
-                            CleanUp(environment, oldMaze, mc);
-                            delete oldMaze;
-                            std::cout << "Cleanup and restore successful. Now building new maze." << std::endl;
-                        }
-                    }
-                    generatedMazes.clear();
-                    generatedMazes.push_back(mazeToBuild);
-                    environment = mazeToBuild->getEnvironment(mc);
-                    mazeToBuild->FlattenAndBuild(mc);
-                } else {
-                    std::cout << "Please generate a maze first." << std::endl;
-                }
+                BuildMazeInMC(mc, terminalMaze, generatedMazes, environment);
                 curState = ST_Main;
             } else if (input == 3) {
                 curState = ST_SolveMaze;
@@ -176,7 +164,10 @@ int main(int argc, char* argv[]) {
                 curState = ST_Main;
             } else if (input == 2) {
                 if (player) {
-                    SolveMaze(mc, player, mode);
+                    //SolveMaze(mc, player, mode);
+                    std::vector<mcpp::Coordinate> shortestPath = FindShortestPath(mc, player);
+                    std::cout << shortestPath.size();
+                    ShowShortestPath(mc, shortestPath);
                 } else {
                     std::cout << "Please initialise a player first." << std::endl;
                 }
@@ -207,6 +198,28 @@ int main(int argc, char* argv[]) {
     player = nullptr;
     return EXIT_SUCCESS;
 
+}
+
+void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes,
+                   std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment) {
+    if (terminalMaze) {
+        Maze* mazeToBuild = generatedMazes.back();  // The last maze generated
+        for (Maze* oldMaze : generatedMazes) {
+            if (oldMaze != mazeToBuild) {
+                std::cout << "Cleaning up and restoring existing environment." << std::endl;
+                CleanUp(environment, oldMaze, mc);
+                delete oldMaze;
+                std::cout << "Cleanup and restore successful. Now building new maze." << std::endl;
+            }
+        }
+        generatedMazes.clear();
+        generatedMazes.push_back(mazeToBuild);
+        environment = mazeToBuild->getEnvironment(mc);
+        mazeToBuild->FlattenAndBuild(mc);
+
+    } else {
+        std::cout << "Please generate a maze first." << std::endl;
+    }
 }
 /** 
  * Cleans up the existing MineCraft environment by restoring the old blocks and then rebuilding the
@@ -758,7 +771,6 @@ void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc,
 }
 
 std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Agent*& player) {
-    // Initialise all our data structures
     std::queue<std::tuple<mcpp::Coordinate, mcpp::Coordinate, AgentDirection>> bfsQueue;
     std::set<CoordDir, CoordDirComparator> visited;
     std::map<mcpp::Coordinate, mcpp::Coordinate, CoordinateComparator> parent;
@@ -768,51 +780,52 @@ std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Ag
     visited.insert({.coord = start, .dir = UP});
     parent[start] = start;
 
-    // While the queue isn't empty (unvisited coords)
+    std::cout << "Starting BFS from: (" << start.x << ", " << start.y << ", " << start.z << ")" << std::endl;
+
     while (!bfsQueue.empty()) {
         auto [currentPosition, previousPosition, currentDirection] = bfsQueue.front();
         bfsQueue.pop();
 
-        // Check if we've already visited this coord with this direction. If so, skip it
-        if (visited.count({.coord = currentPosition, .dir = currentDirection})) continue;
+        std::cout << "Current Position: (" << currentPosition.x << ", " << currentPosition.y << ", " << currentPosition.z << ")" << std::endl;
 
-        // If not, mark as visited
-        visited.insert({.coord = currentPosition, .dir = currentDirection});
-
-        // Check if we've reached the end
         if (CheckIfSolved(currentPosition, mc, currentDirection)) {
             std::vector<mcpp::Coordinate> path;
             mcpp::Coordinate backtrack = currentPosition;
-            
-            // If end is reached, backtrack from end to start to find path
+
+            std::cout << "Maze Solved! Backtracking to find the path." << std::endl;
+
             while (!(backtrack == start)) {
                 path.push_back(backtrack);
                 backtrack = parent[backtrack];
             }
             path.push_back(start);
             std::reverse(path.begin(), path.end());
-
             return path;
         }
 
-        // Loop through all directions to find neighbours
         AgentDirection tempDirection = currentDirection;
         for (int i = 0; i < 4; i++) {
             if (player->canMove(currentPosition.x, currentPosition.z, tempDirection, currentPosition, mc)) {
                 mcpp::Coordinate neighbour = player->findNeighbour(tempDirection, currentPosition, mc);
-                
-                // If we haven't visited this neighbour, add it to the queue
+
+                std::cout << "Found Neighbour: (" << neighbour.x << ", " << neighbour.y << ", " << neighbour.z << ")" << std::endl;
+
                 if (!visited.count({neighbour, tempDirection})) {
+                    visited.insert({.coord = neighbour, .dir = tempDirection});  // Mark as visited here
                     bfsQueue.push({neighbour, currentPosition, tempDirection});
                     parent[neighbour] = currentPosition;
+
+                    std::cout << "Enqueueing neighbour and marking as visited." << std::endl;
                 }
             }
             tempDirection = player->turn(tempDirection);
         }
     }
-    std::vector<mcpp::Coordinate> empty;
-    return empty;
+
+    std::cout << "Error: No path found." << std::endl;
+    return std::vector<mcpp::Coordinate>();
 }
+
 
 void ShowShortestPath(mcpp::MinecraftConnection* mc, std::vector<mcpp::Coordinate> path) {
     int counter = 1;
@@ -821,6 +834,8 @@ void ShowShortestPath(mcpp::MinecraftConnection* mc, std::vector<mcpp::Coordinat
             HighlightSolvedBlock(coord, mc);
             PrintSteps(counter, coord);
         }
+    } else {
+        std::cout << "Error: Detected an empty path." << std::endl;
     }
 }
 
