@@ -53,7 +53,8 @@ struct CoordinateComparator {
 
 
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes);
-void GenerateRandomMaze();
+void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, 
+                        std::vector<Maze*>& generatedMazes);
 void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode);
 void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate& playerPos,
                 mcpp::MinecraftConnection* mc);
@@ -155,7 +156,7 @@ int main(int argc, char* argv[]) {
                 ReadMazeFromTerminal(mc, terminalMaze, generatedMazes);
                 curState = ST_Main;
             } else if (input == 2) {
-                GenerateRandomMaze();
+                GenerateRandomMaze(mc, terminalMaze, generatedMazes);
                 curState = ST_Main;
             } else if (input == 3) {
                 curState = ST_Main;
@@ -416,9 +417,12 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
     terminalMaze = newMaze;
     newMaze->PrintMaze();
 }
-// Ravi
-void GenerateRandomMaze() {
-    // generate random maze and printing it
+
+void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, 
+                        std::vector<Maze*>& generatedMazes) {
+    
+    
+
     std::vector<std::vector<char>> mazeStructure;
     mcpp::Coordinate basePoint;
     int length;
@@ -427,10 +431,14 @@ void GenerateRandomMaze() {
     std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
     std::cout << "Enter the length and width of maze:" << std::endl;
     std::cin >> length >> width;
-    Maze* maze = new Maze(basePoint, length, width, mazeStructure);
-    maze->generateMaze();
-    maze->updateMazeStructure();
-    maze->PrintMaze();
+
+    mazeStructure.resize(length, std::vector<char>(width)); 
+    Maze* newMaze = new Maze(basePoint, length, width, mazeStructure);
+    newMaze->generateMaze();
+    newMaze->updateMazeStructure();
+    generatedMazes.push_back(newMaze);
+    terminalMaze = newMaze;
+    terminalMaze->PrintMaze();
 }
 
 /**

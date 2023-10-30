@@ -18,9 +18,10 @@ Maze::~Maze()
 }
 
 void Maze::generateMazeStructure()
-{
-    // Generate the maze
-    // 1. Initialize the maze
+{   
+    maze.clear();
+    mazeStructure.clear();
+    // Initialize the maze and mazeStructure vectors
     for (int i = 0; i < length; i++)
     {
         std::vector<int> temp;
@@ -28,7 +29,7 @@ void Maze::generateMazeStructure()
         for (int j = 0; j < width; j++)
         {
             temp.push_back(0);
-            temp2.push_back(' ');
+            temp2.push_back('.');
         }
         maze.push_back(temp);
         mazeStructure.push_back(temp2);
@@ -39,22 +40,28 @@ void Maze::generateMazeStructure()
     {
         for (int j = 0; j < width; j++)
         {
-            // if the row number is even, then set the wall
-            // if the column number is even, then set the wall
-            if(i % 2 == 0)
+            if (i % 2 == 0)
             {
-                maze[i][j] = 1;
+                maze[i][j] = 1;  // Set wall
             }
             else
             {
-                if(j % 2 == 0)
+                if (j % 2 == 0)
                 {
-                    maze[i][j] = 1; // 1 means wall
+                    maze[i][j] = 1; // Set wall
                 }
             }
         }
     }
 
+    // Populate mazeStructure based on maze
+    for (int i = 0; i < length; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            mazeStructure[i][j] = (maze[i][j] == 1) ? 'x' : '.';
+        }
+    }
 }
 
 void Maze::generateMaze(){
@@ -108,11 +115,11 @@ void Maze::updateMazeStructure() {
    for(int i = 0; i < length; i++){
         for(int j = 0; j < width; j++){
             if (maze[i][j] == 1){
-                mazeStructure[i][j] = 'X';
+                mazeStructure[i][j] = 'x';
             }
             else
             {
-                mazeStructure[i][j] = ' ';
+                mazeStructure[i][j] = '.';
             }
         }
     }
