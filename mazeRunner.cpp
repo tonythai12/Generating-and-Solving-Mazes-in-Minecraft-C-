@@ -814,3 +814,13 @@ std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Ag
     return empty;
 }
 
+void ShowShortestPath(mcpp::MinecraftConnection* mc, std::vector<mcpp::Coordinate> path) {
+    int counter = 1;
+    if (!path.empty()) {
+        for (const auto& coord : path) {
+            HighlightSolvedBlock(coord, mc);
+            PrintSteps(counter, coord);
+        }
+    }
+}
+
