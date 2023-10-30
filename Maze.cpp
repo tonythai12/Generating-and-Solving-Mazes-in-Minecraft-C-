@@ -112,7 +112,7 @@ void Maze::updateMazeStructure() {
             }
             else
             {
-                mazeStructure[i][j] = ' ';
+                mazeStructure[i][j] = '.';
             }
         }
     }
