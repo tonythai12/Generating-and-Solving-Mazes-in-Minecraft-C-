@@ -9,6 +9,9 @@
 // For tracking tiles that have been solved (for looped mazes)
 #include <map>
 #include <algorithm>
+#include <queue>
+#include <set>
+#include <tuple>
 
 #define NORMAL_MODE 0
 #define TESTING_MODE 1
@@ -737,6 +740,50 @@ void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc,
 }
 
 std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Agent*& player) {
-    std::vector<mcpp::Coordinate> path;
-    return path;
+    std::queue<std::tuple<mcpp::Coordinate, mcpp::Coordinate, AgentDirection>> bfsQueue;
+    std::set<std::pair<mcpp::Coordinate, AgentDirection>> visited;
+    std::map<mcpp::Coordinate, mcpp::Coordinate> parent;
+
+    mcpp::Coordinate start = player->getStartLoc();
+    bfsQueue.push({start, start, UP}); 
+    visited.insert({start, UP});
+    parent[start] = start;
+
+    while (!bfsQueue.empty()) {
+        auto [currentPosition, previousPosition, currentDirection] = bfsQueue.front();
+        bfsQueue.pop();
+
+        if (visited.count({currentPosition, currentDirection})) continue;
+        visited.insert({currentPosition, currentDirection});
+
+        if (CheckIfSolved(currentPosition, mc, currentDirection)) {
+            std::vector<mcpp::Coordinate> path;
+            mcpp::Coordinate backtrack = currentPosition;
+
+            while (!(backtrack == start)) {
+                path.push_back(backtrack);
+                backtrack = parent[backtrack];
+            }
+            path.push_back(start);
+            std::reverse(path.begin(), path.end());
+
+            return path;
+        }
+
+        // Loop through all directions to find neighbours
+        AgentDirection tempDirection = currentDirection;
+        for (int i = 0; i < 4; i++) {
+            if (player->canMove(currentPosition.x, currentPosition.z, tempDirection, currentPosition, mc)) {
+                mcpp::Coordinate neighbour = player->findNeighbour(tempDirection, currentPosition, mc);
+                if (!visited.count({neighbour, tempDirection})) {
+                    bfsQueue.push({neighbour, currentPosition, tempDirection});
+                    parent[neighbour] = currentPosition;
+                }
+            }
+            tempDirection = player->turn(tempDirection);
+        }
+    }
+
+    // placeholder for return value
 }
+
