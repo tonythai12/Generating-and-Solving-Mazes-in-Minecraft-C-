@@ -734,5 +734,9 @@ void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc,
             }
         }
     }
-    
+}
+
+std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Agent*& player) {
+    std::vector<mcpp::Coordinate> path;
+    return path;
 }
