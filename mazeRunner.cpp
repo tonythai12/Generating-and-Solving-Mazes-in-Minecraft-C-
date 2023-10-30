@@ -367,12 +367,14 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
 // Ravi
 void GenerateRandomMaze() {
     // generate random maze and printing it
+    mcpp::MinecraftConnection* mc = new mcpp::MinecraftConnection();
     std::vector<std::vector<char>> mazeStructure;
     mcpp::Coordinate basePoint;
     std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
     Maze maze(basePoint, 13, 13, mazeStructure);
     maze.generateMaze();
     maze.updateMazeStructure();
+    maze.GenerateMazeInMC(mc);
     maze.PrintMaze();   
 }
 
