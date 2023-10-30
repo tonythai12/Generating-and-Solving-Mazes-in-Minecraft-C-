@@ -113,7 +113,25 @@ int main(int argc, char* argv[]) {
             } else if (input == 1) {
                 curState = ST_GetMaze;
             } else if (input == 2) {
-                BuildMazeInMC(mc, terminalMaze, generatedMazes, environment);
+                // print size of generatedMazes
+
+                if (terminalMaze) {
+                    Maze* mazeToBuild = generatedMazes.back();  // The last maze generated
+                    for (Maze* oldMaze : generatedMazes) {
+                        if (oldMaze != mazeToBuild) {
+                            std::cout << "Cleaning up and restoring existing environment." << std::endl;
+                            CleanUp(environment, oldMaze, mc);
+                            delete oldMaze;
+                            std::cout << "Cleanup and restore successful. Now building new maze." << std::endl;
+                        }
+                    }
+                    generatedMazes.clear();
+                    generatedMazes.push_back(mazeToBuild);
+                    environment = mazeToBuild->getEnvironment(mc);
+                    mazeToBuild->FlattenAndBuild(mc);
+                } else {
+                    std::cout << "Please generate a maze first." << std::endl;
+                }
                 curState = ST_Main;
             } else if (input == 3) {
                 curState = ST_SolveMaze;
@@ -403,11 +421,16 @@ void GenerateRandomMaze() {
     // generate random maze and printing it
     std::vector<std::vector<char>> mazeStructure;
     mcpp::Coordinate basePoint;
+    int length;
+    int width;
+    std::cout << "Enter the basePoint of maze:" << std::endl;
     std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
-    Maze maze(basePoint, 13, 13, mazeStructure);
-    maze.generateMaze();
-    maze.updateMazeStructure();
-    maze.PrintMaze();   
+    std::cout << "Enter the length and width of maze:" << std::endl;
+    std::cin >> length >> width;
+    Maze* maze = new Maze(basePoint, length, width, mazeStructure);
+    maze->generateMaze();
+    maze->updateMazeStructure();
+    maze->PrintMaze();
 }
 
 /**
