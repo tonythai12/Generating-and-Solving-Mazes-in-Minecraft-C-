@@ -9,6 +9,9 @@
 // For tracking tiles that have been solved (for looped mazes)
 #include <map>
 #include <algorithm>
+#include <queue>
+#include <set>
+#include <tuple>
 
 #define NORMAL_MODE 0
 #define TESTING_MODE 1
@@ -30,6 +33,24 @@ struct CoordDir {
     mcpp::Coordinate coord;
     AgentDirection dir;
 };
+
+struct CoordDirComparator {
+    bool operator()(const CoordDir& a, const CoordDir& b) const {
+        if(a.coord.x != b.coord.x) return a.coord.x < b.coord.x;
+        if(a.coord.y != b.coord.y) return a.coord.y < b.coord.y;
+        if(a.coord.z != b.coord.z) return a.coord.z < b.coord.z;
+        return a.dir < b.dir;
+    }
+};
+
+struct CoordinateComparator {
+    bool operator()(const mcpp::Coordinate& a, const mcpp::Coordinate& b) const {
+        if(a.x != b.x) return a.x < b.x;
+        if(a.y != b.y) return a.y < b.y;
+        return a.z < b.z;
+    }
+};
+
 
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes);
 void GenerateRandomMaze();
@@ -736,5 +757,72 @@ void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc,
             }
         }
     }
-    
 }
+
+std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Agent*& player) {
+    // Initialise all our data structures
+    std::queue<std::tuple<mcpp::Coordinate, mcpp::Coordinate, AgentDirection>> bfsQueue;
+    std::set<CoordDir, CoordDirComparator> visited;
+    std::map<mcpp::Coordinate, mcpp::Coordinate, CoordinateComparator> parent;
+
+    mcpp::Coordinate start = player->getStartLoc();
+    bfsQueue.push({start, start, UP}); // start with a dir of UP
+    visited.insert({.coord = start, .dir = UP});
+    parent[start] = start;
+
+    // While the queue isn't empty (unvisited coords)
+    while (!bfsQueue.empty()) {
+        auto [currentPosition, previousPosition, currentDirection] = bfsQueue.front();
+        bfsQueue.pop();
+
+        // Check if we've already visited this coord with this direction. If so, skip it
+        if (visited.count({.coord = currentPosition, .dir = currentDirection})) continue;
+
+        // If not, mark as visited
+        visited.insert({.coord = currentPosition, .dir = currentDirection});
+
+        // Check if we've reached the end
+        if (CheckIfSolved(currentPosition, mc, currentDirection)) {
+            std::vector<mcpp::Coordinate> path;
+            mcpp::Coordinate backtrack = currentPosition;
+            
+            // If end is reached, backtrack from end to start to find path
+            while (!(backtrack == start)) {
+                path.push_back(backtrack);
+                backtrack = parent[backtrack];
+            }
+            path.push_back(start);
+            std::reverse(path.begin(), path.end());
+
+            return path;
+        }
+
+        // Loop through all directions to find neighbours
+        AgentDirection tempDirection = currentDirection;
+        for (int i = 0; i < 4; i++) {
+            if (player->canMove(currentPosition.x, currentPosition.z, tempDirection, currentPosition, mc)) {
+                mcpp::Coordinate neighbour = player->findNeighbour(tempDirection, currentPosition, mc);
+                
+                // If we haven't visited this neighbour, add it to the queue
+                if (!visited.count({neighbour, tempDirection})) {
+                    bfsQueue.push({neighbour, currentPosition, tempDirection});
+                    parent[neighbour] = currentPosition;
+                }
+            }
+            tempDirection = player->turn(tempDirection);
+        }
+    }
+    std::vector<mcpp::Coordinate> empty;
+    return empty;
+}
+
+void ShowShortestPath(mcpp::MinecraftConnection* mc, std::vector<mcpp::Coordinate> path) {
+    int counter = 1;
+    if (!path.empty()) {
+        for (const auto& coord : path) {
+            HighlightSolvedBlock(coord, mc);
+            PrintSteps(counter, coord);
+        }
+    }
+}
+

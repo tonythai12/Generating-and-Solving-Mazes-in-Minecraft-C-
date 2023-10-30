@@ -17,7 +17,7 @@ Agent::Agent(mcpp::Coordinate &startLoc)
  * @param mc The Minecraft connection
  * @return True if the agent can move, false otherwise.
 */
-bool Agent::canMove(int x, int z, AgentDirection dir, mcpp::Coordinate &loc, mcpp::MinecraftConnection* mc) {
+bool Agent::canMove(int x, int z, AgentDirection& dir, mcpp::Coordinate &loc, mcpp::MinecraftConnection* mc) {
     
     // Initialise default blockType
     mcpp::BlockType blockType(1);
@@ -38,6 +38,22 @@ bool Agent::canMove(int x, int z, AgentDirection dir, mcpp::Coordinate &loc, mcp
     return blockType == mcpp::Blocks::AIR;
 }
 
+mcpp::Coordinate Agent::findNeighbour(AgentDirection& dir, mcpp::Coordinate& loc, 
+                                     mcpp::MinecraftConnection* mc) {
+    mcpp::Coordinate neighbour(0, 0, 0);
+
+    if (dir == UP) {
+        neighbour = mcpp::Coordinate(loc.x + 1, loc.y, loc.z);
+    } else if (dir == RIGHT) {
+        neighbour = mcpp::Coordinate(loc.x, loc.y, loc.z + 1);
+    } else if (dir == DOWN) {
+        neighbour = mcpp::Coordinate(loc.x - 1, loc.y, loc.z);
+    } else if (dir == LEFT) {
+        neighbour = mcpp::Coordinate(loc.x, loc.y, loc.z - 1);
+    }
+    return neighbour;
+}
+
 /**
  * Turns the agent in a given direction. Achieved through incrementing the direction by 1,
  * and then modding by 4 to ensure the direction is within the range of 0-3.
@@ -45,7 +61,7 @@ bool Agent::canMove(int x, int z, AgentDirection dir, mcpp::Coordinate &loc, mcp
  * @param dir The direction the agent is facing
  * @return The new direction the agent is facing
 */
-AgentDirection Agent::turn(AgentDirection dir) {
+AgentDirection Agent::turn(AgentDirection& dir) {
     return static_cast<AgentDirection>((dir + 1) % 4);
 }
 
