@@ -77,6 +77,7 @@ void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vect
                    std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment);
 void ShowShortestPath(mcpp::MinecraftConnection* mc, std::vector<mcpp::Coordinate> path);
 std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Agent*& player);
+void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width);
 
 int main(int argc, char* argv[]) {
 
@@ -342,45 +343,12 @@ bool validateMazeCharacters(const std::vector<std::string>& rows) {
  * @param generatedMazes: A vector of mazes that have been generated
 */
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes) {
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    mcpp::Coordinate basePoint(0, 0, 0);
+    int envLength = 0;
+    int envWidth = 0;
 
-    std::vector<int> inputs;
+    GetMazeInputs(basePoint, envLength, envWidth);
 
-    do {
-        std::cout << "Enter the basePoint of maze:" << std::endl;
-        inputs = getValidInts("Input Error: Enter 3 integers (e.g., \"103 105 100\").\nEnter the basePoint of the maze:");
-        if (inputs.size() != 3) {
-            std::cout << "Input Error: You must enter exactly 3 integers for the basePoint." << std::endl;
-        }
-    } while (inputs.size() != 3);
-    
-    mcpp::Coordinate basePoint = mcpp::Coordinate(inputs[0], inputs[1], inputs[2]);
-    
-    std::cout << "Enter the length and width of maze:" << std::endl;
-    inputs.clear();
-
-    do {
-        inputs = getValidInts("Input Error: Enter an odd-numbered integer. ");
-        bool isNotOddInput = false;
-
-        if (inputs[0] % 2 == 0 || inputs[0] <= 0) {
-            std::cout << "Input Error: Length must be a positive odd integer. ";
-            isNotOddInput = true;
-        }
-        
-        if (inputs[1] % 2 == 0 || inputs[1] <= 0) {
-            std::cout << "Input Error: Width must be an odd-numbered integer. ";
-            isNotOddInput = true;
-        }
-
-        if (isNotOddInput) {
-            std::cout << "Please re-enter both length and width:" << std::endl;
-        }
-
-    } while (inputs[0] % 2 == 0 || inputs[1] % 2 == 0);
-    
-    int envLength = inputs[0], envWidth = inputs[1];
-    
     std::vector<std::vector<char>> mazeStructure;
     std::vector<std::string> rows;
 
@@ -418,25 +386,63 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
     newMaze->PrintMaze();
 }
 
+void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width) {
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    std::vector<int> inputs;
+
+    do {
+        std::cout << "Enter the basePoint of maze:" << std::endl;
+        inputs = getValidInts("Input Error: Enter 3 integers (e.g., \"103 105 100\").\nEnter the basePoint of the maze:");
+        if (inputs.size() != 3) {
+            std::cout << "Input Error: You must enter exactly 3 integers for the basePoint." << std::endl;
+        }
+    } while (inputs.size() != 3);
+    
+    basePoint = mcpp::Coordinate(inputs[0], inputs[1], inputs[2]);
+    
+    std::cout << "Enter the length and width of maze:" << std::endl;
+    inputs.clear();
+
+    do {
+        inputs = getValidInts("Input Error: Enter an odd-numbered integer. ");
+        bool isNotOddInput = false;
+
+        if (inputs[0] % 2 == 0 || inputs[0] <= 0) {
+            std::cout << "Input Error: Length must be a positive odd integer. ";
+            isNotOddInput = true;
+        }
+        
+        if (inputs[1] % 2 == 0 || inputs[1] <= 0) {
+            std::cout << "Input Error: Width must be an odd-numbered integer. ";
+            isNotOddInput = true;
+        }
+
+        if (isNotOddInput) {
+            std::cout << "Please re-enter both length and width:" << std::endl;
+        }
+
+    } while (inputs[0] % 2 == 0 || inputs[1] % 2 == 0);
+    
+     length = inputs[0], width = inputs[1];
+}
+
 void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, 
                         std::vector<Maze*>& generatedMazes) {
-    
-    
 
     std::vector<std::vector<char>> mazeStructure;
-    mcpp::Coordinate basePoint;
-    int length;
-    int width;
-    std::cout << "Enter the basePoint of maze:" << std::endl;
-    std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
-    std::cout << "Enter the length and width of maze:" << std::endl;
-    std::cin >> length >> width;
+    mcpp::Coordinate basePoint(0, 0, 0);
+    int envLength = 0;
+    int envWidth = 0;
+    
+    GetMazeInputs(basePoint, envLength, envWidth);
 
-    mazeStructure.resize(length, std::vector<char>(width)); 
-    Maze* newMaze = new Maze(basePoint, length, width, mazeStructure);
+    mazeStructure.resize(envLength, std::vector<char>(envWidth)); 
+    Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
     newMaze->generateMaze();
     newMaze->updateMazeStructure();
     generatedMazes.push_back(newMaze);
+    std::cout << "Maze read successfully" << std::endl;
     terminalMaze = newMaze;
     terminalMaze->PrintMaze();
 }
