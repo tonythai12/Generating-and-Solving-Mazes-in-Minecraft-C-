@@ -65,10 +65,6 @@ void Maze::generateMaze(){
     for(int i = 0; i < length; i++){
         for(int j = 0; j < width; j++){
             if (maze[i][j] == 1){
-                // mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::BRICKS);
-                // mc.setBlock(basePoint + mcpp::Coordinate(i, 1, j), mcpp::Blocks::BRICKS);
-                // mc.setBlock(basePoint + mcpp::Coordinate(i, 2, j), mcpp::Blocks::BRICKS);
-
                 // Add the coordinate to cell vector and set isVisited to false
                 cells.push_back(Cell{basePoint + mcpp::Coordinate(i, 0, j), false});
 
@@ -78,10 +74,6 @@ void Maze::generateMaze(){
             }
             else
             {
-                // mc.setBlock(basePoint + mcpp::Coordinate(i, 0, j), mcpp::Blocks::AIR);
-                // mc.setBlock(basePoint + mcpp::Coordinate(i, 1, j), mcpp::Blocks::AIR);
-                // mc.setBlock(basePoint + mcpp::Coordinate(i, 2, j), mcpp::Blocks::AIR);
-
                 // Add the coordinate of the cell to the vector
                 cells.push_back(Cell{basePoint + mcpp::Coordinate(i, 0, j), false});
 
@@ -199,11 +191,6 @@ Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
 }
 
 void Maze::removeWall(Maze::Cell cell){
-    // mcpp::MinecraftConnection mc;
-    // mc.setBlock(cell.coordinate, mcpp::Blocks::AIR);
-    // mc.setBlock(cell.coordinate + mcpp::Coordinate(0, 1, 0), mcpp::Blocks::AIR);
-    // mc.setBlock(cell.coordinate + mcpp::Coordinate(0, 2, 0), mcpp::Blocks::AIR);
-
     mcpp::Coordinate pos = cell.coordinate - basePoint;
     maze[pos.x][pos.z] = 0;
 

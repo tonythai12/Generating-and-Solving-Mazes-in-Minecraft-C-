@@ -109,6 +109,8 @@ int main(int argc, char* argv[]) {
             } else if (input == 1) {
                 curState = ST_GetMaze;
             } else if (input == 2) {
+                // print size of generatedMazes
+
                 if (terminalMaze) {
                     Maze* mazeToBuild = generatedMazes.back();  // The last maze generated
                     for (Maze* oldMaze : generatedMazes) {
@@ -388,15 +390,18 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
 // Ravi
 void GenerateRandomMaze() {
     // generate random maze and printing it
-    mcpp::MinecraftConnection* mc = new mcpp::MinecraftConnection();
     std::vector<std::vector<char>> mazeStructure;
     mcpp::Coordinate basePoint;
+    int length;
+    int width;
+    std::cout << "Enter the basePoint of maze:" << std::endl;
     std::cin >> basePoint.x >> basePoint.y >> basePoint.z;
-    Maze maze(basePoint, 13, 13, mazeStructure);
-    maze.generateMaze();
-    maze.updateMazeStructure();
-    maze.GenerateMazeInMC(mc);
-    maze.PrintMaze();   
+    std::cout << "Enter the length and width of maze:" << std::endl;
+    std::cin >> length >> width;
+    Maze* maze = new Maze(basePoint, length, width, mazeStructure);
+    maze->generateMaze();
+    maze->updateMazeStructure();
+    maze->PrintMaze();
 }
 
 /**
