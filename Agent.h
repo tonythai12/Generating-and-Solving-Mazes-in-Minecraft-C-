@@ -40,7 +40,7 @@ public:
     mcpp::Coordinate getStartLoc();
     AgentDirection getDirection() {return dir;}
     void setDirection(AgentDirection dir) {this->dir = dir;}
-    mcpp::Coordinate Agent::findNeighbour(AgentDirection& dir, mcpp::Coordinate& loc, 
+    mcpp::Coordinate findNeighbour(AgentDirection& dir, mcpp::Coordinate& loc, 
                                          mcpp::MinecraftConnection* mc);
 
 private:
