@@ -32,7 +32,22 @@ struct CoordDir {
     AgentDirection dir;
 };
 
+/**
+ * @struct CoordDirComparator
+ * @brief Custom comparator for CoordDir objects.
+ *
+ * This struct provides a custom comparison operator for objects of type CoordDir.
+ * It is designed to provide a total ordering based on the x, y, and z coordinates, 
+ * as well as the direction (dir) member of CoordDir objects.
+ */
 struct CoordDirComparator {
+    /**
+     * @brief Overloaded function call operator for comparing two CoordDir objects.
+     *
+     * @param a The first CoordDir object.
+     * @param b The second CoordDir object.
+     * @return True if 'a' should come before 'b', false otherwise.
+     */
     bool operator()(const CoordDir& a, const CoordDir& b) const {
         if(a.coord.x != b.coord.x) return a.coord.x < b.coord.x;
         if(a.coord.y != b.coord.y) return a.coord.y < b.coord.y;
@@ -41,7 +56,21 @@ struct CoordDirComparator {
     }
 };
 
+/**
+ * @struct CoordinateComparator
+ * @brief Custom comparator for mcpp::Coordinate objects.
+ *
+ * This struct provides a custom comparison operator for objects of type mcpp::Coordinate.
+ * It offers a total ordering based on the x, y, and z coordinates of the mcpp::Coordinate objects.
+ */
 struct CoordinateComparator {
+    /**
+     * @brief Overloaded function call operator for comparing two mcpp::Coordinate objects.
+     *
+     * @param a The first mcpp::Coordinate object.
+     * @param b The second mcpp::Coordinate object.
+     * @return True if 'a' should come before 'b', false otherwise.
+     */
     bool operator()(const mcpp::Coordinate& a, const mcpp::Coordinate& b) const {
         if(a.x != b.x) return a.x < b.x;
         if(a.y != b.y) return a.y < b.y;
