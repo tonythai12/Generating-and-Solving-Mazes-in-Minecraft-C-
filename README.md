@@ -22,8 +22,7 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
     - [Vectors vs other Data Structures (DS)](#vectors-vs-other-data-structures-ds)
     - [Maps, Sets, and Tuples](#maps-sets-and-tuples)
     - [Private member variables of the Agent class](#private-member-variables-of-the-agent-class)
-  - [Contributors](#contributors)
-    - [Workload](#workload)
+  - [Contributors and Workload](#contributors-and-workload)
 
 ## Key Features
 
@@ -122,23 +121,17 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 
 ### Vectors vs other Data Structures (DS)
 
-- Vectors are chosen over linked lists (or any other DS) because they are generally faster for our needs. In a vector, all elements are stored next to each other in memory, making it quicker for the computer to read or write data. This is especially useful in our maze algorithms, where quick access to elements can make a big difference in performance.
+- ```std::vectors``` are chosen over ```LinkedLists``` (or any other DS) because they are generally faster for our needs. In a vector, all elements are stored next to each other in memory, making it quicker for the computer to read or write data. This is especially useful in our maze algorithms, where quick access to elements can make a big difference in performance.
 
 ### Maps, Sets, and Tuples
 
-- Maps and sets provide quick insertions, deletions, and lookups which are essential for BFS. Tuples are used to bundle multiple types of data together, offering a straightforward way to manage complex data.
+- ```std::map``` and ```std::set``` provide quick insertions, deletions, and lookups which are essential for BFS. Tuples are used to bundle multiple types of data together, offering a straightforward way to manage complex data.
 
 ### Private member variables of the Agent class
 
-- Certain private member variables (PMV) of the Agent class are either not used, or significantly underutilised. We acknowledge that utilising PMV may be slightly more efficient than just passing in all variables by reference in ```mazeRunner.cpp```. For example, ```AgentDirection``` and ```mcpp::Coordinate startLoc``` are both private members of the ```Agent``` class. However, when function signatures and definitions were changed to take in these private members (and scope issues were fixed), erratic behaviour, such as RHWF breaking through walls occurred. As such, this is one of the efficiency/memory shortcomings of this iteration of the program.
+- Certain ```private``` member variables (PMV) of the Agent class are either not used, or significantly underutilised. We acknowledge that utilising PMV may be slightly more efficient than just passing in all variables by reference in ```mazeRunner.cpp```. For example, ```AgentDirection``` and ```mcpp::Coordinate startLoc``` are both private members of the ```Agent``` class. However, when function signatures and definitions were changed to take in these private members (and scope issues were fixed), erratic behaviour, such as RHWF breaking through walls occurred. As such, this is one of the efficiency/memory shortcomings of this iteration of the program.
 
-## Contributors
-
-@pdotkeenan - Keenan Phillips
-@ravisidhu007 - Ravikumar Singh
-@tonythai12 - Tony Thai
-
-### Workload
+## Contributors and Workload
 
 **@ravisidhu007 - Ravikumar Singh:**
 
