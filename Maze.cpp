@@ -8,7 +8,7 @@
 #define BUFFER 2
 
 Maze::Maze(mcpp::Coordinate basePoint, int xlen, int zlen, std::vector<std::vector<char>> mazeStructure)
-    : basePoint(basePoint), length(xlen), width(zlen), mazeStructure(mazeStructure) //mode(mode)
+    : basePoint(basePoint), length(xlen), width(zlen), mazeStructure(mazeStructure)
 {
 }
 
@@ -67,8 +67,6 @@ void Maze::generateMazeStructure()
 void Maze::generateMaze(){
     Maze::generateMazeStructure();
 
-    mcpp::MinecraftConnection mc;
-    basePoint.y = mc.getHeight(basePoint.x, basePoint.z) + 1;
     for(int i = 0; i < length; i++){
         for(int j = 0; j < width; j++){
             if (maze[i][j] == 1){

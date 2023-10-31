@@ -77,7 +77,7 @@ void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vect
                    std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment);
 void ShowShortestPath(mcpp::MinecraftConnection* mc, std::vector<mcpp::Coordinate> path);
 std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Agent*& player);
-void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width);
+void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::MinecraftConnection* mc);
 std::vector<mcpp::Coordinate> BacktrackPath(CoordDir& backtrack, const mcpp::Coordinate& start, 
                                             std::map<CoordDir, CoordDir, CoordDirComparator>& parent);
 
@@ -348,7 +348,7 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
     int envLength = 0;
     int envWidth = 0;
 
-    GetMazeInputs(basePoint, envLength, envWidth);
+    GetMazeInputs(basePoint, envLength, envWidth, mc);
 
     std::vector<std::vector<char>> mazeStructure;
     std::vector<std::string> rows;
@@ -387,7 +387,8 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
     newMaze->PrintMaze();
 }
 
-void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width) {
+void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width,
+                    mcpp::MinecraftConnection* mc) {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     std::vector<int> inputs;
@@ -401,6 +402,7 @@ void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width) {
     } while (inputs.size() != 3);
     
     basePoint = mcpp::Coordinate(inputs[0], inputs[1], inputs[2]);
+    basePoint.y = mc->getHeight(basePoint.x, basePoint.z) + 1;
     
     std::cout << "Enter the length and width of maze:" << std::endl;
     inputs.clear();
@@ -436,7 +438,7 @@ void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze,
     int envLength = 0;
     int envWidth = 0;
     
-    GetMazeInputs(basePoint, envLength, envWidth);
+    GetMazeInputs(basePoint, envLength, envWidth, mc);
 
     mazeStructure.resize(envLength, std::vector<char>(envWidth)); 
     Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
