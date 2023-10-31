@@ -202,7 +202,6 @@ int main(int argc, char* argv[]) {
     terminalMaze = nullptr;
     player = nullptr;
     return EXIT_SUCCESS;
-
 }
 
 void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes,
@@ -308,14 +307,24 @@ bool validateMazeDimensions(const std::vector<std::string>& rows, int& envLength
  * @return True if the characters are valid, false otherwise.
 */
 bool validateMazeCharacters(const std::vector<std::string>& rows) {
-    bool valid = true; // Initially assume that it's valid, then check for invalid characters
-    for (const auto& row : rows) {
-        for (char c : row) {
+    bool valid = true;  // Initially assume that it's valid, then check for invalid characters
+    size_t i = 0;
+    size_t numRows = rows.size();
+
+    while (valid && i < numRows) {
+        size_t j = 0;
+        size_t numCols = rows[i].size();
+        
+        while (valid && j < numCols) {
+            char c = rows[i][j];
             if (c != 'x' && c != '.') {
-                return false;
+                valid = false;
             }
+            j++;
         }
+        i++;
     }
+
     return valid;
 }
 
