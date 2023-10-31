@@ -783,10 +783,11 @@ void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc,
         };
         AgentDirection directions[] = { RIGHT, DOWN, LEFT, UP };
 
-        for (int i = 0; i < 4; ++i) {
+        bool foundWall = false;
+        for (int i = 0; i < 4 && !foundWall; ++i) {
             if (blockTypes[i] == mcpp::Blocks::BRICKS) {
                 dir = directions[i];
-                break;
+                foundWall = true;
             }
         }
     }
