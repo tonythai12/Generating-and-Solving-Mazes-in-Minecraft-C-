@@ -3,10 +3,8 @@
 #include "menuUtils.h"
 #include "Maze.h"
 #include "Agent.h"
-// For sleep and time duration
 #include <thread>   
 #include <chrono> 
-// For tracking tiles that have been solved (for looped mazes)
 #include <map>
 #include <algorithm>
 #include <queue>
@@ -81,16 +79,20 @@ void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::M
 std::vector<mcpp::Coordinate> BacktrackPath(CoordDir& backtrack, const mcpp::Coordinate& start, 
                                             std::map<CoordDir, CoordDir, CoordDirComparator>& parent);
 
-
 int main(int argc, char* argv[]) {
 
     bool mode = NORMAL_MODE;
+    solveAlgorithm solveAlgorithm = RIGHT_HAND_FOLLOW;
     
-    // Check for testing mode
+    // Check for testing mode and BFS flag
     for (int i = 1; i < argc; i++) {  
         std::string arg = argv[i];
         if (arg == "-testmode") {
             mode = TESTING_MODE;
+            std::cout << "You are running the program in test mode." << std::endl;
+        } else if (arg == "-e2") {
+            solveAlgorithm = BREATH_FIRST_SEARCH;
+            std::cout << "The solving algorithm will be changed to a Breadth-First-Search." << std::endl;
         }
     }
 
@@ -169,9 +171,12 @@ int main(int argc, char* argv[]) {
                 curState = ST_Main;
             } else if (input == 2) {
                 if (player) {
-                    //SolveMaze(mc, player, mode);
-                    std::vector<mcpp::Coordinate> shortestPath = FindShortestPath(mc, player);
-                    ShowShortestPath(mc, shortestPath);
+                    if (solveAlgorithm == RIGHT_HAND_FOLLOW) {
+                        SolveMaze(mc, player, mode);
+                    } else {
+                        std::vector<mcpp::Coordinate> shortestPath = FindShortestPath(mc, player);
+                        ShowShortestPath(mc, shortestPath);
+                    }
                 } else {
                     std::cout << "Please initialise a player first." << std::endl;
                 }
@@ -246,7 +251,8 @@ void CleanUp(std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment
         maze->rebuildEnvironment(mc, environment);
         environment.clear();
     } else {
-        std::cout << "Error: The environment vector is empty, unable to restore environment." << std::endl;
+        std::cout << "The environment vector is empty, so unable to restore environment." << 
+        " Ignore this message if you didn't generate a maze" << std::endl;
     }
 }
 
@@ -386,8 +392,7 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
     newMaze->PrintMaze();
 }
 
-void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width,
-                    mcpp::MinecraftConnection* mc) {
+void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::MinecraftConnection* mc) {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     std::vector<int> inputs;
