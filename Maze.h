@@ -64,6 +64,8 @@ public:
     void setBasePoint(mcpp::Coordinate basePoint) { this->basePoint = basePoint; }
     void setLength(int length) { this->length = length; }
     void setWidth(int width) { this->width = width; }
+    void setMazeBuiltStatus(bool mazeBuiltAlready) { this->mazeBuiltAlready = mazeBuiltAlready; }
+    bool getMazeBuiltStatus() const { return mazeBuiltAlready; }
     std::vector<mcpp::Coordinate> getWalkableCoords() const { return walkableCoords; }
     void GenerateMazeInMC(mcpp::MinecraftConnection* mc);
     std::vector<std::vector<std::vector<mcpp::BlockType>>> getEnvironment(mcpp::MinecraftConnection* mc);
@@ -71,7 +73,6 @@ public:
     void rebuildEnvironment(mcpp::MinecraftConnection* mc,
                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment);
     void FlattenAndBuild(mcpp::MinecraftConnection* mc);
-    void UndoMaze(mcpp::MinecraftConnection* mc);
     void StoreOldBlock(mcpp::MinecraftConnection* mc, mcpp::Coordinate& coord);
     void RestoreOldBlocksFirst(mcpp::MinecraftConnection* mc);
 
@@ -109,6 +110,8 @@ private:
     std::vector<mcpp::Coordinate> walkableCoords;
 
     std::vector<GeneratedBlock> generatedBlocks;
+
+    bool mazeBuiltAlready = false;
 };
 
 

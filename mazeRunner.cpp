@@ -214,17 +214,24 @@ void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vect
                 CleanUp(environment, oldMaze, mc);
                 delete oldMaze;
                 std::cout << "Cleanup and restore successful. Now building new maze." << std::endl;
-            }
+            } 
         }
-        generatedMazes.clear();
-        generatedMazes.push_back(mazeToBuild);
-        environment = mazeToBuild->getEnvironment(mc);
-        mazeToBuild->FlattenAndBuild(mc);
+        if (mazeToBuild->getMazeBuiltStatus() == false) {
+            generatedMazes.clear();
+            generatedMazes.push_back(mazeToBuild);
+            environment = mazeToBuild->getEnvironment(mc);
+            mazeToBuild->FlattenAndBuild(mc);
+            mazeToBuild->setMazeBuiltStatus(true);
+        } else {
+            std::cout << "Error: You are trying to build a maze that's already been built." << std::endl;
+        }
 
     } else {
         std::cout << "Please generate a maze first." << std::endl;
     }
 }
+
+
 /** 
  * Cleans up the existing MineCraft environment by restoring the old blocks and then rebuilding the
  * environment from the environment vector. This is used when the user wants to generate a new maze
@@ -235,12 +242,12 @@ void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vect
  */
 void CleanUp(std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment,
              Maze*& maze, mcpp::MinecraftConnection* mc) {
-    if (maze) {
+    if (maze && !environment.empty()) {
         maze->RestoreOldBlocksFirst(mc);
         maze->rebuildEnvironment(mc, environment);
         environment.clear();
     } else {
-        std::cout << "Error: Maze is a nullptr. Unable to clean up." << std::endl;
+        std::cout << "Error: The environment vector is empty, unable to restore environment." << std::endl;
     }
 }
 
