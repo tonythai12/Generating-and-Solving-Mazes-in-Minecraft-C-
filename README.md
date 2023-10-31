@@ -113,6 +113,7 @@ This program uses C++ and the external 'mcpp' library to build and generate maze
 - Validating user input
 - Implementing flattening of terrain, getting existing environment structure, and restoring environment
 - Storing all generated mazes (terminal and randomly generated) in a Maze* object
+- Creation of custom structs to assist with comparisons and visited tile tracking
 - Assisted @tonythai12 in full and robust implementation of reading maze from terminal
 - Assisted @ravisidhu007 in creating robust Maze::Maze() constructor
 
