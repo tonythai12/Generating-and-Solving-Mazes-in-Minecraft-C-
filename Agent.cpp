@@ -24,13 +24,13 @@ bool Agent::canMove(int x, int z, AgentDirection& dir, mcpp::Coordinate &loc, mc
     bool canMove = false;
 
     if (dir == UP) {
-        blockType = mc->getBlock(mcpp::Coordinate(loc.x + 1, loc.y, loc.z));
+        blockType = mc->getBlock(loc + MOVE_XPLUS);
     } else if (dir == RIGHT) {
-        blockType = mc->getBlock(mcpp::Coordinate(loc.x, loc.y, loc.z + 1));
+        blockType = mc->getBlock(loc + MOVE_ZPLUS);
     } else if (dir == DOWN) {
-        blockType = mc->getBlock(mcpp::Coordinate(loc.x - 1, loc.y, loc.z));
+        blockType = mc->getBlock(loc + MOVE_XMINUS);
     } else if (dir == LEFT) {
-        blockType = mc->getBlock(mcpp::Coordinate(loc.x, loc.y, loc.z - 1));
+        blockType = mc->getBlock(loc + MOVE_ZMINUS);
     }
 
     // If an air block is returned, set canMove to true
@@ -46,13 +46,13 @@ mcpp::Coordinate Agent::findNeighbour(AgentDirection& dir, mcpp::Coordinate& loc
     mcpp::Coordinate neighbour(0, 0, 0);
 
     if (dir == UP) {
-        neighbour = mcpp::Coordinate(loc.x + 1, loc.y, loc.z);
+        neighbour = loc + MOVE_XPLUS;
     } else if (dir == RIGHT) {
-        neighbour = mcpp::Coordinate(loc.x, loc.y, loc.z + 1);
+        neighbour = loc + MOVE_ZPLUS;
     } else if (dir == DOWN) {
-        neighbour = mcpp::Coordinate(loc.x - 1, loc.y, loc.z);
+        neighbour = loc + MOVE_XMINUS;
     } else if (dir == LEFT) {
-        neighbour = mcpp::Coordinate(loc.x, loc.y, loc.z - 1);
+        neighbour = loc + MOVE_ZMINUS;
     }
     return neighbour;
 }

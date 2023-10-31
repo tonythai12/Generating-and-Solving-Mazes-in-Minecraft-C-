@@ -663,35 +663,35 @@ bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, Agent
 
     if (dir == UP) {
         front_coords = {
-            mcpp::Coordinate(coord.x + 1, coord.y, coord.z),
-            mcpp::Coordinate(coord.x + 1, coord.y, coord.z + 1),
-            mcpp::Coordinate(coord.x + 1, coord.y, coord.z - 1),
-            mcpp::Coordinate(coord.x, coord.y, coord.z + 1),
-            mcpp::Coordinate(coord.x, coord.y, coord.z - 1)
+            coord + MOVE_XPLUS,
+            coord + MOVE_XPLUS + MOVE_ZPLUS,
+            coord + MOVE_XPLUS + MOVE_ZMINUS,
+            coord + MOVE_ZPLUS,
+            coord + MOVE_ZMINUS
         };
     } else if (dir == RIGHT) {
         front_coords = {
-            mcpp::Coordinate(coord.x, coord.y, coord.z + 1),
-            mcpp::Coordinate(coord.x + 1, coord.y, coord.z + 1),
-            mcpp::Coordinate(coord.x - 1, coord.y, coord.z + 1),
-            mcpp::Coordinate(coord.x + 1, coord.y, coord.z),
-            mcpp::Coordinate(coord.x - 1, coord.y, coord.z)
+            coord + MOVE_ZPLUS,
+            coord + MOVE_ZPLUS + MOVE_XPLUS,
+            coord + MOVE_ZPLUS + MOVE_XMINUS,
+            coord + MOVE_XPLUS,
+            coord + MOVE_XMINUS
         };
     } else if (dir == DOWN) {
         front_coords = {
-            mcpp::Coordinate(coord.x - 1, coord.y, coord.z),
-            mcpp::Coordinate(coord.x - 1, coord.y, coord.z + 1),
-            mcpp::Coordinate(coord.x - 1, coord.y, coord.z - 1),
-            mcpp::Coordinate(coord.x, coord.y, coord.z + 1),
-            mcpp::Coordinate(coord.x, coord.y, coord.z - 1)
+            coord + MOVE_XMINUS,
+            coord + MOVE_XMINUS + MOVE_ZPLUS,
+            coord + MOVE_XMINUS + MOVE_ZMINUS,
+            coord + MOVE_ZPLUS,
+            coord + MOVE_ZMINUS
         };
     } else if (dir == LEFT) {
         front_coords = {
-            mcpp::Coordinate(coord.x, coord.y, coord.z - 1),
-            mcpp::Coordinate(coord.x + 1, coord.y, coord.z - 1),
-            mcpp::Coordinate(coord.x - 1, coord.y, coord.z - 1),
-            mcpp::Coordinate(coord.x + 1, coord.y, coord.z),
-            mcpp::Coordinate(coord.x - 1, coord.y, coord.z)
+            coord + MOVE_ZMINUS,
+            coord + MOVE_ZMINUS + MOVE_XPLUS,
+            coord + MOVE_ZMINUS + MOVE_XMINUS,
+            coord + MOVE_XPLUS,
+            coord + MOVE_XMINUS
         };
     } else {
         std::cout << "Error: Unable to find the solution to the maze. Exiting ... " << std::endl;
@@ -764,37 +764,37 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& p
 void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection& dir
                         , bool mode) {
     if (mode == NORMAL_MODE) {
-        mcpp::BlockType blockTypeEast = mc->getBlock(mcpp::Coordinate(startLoc.x + 1, startLoc.y, startLoc.z));
-        mcpp::BlockType blockTypeWest = mc->getBlock(mcpp::Coordinate(startLoc.x - 1, startLoc.y, startLoc.z));
-        mcpp::BlockType blockTypeNorth = mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z - 1));
-        mcpp::BlockType blockTypeSouth = mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z + 1));
+        mcpp::BlockType blockTypeEast = mc->getBlock(startLoc + MOVE_XPLUS);
+        mcpp::BlockType blockTypeWest = mc->getBlock(startLoc + MOVE_XMINUS);
+        mcpp::BlockType blockTypeNorth = mc->getBlock(startLoc + MOVE_ZMINUS);
+        mcpp::BlockType blockTypeSouth = mc->getBlock(startLoc + MOVE_ZPLUS);
 
-        if (blockTypeEast == mcpp::Blocks::BRICKS) {
+        if (blockTypeEast == mcpp::Blocks::ACACIA_WOOD_PLANK) {
             // Wall is to the Right, so face North (up)
             dir = UP;
-        } else if (blockTypeWest == mcpp::Blocks::BRICKS) {
+        } else if (blockTypeWest == mcpp::Blocks::ACACIA_WOOD_PLANK) {
             // Wall is to the Left, so face South (down)
             dir = DOWN;
-        } else if (blockTypeNorth == mcpp::Blocks::BRICKS) {
+        } else if (blockTypeNorth == mcpp::Blocks::ACACIA_WOOD_PLANK) {
             // Wall is to the North, so face West (left)
             dir = LEFT;
-        } else if (blockTypeSouth == mcpp::Blocks::BRICKS) {
+        } else if (blockTypeSouth == mcpp::Blocks::ACACIA_WOOD_PLANK) {
             // Wall is to the South, so face East (right)
             dir = RIGHT;
         }
     } else {
         dir = RIGHT; // Start by facing East (right)
         mcpp::BlockType blockTypes[] = {
-            mc->getBlock(mcpp::Coordinate(startLoc.x + 1, startLoc.y, startLoc.z)), // East
-            mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z + 1)), // South
-            mc->getBlock(mcpp::Coordinate(startLoc.x - 1, startLoc.y, startLoc.z)), // West
-            mc->getBlock(mcpp::Coordinate(startLoc.x, startLoc.y, startLoc.z - 1))  // North
+            mc->getBlock(startLoc + MOVE_XPLUS),   // East
+            mc->getBlock(startLoc + MOVE_ZPLUS),   // South
+            mc->getBlock(startLoc + MOVE_XMINUS),  // West
+            mc->getBlock(startLoc + MOVE_ZMINUS)   // North
         };
         AgentDirection directions[] = { RIGHT, DOWN, LEFT, UP };
 
         bool foundWall = false;
         for (int i = 0; i < 4 && !foundWall; ++i) {
-            if (blockTypes[i] == mcpp::Blocks::BRICKS) {
+            if (blockTypes[i] == mcpp::Blocks::ACACIA_WOOD_PLANK) {
                 dir = directions[i];
                 foundWall = true;
             }
