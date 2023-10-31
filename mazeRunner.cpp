@@ -462,7 +462,6 @@ void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze,
  * @param mode: The mode that the program is running in, as this affects the algorithm
 */
 void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode) {
-    // mcpp::MinecraftConnection mc;
     int counter = 1;
 
     // Find player position
@@ -890,7 +889,6 @@ std::vector<mcpp::Coordinate> BacktrackPath(CoordDir& backtrack, const mcpp::Coo
                                             std::map<CoordDir, CoordDir, CoordDirComparator>& parent) {
     std::vector<mcpp::Coordinate> path;
     while (!(backtrack.coord == start)) {
-        std::cout << "Backtrack: (" << backtrack.coord.x << ", " << backtrack.coord.y << ", " << backtrack.coord.z << ")" << std::endl;
         path.push_back(backtrack.coord);
         backtrack = parent[backtrack];  // Update backtrack for the next iteration
     }
