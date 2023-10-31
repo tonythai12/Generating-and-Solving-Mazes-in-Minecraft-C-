@@ -19,8 +19,9 @@ Agent::Agent(mcpp::Coordinate &startLoc)
 */
 bool Agent::canMove(int x, int z, AgentDirection& dir, mcpp::Coordinate &loc, mcpp::MinecraftConnection* mc) {
     
-    // Initialise default blockType
+    // Initialise default blockType and condition for the return value
     mcpp::BlockType blockType(1);
+    bool canMove = false;
 
     if (dir == UP) {
         blockType = mc->getBlock(mcpp::Coordinate(loc.x + 1, loc.y, loc.z));
@@ -30,12 +31,14 @@ bool Agent::canMove(int x, int z, AgentDirection& dir, mcpp::Coordinate &loc, mc
         blockType = mc->getBlock(mcpp::Coordinate(loc.x - 1, loc.y, loc.z));
     } else if (dir == LEFT) {
         blockType = mc->getBlock(mcpp::Coordinate(loc.x, loc.y, loc.z - 1));
-    } else {
-        return false;
     }
 
-    // If an air block is returned, canMove == true
-    return blockType == mcpp::Blocks::AIR;
+    // If an air block is returned, set canMove to true
+    if (blockType == mcpp::Blocks::AIR) {
+        canMove = true;
+    }
+
+    return canMove;
 }
 
 mcpp::Coordinate Agent::findNeighbour(AgentDirection& dir, mcpp::Coordinate& loc, 
