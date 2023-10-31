@@ -78,6 +78,9 @@ void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vect
 void ShowShortestPath(mcpp::MinecraftConnection* mc, std::vector<mcpp::Coordinate> path);
 std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Agent*& player);
 void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width);
+std::vector<mcpp::Coordinate> BacktrackPath(CoordDir& backtrack, const mcpp::Coordinate& start, 
+                                            std::map<CoordDir, CoordDir, CoordDirComparator>& parent);
+
 
 int main(int argc, char* argv[]) {
 
@@ -789,21 +792,33 @@ void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc,
     }
 }
 
+/**
+ * Finds the shortest path from the start to the end of the maze. It does this by using a
+ * Breadth-First Search algorithm. It will then backtrack from the end to the start to find the
+ * shortest path.
+ * @param mc: The MineCraft connection
+ * @param player: The player that is being initialised
+ * @return A vector of coordinates that represent the shortest path from the start to the end of the maze.
+*/
 std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Agent*& player) {
     std::queue<std::tuple<mcpp::Coordinate, mcpp::Coordinate, AgentDirection>> bfsQueue;
     std::set<CoordDir, CoordDirComparator> visited;
     std::map<CoordDir, CoordDir, CoordDirComparator> parent;
+    std::vector<mcpp::Coordinate> path;
 
     mcpp::Coordinate start = player->getStartLoc();
     CoordDir startState = {.coord = start, .dir = UP};
     
-    bfsQueue.push({start, start, UP}); // start with a dir of UP
+    bfsQueue.push({start, start, UP});
     visited.insert(startState);
     parent[startState] = startState;
 
+    bool pathFound = false;
+
     std::cout << "Starting BFS from: (" << start.x << ", " << start.y << ", " << start.z << ")" << std::endl;
 
-    while (!bfsQueue.empty()) {
+    // While the queue is not empty and the path has not been found
+    while (!bfsQueue.empty() && !pathFound) {
         auto [currentPosition, previousPosition, currentDirection] = bfsQueue.front();
         bfsQueue.pop();
 
@@ -811,47 +826,62 @@ std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Ag
         std::cout << "Current Position: (" << currentPosition.x << ", " << currentPosition.y << ", " << currentPosition.z << ")" << std::endl;
 
         if (CheckIfSolved(currentPosition, mc, currentDirection)) {
-            std::vector<mcpp::Coordinate> path;
-            CoordDir backtrack = {.coord = currentPosition, .dir = currentDirection};
-
             std::cout << "Maze Solved! Backtracking to find the path." << std::endl;
-            mc->postToChat("Backtracking to find the path.");
-            
-            while (!(backtrack.coord == start)) {
-                std::cout << "Backtrack: (" << backtrack.coord.x << ", " << backtrack.coord.y << ", " << backtrack.coord.z << ")" << std::endl;
-                std::cout << "Start: (" << start.x << ", " << start.y << ", " << start.z << ")" << std::endl;
-                path.push_back(backtrack.coord);
-                backtrack = parent[backtrack];
-            }
-            path.push_back(start);
-            std::reverse(path.begin(), path.end());
-            return path;
+            CoordDir backtrack = {.coord = currentPosition, .dir = currentDirection};
+            path = BacktrackPath(backtrack, start, parent);
+            pathFound = true;
         }
 
-        AgentDirection tempDirection = currentDirection;
-        for (int i = 0; i < 4; i++) {
-            if (player->canMove(currentPosition.x, currentPosition.z, tempDirection, currentPosition, mc)) {
-                mcpp::Coordinate neighbour = player->findNeighbour(tempDirection, currentPosition, mc);
-                CoordDir neighbourState = {.coord = neighbour, .dir = tempDirection};
-                std::cout << "Found Neighbour: (" << neighbour.x << ", " << neighbour.y << ", " << neighbour.z << ")" << std::endl;
+        // Process all neighbours
+        if (!pathFound) {
+            AgentDirection tempDirection = currentDirection;
+            for (int i = 0; i < 4; i++) {
+                if (player->canMove(currentPosition.x, currentPosition.z, tempDirection, currentPosition, mc)) {
+                    mcpp::Coordinate neighbour = player->findNeighbour(tempDirection, currentPosition, mc);
+                    CoordDir neighbourState = {.coord = neighbour, .dir = tempDirection};
+                    std::cout << "Found Neighbour: (" << neighbour.x << ", " << neighbour.y 
+                    << ", " << neighbour.z << ")" << std::endl;
 
-                if (!visited.count(neighbourState)) {
-                    visited.insert(neighbourState);  // Mark as visited here
-                    bfsQueue.push({neighbour, currentPosition, tempDirection});
-                    parent[neighbourState] = currentState;
-                    std::cout << "Parent of (" << neighbour.x << ", " << neighbour.y << ", " << neighbour.z << ") set to (" << currentPosition.x << ", " << currentPosition.y << ", " << currentPosition.z << ")" << std::endl;
-                    std::cout << "Enqueueing neighbour and marking as visited." << std::endl;
+                    if (!visited.count(neighbourState)) {
+                        visited.insert(neighbourState);  // Mark as visited here
+                        bfsQueue.push({neighbour, currentPosition, tempDirection});
+                        parent[neighbourState] = currentState;
+                        std::cout << "Enqueueing neighbour and marking as visited." << std::endl;
+                    }
                 }
+                tempDirection = player->turn(tempDirection);
             }
-            tempDirection = player->turn(tempDirection);
         }
     }
-
-    std::cout << "Error: No path found." << std::endl;
-    return std::vector<mcpp::Coordinate>();
+    return path;
 }
 
+/**
+ * Backtracks from the end of the maze to the start to find the shortest path.
+ * @param backtrack: The current position of the agent
+ * @param start: The starting position of the agent
+ * @param parent: A map that stores the parent of each tile
+ * @return A vector of coordinates that represent the shortest path from the start to the end of the maze.
+*/
+std::vector<mcpp::Coordinate> BacktrackPath(CoordDir& backtrack, const mcpp::Coordinate& start, 
+                                            std::map<CoordDir, CoordDir, CoordDirComparator>& parent) {
+    std::vector<mcpp::Coordinate> path;
+    while (!(backtrack.coord == start)) {
+        std::cout << "Backtrack: (" << backtrack.coord.x << ", " << backtrack.coord.y << ", " << backtrack.coord.z << ")" << std::endl;
+        path.push_back(backtrack.coord);
+        backtrack = parent[backtrack];  // Update backtrack for the next iteration
+    }
+    path.push_back(start);
+    std::reverse(path.begin(), path.end());
+    return path;
+}
 
+/**
+ * Shows the shortest path in MineCraft by highlighting the blocks in the path with a lime carpet
+ * block for 1 second. It then removes the lime carpet block by generating an air block in place of it.
+ * @param mc: The MineCraft connection
+ * @param path: A vector of coordinates that represent the shortest path from the start to the end of the maze.
+*/
 void ShowShortestPath(mcpp::MinecraftConnection* mc, std::vector<mcpp::Coordinate> path) {
     int counter = 1;
     if (!path.empty()) {
@@ -860,7 +890,7 @@ void ShowShortestPath(mcpp::MinecraftConnection* mc, std::vector<mcpp::Coordinat
             PrintSteps(counter, coord);
         }
     } else {
-        std::cout << "Error: Detected an empty path." << std::endl;
+        std::cout << "Error: No solution exists for this maze." << std::endl;
     }
     mc->postToChat("All done!");
 }
