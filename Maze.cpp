@@ -388,8 +388,10 @@ void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
             // Set blocks above the floorLevel and up to the highest block to AIR
             for (int y = floorLevel + 1; y <= highestBlockY; y++) {
                 mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
-                mc->setBlock(coord, mcpp::Blocks::AIR);
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                if (!(mc->getBlock(coord) == mcpp::Blocks::AIR)) {
+                    mc->setBlock(coord, mcpp::Blocks::AIR);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                }
             }
 
             // Set the block at floorLevel to BlockType at basePoint
@@ -403,9 +405,11 @@ void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
             // Set blocks below floorLevel to BlockType at basePoint
             for (int y = highestBlockY; y < floorLevel; y++) {
                 mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
-                StoreOldBlock(mc, coord);
-                mc->setBlock(coord, basePointBlock);
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                if (!(basePointBlock == mc->getBlock(coord))) {
+                    StoreOldBlock(mc, coord);
+                    mc->setBlock(coord, basePointBlock);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                }
             }
         }
     }
