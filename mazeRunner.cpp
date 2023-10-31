@@ -171,7 +171,6 @@ int main(int argc, char* argv[]) {
                 if (player) {
                     //SolveMaze(mc, player, mode);
                     std::vector<mcpp::Coordinate> shortestPath = FindShortestPath(mc, player);
-                    std::cout << shortestPath.size();
                     ShowShortestPath(mc, shortestPath);
                 } else {
                     std::cout << "Please initialise a player first." << std::endl;
@@ -396,10 +395,10 @@ void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width,
     do {
         std::cout << "Enter the basePoint of maze:" << std::endl;
         inputs = getValidInts("Input Error: Enter 3 integers (e.g., \"103 105 100\").\nEnter the basePoint of the maze:");
-        if (inputs.size() != 3) {
+        if (static_cast<int>(inputs.size()) != 3) {
             std::cout << "Input Error: You must enter exactly 3 integers for the basePoint." << std::endl;
         }
-    } while (inputs.size() != 3);
+    } while (static_cast<int>(inputs.size()) != 3);
     
     basePoint = mcpp::Coordinate(inputs[0], inputs[1], inputs[2]);
     basePoint.y = mc->getHeight(basePoint.x, basePoint.z) + 1;
@@ -741,7 +740,7 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& p
     // Set player position & allow them to solve manually
     if (!coords.empty()) {
         if (mode == NORMAL_MODE) {
-            int randomIndex = std::rand() % coords.size();
+            int randomIndex = std::rand() % static_cast<int>(coords.size());
             std::cout << "Random index: " << randomIndex << std::endl;
             walkableTile = coords[randomIndex];
         } else {  // TESTING_MODE

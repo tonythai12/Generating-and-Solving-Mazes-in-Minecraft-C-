@@ -300,8 +300,8 @@ bool Maze::visited(Cell cell) {
  * Prints the maze structure to the console.
  */
 void Maze::PrintMaze() {
-    int zLen = mazeStructure.size();
-    int xLen = mazeStructure[0].size();
+    int zLen = static_cast<int>(mazeStructure.size());
+    int xLen = static_cast<int>(mazeStructure[0].size());
 
     std::cout << "**Printing Maze**" << std::endl;
     std::cout << "Basepoint: (" << basePoint.x << ", " << basePoint.y << ", " << basePoint.z << ")" << std::endl;
@@ -322,8 +322,8 @@ void Maze::PrintMaze() {
  * @param mc The MinecraftConnection object.
 */
 void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
-    int zLen = mazeStructure.size();
-    int xLen = mazeStructure[0].size();
+    int zLen = static_cast<int>(mazeStructure.size());
+    int xLen = static_cast<int>(mazeStructure[0].size());
     int yLen = 3;  // Height of the maze
 
     for (int y = 0; y < yLen; y++) { 
@@ -424,9 +424,9 @@ void Maze::rebuildEnvironment(mcpp::MinecraftConnection* mc,
                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment) {
 
     // Format is [y][x][z]
-    int yLen = savedEnvironment.size();
-    int xLen = savedEnvironment[0].size();
-    int zLen = savedEnvironment[0][0].size(); 
+    int yLen = static_cast<int>(savedEnvironment.size());
+    int xLen = static_cast<int>(savedEnvironment[0].size());
+    int zLen = static_cast<int>(savedEnvironment[0][0].size()); 
 
     for (int y = 0; y < yLen; y++) {
         for (int x = 0; x < xLen; x++) {
