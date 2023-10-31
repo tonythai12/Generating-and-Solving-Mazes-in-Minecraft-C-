@@ -115,25 +115,7 @@ int main(int argc, char* argv[]) {
             } else if (input == 1) {
                 curState = ST_GetMaze;
             } else if (input == 2) {
-                // print size of generatedMazes
-
-                if (terminalMaze) {
-                    Maze* mazeToBuild = generatedMazes.back();  // The last maze generated
-                    for (Maze* oldMaze : generatedMazes) {
-                        if (oldMaze != mazeToBuild) {
-                            std::cout << "Cleaning up and restoring existing environment." << std::endl;
-                            CleanUp(environment, oldMaze, mc);
-                            delete oldMaze;
-                            std::cout << "Cleanup and restore successful. Now building new maze." << std::endl;
-                        }
-                    }
-                    generatedMazes.clear();
-                    generatedMazes.push_back(mazeToBuild);
-                    environment = mazeToBuild->getEnvironment(mc);
-                    mazeToBuild->FlattenAndBuild(mc);
-                } else {
-                    std::cout << "Please generate a maze first." << std::endl;
-                }
+                BuildMazeInMC(mc, terminalMaze, generatedMazes, environment);
                 curState = ST_Main;
             } else if (input == 3) {
                 curState = ST_SolveMaze;
