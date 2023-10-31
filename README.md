@@ -1,8 +1,10 @@
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-718a45dd9cf7e7f842a935f5ebbe5719a5e09af4491e668f4dbf3b35d5cca122.svg)](https://classroom.github.com/online_ide?assignment_repo_id=12196410&assignment_repo_type=AssignmentRepo)
 
-# Assignment 3: Generating and solving mazes in Minecraft via C++
+# Team 46 - Assignment 3: Generating and solving mazes in Minecraft via C++
 
-- [Assignment 3: Generating and solving mazes in Minecraft via C++](#assignment-3-generating-and-solving-mazes-in-minecraft-via-c)
+This program uses C++ and the external [```mcpp```](https://github.com/rozukke/mcpp) library to build and generate mazes in Minecraft.
+
+- [Team 46 - Assignment 3: Generating and solving mazes in Minecraft via C++](#team-46---assignment-3-generating-and-solving-mazes-in-minecraft-via-c)
   - [Key Features](#key-features)
   - [Technical aspects](#technical-aspects)
   - [How to Use](#how-to-use)
@@ -23,25 +25,23 @@
   - [Contributors](#contributors)
     - [Workload](#workload)
 
-This program uses C++ and the external [```mcpp```](https://github.com/rozukke/mcpp) library to build and generate mazes in Minecraft.
-
 ## Key Features
 
-**Build Mazes:** Users can create their own 'perfect' or 'looped' mazes by specifying the maze structure.
+- **Build Mazes:** Users can create their own 'perfect' or 'looped' mazes by specifying the maze structure.
 
-**Generate Mazes:** Automatically generate a 'perfect' maze without loops using the recursive backtracking algorithm.
+- **Generate Mazes:** Automatically generate a 'perfect' maze without loops using the recursive backtracking algorithm.
 
-**Solve Mazes:** Optionally, users can receive help to solve the maze using either the Right-Hand Wall-Follower (RHWF) algorithm or the Breadth-First-Search (BFS) algorithm.
+- **Solve Mazes:** Optionally, users can receive help to solve the maze using either the Right-Hand Wall-Follower (RHWF) algorithm or the Breadth-First-Search (BFS) algorithm.
 
-**Environment Management:** After a maze is built or the program exits, the Minecraft environment is restored to its prior state.
+- **Environment Management:** After a maze is built or the program exits, the Minecraft environment is restored to its prior state.
 
 ## Technical aspects
 
-**Error Handling:** All incorrect user inputs are handled gracefully.
+- **Error Handling:** All incorrect user inputs are handled gracefully.
 
-**Algorithm Robustness:** Special conditions for RHWF and BFS to avoid infinite loops.
+- **Algorithm Robustness:** Special conditions for RHWF and BFS to avoid infinite loops.
 
-**Efficiency:** Most variables are passed by reference to enhance performance.
+- **Efficiency:** Most variables are passed by reference to enhance performance.
 
 ## How to Use
 
