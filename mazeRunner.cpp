@@ -83,6 +83,7 @@ int main(int argc, char* argv[]) {
 
     bool mode = NORMAL_MODE;
     solveAlgorithm solveAlgorithm = RIGHT_HAND_FOLLOW;
+    std::cout << std::endl;
     
     // Check for testing mode and BFS flag
     for (int i = 1; i < argc; i++) {  
@@ -92,7 +93,7 @@ int main(int argc, char* argv[]) {
             std::cout << "You are running the program in test mode." << std::endl;
         } else if (arg == "-e2") {
             solveAlgorithm = BREATH_FIRST_SEARCH;
-            std::cout << "The solving algorithm will be changed to a Breadth-First-Search." << std::endl;
+            std::cout << "The maze-solving algorithm will be changed to a Breadth-First-Search." << std::endl;
         }
     }
 
@@ -208,6 +209,16 @@ int main(int argc, char* argv[]) {
     return EXIT_SUCCESS;
 }
 
+/**
+ * Builds the generated maze in the MineCraft world. First checks if there are any existing mazes built.
+ * If so, it cleans up the environment and restores the old blocks. It then builds the new maze.
+ * If the user is generating the same maze, it prints an error message and does not generate a new maze.
+ * @param mc: The MineCraft connection
+ * @param terminalMaze: The maze that is being built
+ * @param generatedMazes: A vector of mazes that have been generated
+ * @param environment: A vector of vectors of vectors of BlockTypes that stores the old blocks
+ *                    in the environment.
+*/
 void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes,
                    std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment) {
     if (terminalMaze) {
@@ -392,6 +403,13 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
     newMaze->PrintMaze();
 }
 
+/**
+ * Gets all required inputs from the user for generating a maze. Includes input validation.
+ * @param basePoint: The basePoint of the maze
+ * @param length: The length of the maze
+ * @param width: The width of the maze
+ * @param mc: The MineCraft connection
+*/
 void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::MinecraftConnection* mc) {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
