@@ -1,12 +1,6 @@
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-718a45dd9cf7e7f842a935f5ebbe5719a5e09af4491e668f4dbf3b35d5cca122.svg)](https://classroom.github.com/online_ide?assignment_repo_id=12196410&assignment_repo_type=AssignmentRepo)
 
-### Assignment 3: Generating and solving mazes in Minecraft via C++
-
-## Contributors
-
-@pdotkeenan - Keenan Phillips
-@ravisidhu007 - Ravikumar Singh
-@tonythai12 - Tony Thai
+# Assignment 3: Generating and solving mazes in Minecraft via C++
 
 This program uses C++ and the external 'mcpp' library to build and generate mazes in Minecraft.
 
@@ -25,23 +19,23 @@ This program uses C++ and the external 'mcpp' library to build and generate maze
 
 ## How to Use
 
-# Test Mode
+### Test Mode
 
 - Run './mazeRunner -testmode' to enable test mode. More details on how this affects gameplay can be found here.
 
-# Breadth-First Search
+### Breadth-First Search
 
 - Run './mazeRunner -e2' to enable BFS instead of RHWF. This significantly speeds up the solving algorithm.
 
 ## Assumptions
 
-# General Assumptions
+### General Assumptions
 
 - Language and Libraries: The project is written in C++ and uses the mcpp library for Minecraft interactions.
 - Operating System: Assumes a Unix-like (or compatible) operating system for compilation and execution.
 - Minecraft Server: Assumes that a Minecraft server is running and accessible, with the 'mcpp' library compatible with the server version.
 
-# Maze Assumptions
+### Maze Assumptions
 
 - Maze Construction: Assumes that the maze can only be built in a predefined location in the Minecraft world. This predefined location is known as the "basePoint", consisting of (x, y, z) coordinates.
 - Maze Structure: Assumes that the maze uses Acacia Wood Planks for walls, and Air blocks for empty spaces.
@@ -50,18 +44,18 @@ This program uses C++ and the external 'mcpp' library to build and generate maze
 - Maze Exit: Assumes the maze has only one exit point. Assumes that the maze exit is a total of 5 air blocks in a 180-degree fashion in front of the player, relative to their current direction. The y-coordinate remains unchanged.
 - Base Point: Assumes that the user chooses a Base Point that contains a solid block (e.g., Grass, Stone) and NOT blocks that they can walk through or damage them (e.g., Water, Lava). This is because the building algorithm gets the block at the basePoint and makes that the foundation for the ground of the maze.
 
-# Solving Algorithm Assumptions
+### Solving Algorithm Assumptions
 
 - BFS: Assumes that the maze is 'perfect' with only one exit point. Multiple exit points or a loop will lead to undefined behaviour, including infinite loops.
 - RHWF: Assumes that the maze is 'perfect' with only one exit point. Multiple exit points may lead to undefined behaviour. Loops are designed to be detected after the agent has visited a tile with the same direction faced N times, but are not guaranteed to caught. A looped maze may cause an infinite loop.
 
-# Agent (player)
+### Agent (player)
 
 - Initial Position: Assumes that the agent starts at a specified location (through the "Solve Manually" option in the "Solve Maze" menu)
 - Direction: Assumes the agent initially faces the "UP"/"NORTH"/"MOVE_ZMINUS" direction. In testing mode, this varies based on the presence of a wall.
 - Movement: Assumes that the agent can only move in four directions - "UP"/"NORTH"/"MOVE_ZMINUS", "DOWN"/"SOUTH"/"MOVE_ZPLUS", "LEFT"/"WEST"/"MOVE_XMINUS", and "RIGHT"/"EAST/"MOVE_XPLUS". Assumes the agent cannot move in the y-direction.
 
-# User Interaction
+### User Interaction
 
 - Command Line Arguments: Assumes specific command-line arguments for different program behaviour, like '-testmode' for testing and/or '-e2' for enabling BFS. Both can be used together.
 - Input: Assumes that the user will provide maze configurations in a specific format - 'x' for walls, and '.' for empty spaces. Assumes the length and width will be positive integers. The program is designed to catch invalid inputs and re-prompt the user.
@@ -76,14 +70,52 @@ This program uses C++ and the external 'mcpp' library to build and generate maze
 
 ## Data Structures
 
-# Custom structs
+### Custom structs
 
 - The custom structs like 'CoordDirComparator' and 'CoordinateComparator' offer efficient and logical ways to compare coordinates and directions. These structs are crucial for storing unique sets of coordinates and ensuring that the program logic proceeds as expected.
 
-# Vectors vs other Data Structures (DS)
+### Vectors vs other Data Structures (DS)
 
 - Vectors are chosen over linked lists (or any other DS) because they are generally faster for our needs. In a vector, all elements are stored next to each other in memory, making it quicker for the computer to read or write data. This is especially useful in our maze algorithms, where quick access to elements can make a big difference in performance.
 
-# Maps, Sets, and Tuples
+### Maps, Sets, and Tuples
 
 - Maps and sets provide quick insertions, deletions, and lookups which are essential for BFS. Tuples are used to bundle multiple types of data together, offering a straightforward way to manage complex data.
+
+## Contributors
+
+@pdotkeenan - Keenan Phillips
+
+@ravisidhu007 - Ravikumar Singh
+
+@tonythai12 - Tony Thai
+
+### Workload
+
+@ravisidhu007 - Ravikumar Singh:
+
+- Fully create the recursive backtracking algorithm for automated generating of 'perfect' mazes
+- Partially contributed towards building maze
+- Create custom structs to support recursive backtracking algorithm
+- Basic implementation of Maze::Maze() constructor
+
+@tonythai12 - Tony Thai:
+
+- Created basic test-cases
+- Skeleton implementation of reading maze from terminal
+
+@pdotkeenan - Keenan Phillips:
+
+- Main Menu and its navigation logic
+- Create the RHWF and Extension 2 (BFS)
+- Create all functions for Agent class
+- Implement maze-building algorithm
+- Validating user input
+- Implementing flattening of terrain, getting existing environment structure, and restoring environment
+- Storing all generated mazes (terminal and randomly generated) in a Maze* object
+- Assisted @tonythai12 in full and robust implementation of reading maze from terminal
+- Assisted @ravisidhu007 in creating robust Maze::Maze() constructor
+
+See commit history for more information. It should be noted that @tonythai12 had trouble with VSCode and as a result was unable to push their share of the workload (as listed above). Other contributors needed to take on their workload in some situations.
+
+## Ruwan has recommended that everyone in this group be individually marked for this assignment
