@@ -275,7 +275,6 @@ void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vect
     }
 }
 
-
 /** 
  * Cleans up the existing MineCraft environment by restoring the old blocks and then rebuilding the
  * environment from the environment vector. This is used when the user wants to generate a new maze
@@ -491,6 +490,13 @@ void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::M
      length = inputs[0], width = inputs[1];
 }
 
+/**
+ * Generates a random maze in Minecraft using the recursive backtracking algorithm.
+ * @param mc: The MineCraft connection
+ * @param terminalMaze: The maze that is being generated
+ * @param generatedMazes: A vector of mazes that have been generated
+ * @param mode: Flag indicating the mode of maze generation (NORMAL_MODE/TESTING_MODE).
+*/
 void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, 
                         std::vector<Maze*>& generatedMazes, const bool mode) {
 
@@ -516,7 +522,7 @@ void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze,
  * Then uses helper functions to show the escape route.
  * @param mc: The MineCraft connection
  * @param player: The player that is being initialised
- * @param mode: The mode that the program is running in, as this affects the algorithm
+ * @param mode: Flag indicating the mode of maze generation (NORMAL_MODE/TESTING_MODE)
 */
 void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode) {
     int counter = 1;
@@ -553,6 +559,7 @@ void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode) {
         solvedMaze = AllVisited(playerPos, dir, visitedTiles, mc);
     }
 }
+
 /**
  * Prints the coordinates of the solved tile in the console. Part of the SolveMaze() function.
  * @param counter: The number of steps taken to solve the maze
@@ -821,6 +828,7 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& p
         std::cout << "No walkable tile found! Please generate another maze." << std::endl;
     }
 }
+
 /**
  * Initialises the player's starting location and direction based on the maze's outer walls. Will
  * orient the Agent with its right hand touching a wall. If used in TESTING_MODE, it will orient the
@@ -972,4 +980,3 @@ void ShowShortestPath(mcpp::MinecraftConnection* mc, std::vector<mcpp::Coordinat
     }
     mc->postToChat("All done!");
 }
-

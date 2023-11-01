@@ -17,17 +17,28 @@ Maze::~Maze()
     std::cout << "Maze destructor successfully called." << std::endl;
 }
 
-void Maze::generateMazeStructure()
-{   
+/**
+ * @brief Generates the initial structure of the maze.
+ * 
+ * This function initializes the 'maze' and 'mazeStructure' member variables
+ * to represent the layout of the maze. Walls are represented by 1s and open
+ * cells by 0s in 'maze'. In 'mazeStructure', walls are represented by 'x'
+ * and open cells by '.'.
+ * 
+ * The maze is generated such that every other row and every other column are walls.
+ * Specifically, all even-indexed rows are walls, and within odd-indexed rows, even-indexed
+ * columns are walls.
+ */
+void Maze::generateMazeStructure() {   
+    // Clear any previous data in maze and mazeStructure vectors
     maze.clear();
     mazeStructure.clear();
-    // Initialize the maze and mazeStructure vectors
-    for (int i = 0; i < length; i++)
-    {
+
+    // Clear any previous data in maze and mazeStructure vectors
+    for (int i = 0; i < length; i++) {
         std::vector<int> temp;
         std::vector<char> temp2;
-        for (int j = 0; j < width; j++)
-        {
+        for (int j = 0; j < width; j++) {
             temp.push_back(0);
             temp2.push_back('.');
         }
@@ -35,50 +46,54 @@ void Maze::generateMazeStructure()
         mazeStructure.push_back(temp2);
     }
 
-    // Generate the maze structure
-    for (int i = 0; i < length; i++)
-    {
-        for (int j = 0; j < width; j++)
-        {
-            if (i % 2 == 0)
-            {
+    // Set wall positions in the maze vector
+    for (int i = 0; i < length; i++) {
+        for (int j = 0; j < width; j++) {
+
+            // If the row index is even, mark the whole row as a wall
+            if (i % 2 == 0) {
                 maze[i][j] = 1;  // Set wall
-            }
-            else
-            {
-                if (j % 2 == 0)
-                {
+            } else {
+                if (j % 2 == 0) {
                     maze[i][j] = 1; // Set wall
                 }
             }
         }
     }
 
-    // Populate mazeStructure based on maze
-    for (int i = 0; i < length; i++)
-    {
-        for (int j = 0; j < width; j++)
-        {
+    // Update mazeStructure based on the value in maze
+    for (int i = 0; i < length; i++) {
+        for (int j = 0; j < width; j++) {
             mazeStructure[i][j] = (maze[i][j] == 1) ? 'x' : '.';
         }
     }
 }
 
-void Maze::generateMaze(bool mode){
+/**
+ * @brief Generates a maze based on the selected mode.
+ * 
+ * This function first calls generateMazeStructure() to initialize the maze. Then, it populates
+ * the 'cells' and 'innerWallCells' vectors based on the structure. Finally, it chooses a
+ * starting point and an outer wall to remove, beginning the maze generation process.
+ * 
+ * @param mode Boolean value that signifies the mode (NORMAL_MODE or TESTING_MODE).
+ */
+void Maze::generateMaze(bool mode) {
+    
     Maze::generateMazeStructure();
 
-    for(int i = 0; i < length; i++){
-        for(int j = 0; j < width; j++){
-            if (maze[i][j] == 1){
+    for (int i = 0; i < length; i++) {
+        for (int j = 0; j < width; j++) {
+
+            if (maze[i][j] == 1) {
                 // Add the coordinate to cell vector and set isVisited to false
                 cells.push_back(Cell{basePoint + mcpp::Coordinate(i, 0, j), false});
 
                 if (i > 0 && i < length - 1 && j > 0 && j < width - 1) {
                     innerWallCells.push_back(Cell{basePoint + mcpp::Coordinate(i, 0, j), false});
                 }
-            }
-            else
-            {
+
+            } else {
                 // Add the coordinate of the cell to the vector
                 cells.push_back(Cell{basePoint + mcpp::Coordinate(i, 0, j), false});
 
@@ -104,8 +119,8 @@ void Maze::generateMaze(bool mode){
 
         posOuter = outerWallCell.coordinate - basePoint;
         maze[posOuter.x][posOuter.z] = 0;
-    }
-    else if (mode == TESTING_MODE) {
+
+    } else if (mode == TESTING_MODE) {
         randomStart = basePoint + mcpp::Coordinate(1, 0, 1);
         start = Cell{randomStart, true};
 
@@ -123,15 +138,20 @@ void Maze::generateMaze(bool mode){
 
 }
 
-// update Maze Structure
+/**
+ * @brief Updates the 'mazeStructure' vector based on the 'maze' vector.
+ * 
+ * This function iterates over each cell in the 'maze' 2D vector. It then sets the corresponding
+ * cell in the 'mazeStructure' 2D vector to 'x' if the cell in 'maze' is a wall (has a value of 1),
+ * and sets it to '.' otherwise (open cell).
+ */
 void Maze::updateMazeStructure() {
 
-   for(int i = 0; i < length; i++){
-        for(int j = 0; j < width; j++){
-            if (maze[i][j] == 1){
+   for (int i = 0; i < length; i++) {
+        for (int j = 0; j < width; j++) {
+            if (maze[i][j] == 1) {
                 mazeStructure[i][j] = 'x';
-            }
-            else
+            } else
             {
                 mazeStructure[i][j] = '.';
             }
@@ -139,21 +159,26 @@ void Maze::updateMazeStructure() {
     }
 }
 
-mcpp::Coordinate Maze::selectRandomStartingPoint(){
+/**
+ * @brief Selects a random starting point from the available options in the maze.
+ * 
+ * This function searches the perimeter of the maze grid for cells that are open (having a value of 0).
+ * It then selects one of these open cells at random and returns its coordinate.
+ * 
+ * @return mcpp::Coordinate representing the randomly chosen starting point in the maze.
+ */
+mcpp::Coordinate Maze::selectRandomStartingPoint() {
     
     mcpp::Coordinate randomStart;
     
-    // Array to store mccp::Coordinate of the starting point
+    // Vector to store mccp::Coordinate of the starting point
     std::vector<mcpp::Coordinate> startingPoints;
 
     // If there is 0 in the maze, then it is the starting point
-    for (int i = 0; i < length; i++)
-    {
-        for(int j = 0; j < width; j++)
-        {
+    for (int i = 0; i < length; i++) {
+        for(int j = 0; j < width; j++) {
             if (i == 1 || j == 1 || i == length - 2 || j == width - 2) {
-                if (maze[i][j] == 0)
-                {
+                if (maze[i][j] == 0) {
                     startingPoints.push_back(basePoint + mcpp::Coordinate(i, 0, j));
                 }
             }
@@ -169,7 +194,7 @@ mcpp::Coordinate Maze::selectRandomStartingPoint(){
     return randomStart;
 }
 
-Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
+Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell) {
     const mcpp::Coordinate offsets[] = {
         mcpp::Coordinate(2, 0, 0),
         mcpp::Coordinate(-2, 0, 0),
@@ -190,8 +215,8 @@ Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
             }
         }
 
-        if(isOuterWall) {
-            if(i == 0) {
+        if (isOuterWall) {
+            if (i == 0) {
                 temp = cell + mcpp::Coordinate(1, 0, 0);
             }
             else if (i == 1) {
@@ -211,7 +236,18 @@ Maze::Cell Maze::OuterWallCell(mcpp::Coordinate cell){
     return outerWallCell;
 }
 
-void Maze::removeWall(Maze::Cell cell){
+/**
+ * @brief Finds a cell that can serve as an "outer wall" relative to a given cell.
+ * 
+ * This function explores potential cells at a distance of 2 units away from the given cell 
+ * in all four cardinal directions (North, South, East, West). 
+ * It then checks whether these potential cells already exist in the 'cells' vector.
+ * If a potential cell does not exist in 'cells', it is considered as an "outer wall" cell.
+ *
+ * @param cell The given cell's coordinate relative to which an "outer wall" cell is to be found.
+ * @return Cell representing the coordinate of the identified "outer wall" cell.
+ */
+void Maze::removeWall(Maze::Cell cell) {
     mcpp::Coordinate pos = cell.coordinate - basePoint;
     maze[pos.x][pos.z] = 0;
 
@@ -226,35 +262,45 @@ void Maze::removeWall(Maze::Cell cell){
     
 }
 
+/**
+ * @brief Chooses a random direction.
+*/
 int Maze::getRandomDirection() {
     return rand() % 4;
 }
 
-bool Maze::isInsideMaze(mcpp::Coordinate cell){
+bool Maze::isInsideMaze(mcpp::Coordinate cell) {
 
     bool isInside = false;
-    for(int i = 0; i < static_cast<int>(innerWallCells.size()); i++){
-        if (innerWallCells.at(i).coordinate == cell)
-        {
+    for (int i = 0; i < static_cast<int>(innerWallCells.size()); i++) {
+        if (innerWallCells.at(i).coordinate == cell) {
             isInside = true;
         }
     }
-
     return isInside;
 }
 
+/**
+ * @brief Checks if a given cell has any unvisited neighbors.
+ * 
+ * This function uses the given cell's coordinates to look for neighbors in all four cardinal 
+ * directions (North, South, East, West), specifically 2 units away from the current cell. 
+ * Then, it checks if each neighbor is both inside the maze boundaries and has not been visited yet.
+ *
+ * @param cell The cell for which to check for unvisited neighbors.
+ * @return A boolean value indicating whether the cell has at least one unvisited neighbor.
+ */
 bool Maze::hasUnvisitedNeighbour(Cell cell) {
     static int dx[] = {0, 2, 0, -2};
     static int dz[] = {-2, 0, 2, 0};
 
     bool hasUnvisitedNeighbour = false;
 
-    for (int i = 0; i < 4; i++)
-    {
+    for (int i = 0; i < 4; i++) {
         Cell neighbour;
         neighbour.coordinate = cell.coordinate + mcpp::Coordinate(dx[i], 0, dz[i]);
-        if (isInsideMaze(neighbour.coordinate) && !visited(neighbour))
-        {
+
+        if (isInsideMaze(neighbour.coordinate) && !visited(neighbour)) {
             hasUnvisitedNeighbour = true;
         }
     }
@@ -262,21 +308,61 @@ bool Maze::hasUnvisitedNeighbour(Cell cell) {
     return hasUnvisitedNeighbour;
 }
 
+/**
+ * @brief Recursively generates a maze structure.
+ *
+ * This function modifies the maze by carving out paths. It uses recursion to
+ * traverse through the maze, removing walls to form paths. It has two modes:
+ * NORMAL_MODE and TESTING_MODE, which affect how the maze is generated.
+ *
+ * @param cells Reference to a vector containing all cells of the maze.
+ * @param cell Current cell being processed.
+ * @param mode Flag indicating the mode of maze generation (NORMAL_MODE/TESTING_MODE).
+ */
 void Maze::generateRecursiveMaze(std::vector<Cell> &cells, Cell cell, bool mode) {
 
     cell.isVisited = true;
     visitedCells.push_back(cell);
     int direction;
 
-    while (hasUnvisitedNeighbour(cell))
-    {
+    while (hasUnvisitedNeighbour(cell)) {
         // Create a new cell
         Cell newCell;
         Cell tempCell;
 
-        if(mode == NORMAL_MODE){
+        if (mode == NORMAL_MODE) {
             direction = getRandomDirection();
        
+            if (direction == 0) {
+                newCell.coordinate = cell.coordinate + mcpp::Coordinate(-2, 0, 0);
+                tempCell.coordinate = cell.coordinate + mcpp::Coordinate(-1, 0, 0);
+            }
+            else if (direction == 1) {
+                newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 2);
+                tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 1);
+            }
+            else if (direction == 2) {
+                newCell.coordinate = cell.coordinate + mcpp::Coordinate(2, 0, 0);
+                tempCell.coordinate = cell.coordinate + mcpp::Coordinate(1, 0, 0);
+            }
+            else if (direction == 3) {
+                newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -2);
+                tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -1);
+            }
+
+            if (isInsideMaze(newCell.coordinate) && !visited(newCell)) {
+                removeWall(tempCell);
+                generateRecursiveMaze(cells, newCell, mode);
+            }
+
+        } else if (mode == TESTING_MODE) {
+            direction = counter;
+            if (counter == 4) {
+                this->counter = 0;
+            } else {
+                this->counter++;
+            }
+            std::cout << "Direction: " << direction << std::endl;
 
             if (direction == 0) {
                 newCell.coordinate = cell.coordinate + mcpp::Coordinate(-2, 0, 0);
@@ -295,58 +381,21 @@ void Maze::generateRecursiveMaze(std::vector<Cell> &cells, Cell cell, bool mode)
                 tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -1);
             }
 
-            if(isInsideMaze(newCell.coordinate) && !visited(newCell)){
+            if (isInsideMaze(newCell.coordinate) && !visited(newCell)) {
                 removeWall(tempCell);
                 generateRecursiveMaze(cells, newCell, mode);
             }
-        } else if (mode == TESTING_MODE) {
-                direction = counter;
-                if (counter == 4)
-                {
-                    this->counter = 0;
-                }
-                else
-                {
-                    this->counter++;
-                }
-                std::cout << "Direction: " << direction << std::endl;
-
-                if (direction == 0) {
-                    newCell.coordinate = cell.coordinate + mcpp::Coordinate(-2, 0, 0);
-                    tempCell.coordinate = cell.coordinate + mcpp::Coordinate(-1, 0, 0);
-                }
-                else if (direction == 1) {
-                    newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 2);
-                    tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 1);
-                }
-                else if (direction == 2) {
-                    newCell.coordinate = cell.coordinate + mcpp::Coordinate(2, 0, 0);
-                    tempCell.coordinate = cell.coordinate + mcpp::Coordinate(1, 0, 0);
-                }
-                else if (direction == 3) {
-                    newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -2);
-                    tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -1);
-                }
-
-                if(isInsideMaze(newCell.coordinate) && !visited(newCell)){
-                    removeWall(tempCell);
-                    generateRecursiveMaze(cells, newCell, mode);
-                }
         }
-        
     } 
 }
 
 bool Maze::visited(Cell cell) {
     bool visited = false;
-    for (int i = 0; i < static_cast<int>(visitedCells.size()); i++)
-    {
-        if (visitedCells.at(i).coordinate == cell.coordinate)
-        {
+    for (int i = 0; i < static_cast<int>(visitedCells.size()); i++) {
+        if (visitedCells.at(i).coordinate == cell.coordinate) {
             visited = true;
         }
     }
-
     return visited;
 }
 
@@ -385,7 +434,6 @@ void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
             for (int j = 0; j < xLen; j++) {  
                 if (mazeStructure[i][j] == 'x') {
                     mc->setBlock(basePoint + mcpp::Coordinate(i, y + 1, j), mcpp::Blocks::ACACIA_WOOD_PLANK);
-                    //StoreOldBlock(mc, basePoint + mcpp::Coordinate(i, y + 1, j));
                     std::this_thread::sleep_for(std::chrono::milliseconds(50));
                 } else {
                     if (!(mc->getBlock(basePoint + mcpp::Coordinate(i, y + 1, j)) == mcpp::Blocks::AIR)) {
