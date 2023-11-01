@@ -133,7 +133,7 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 
 ## Contributors and Workload
 
-**@ravisidhu007 - Ravikumar Singh:**
+**@ravisidhu007 - Ravikaran Singh:**
 
 - Fully create the recursive backtracking algorithm for automated generating of 'perfect' mazes
 - Partially contributed towards building maze
