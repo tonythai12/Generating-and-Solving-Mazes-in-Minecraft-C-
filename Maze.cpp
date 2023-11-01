@@ -487,6 +487,8 @@ void Maze::rebuildEnvironment(mcpp::MinecraftConnection* mc,
             for (int z = 0; z < zLen; z++) {
                 mcpp::Coordinate newCoord(basePoint.x + x, basePoint.y + y, basePoint.z + z);
                 mc->setBlock(newCoord, savedEnvironment[y][x][z]);
+                // std::cout << "Rebuilding " << savedEnvironment[y][x][z] << " at (" 
+                // << newCoord.x << ", " << newCoord.y << ", " << newCoord.z << ")" << std::endl;
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
         }
@@ -524,6 +526,8 @@ void Maze::RestoreOldBlocksFirst(mcpp::MinecraftConnection* mc) {
     for (const auto& block : generatedBlocks) {
         // Set block.coordinate to block.originalType
         mc->setBlock(block.coordinate, block.originalType);
+        // std::cout << "Restoring " << block.originalType << " at (" << block.coordinate.x << ", " << 
+        // block.coordinate.y << ", " << block.coordinate.z << ")" << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 }
