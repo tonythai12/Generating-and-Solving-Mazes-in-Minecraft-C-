@@ -4,12 +4,15 @@
 #include <vector>
 #include <mcpp/mcpp.h>
 
+#define NORMAL_MODE 0
+#define TESTING_MODE 1
+
 class Maze
 {
 
 public:
     Maze(mcpp::Coordinate basePoint, int xlen, int zlen,
-        std::vector<std::vector<char>> mazeStructure);
+        std::vector<std::vector<char>> mazeStructure, bool mode);
     ~Maze();
 
      // struct to store the coordinates of the maze cells
@@ -112,6 +115,9 @@ private:
     std::vector<GeneratedBlock> generatedBlocks;
 
     bool mazeBuiltAlready = false;
+
+    bool mode = NORMAL_MODE;
+    int counter = 0;
 };
 
 

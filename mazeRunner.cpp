@@ -81,7 +81,7 @@ struct CoordinateComparator {
 
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes);
 void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, 
-                        std::vector<Maze*>& generatedMazes);
+                        std::vector<Maze*>& generatedMazes, bool mode);
 void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode);
 void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate& playerPos,
                 mcpp::MinecraftConnection* mc);
@@ -174,7 +174,7 @@ int main(int argc, char* argv[]) {
                 ReadMazeFromTerminal(mc, terminalMaze, generatedMazes);
                 curState = ST_Main;
             } else if (input == 2) {
-                GenerateRandomMaze(mc, terminalMaze, generatedMazes);
+                GenerateRandomMaze(mc, terminalMaze, generatedMazes, mode);
                 curState = ST_Main;
             } else if (input == 3) {
                 curState = ST_Main;
@@ -392,6 +392,7 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
     mcpp::Coordinate basePoint(0, 0, 0);
     int envLength = 0;
     int envWidth = 0;
+    bool mode = NORMAL_MODE;
 
     GetMazeInputs(basePoint, envLength, envWidth, mc);
 
@@ -425,7 +426,7 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
             mazeStructure[i][j] = rows[i][j];
         }
     }
-    Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
+    Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure, mode);
     generatedMazes.push_back(newMaze);
     std::cout << "Maze read successfully" << std::endl;
     terminalMaze = newMaze;
@@ -482,7 +483,7 @@ void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::M
 }
 
 void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, 
-                        std::vector<Maze*>& generatedMazes) {
+                        std::vector<Maze*>& generatedMazes, bool mode) {
 
     std::vector<std::vector<char>> mazeStructure;
     mcpp::Coordinate basePoint(0, 0, 0);
@@ -492,7 +493,7 @@ void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze,
     GetMazeInputs(basePoint, envLength, envWidth, mc);
 
     mazeStructure.resize(envLength, std::vector<char>(envWidth)); 
-    Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
+    Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure, mode);
     newMaze->generateMaze();
     newMaze->updateMazeStructure();
     generatedMazes.push_back(newMaze);

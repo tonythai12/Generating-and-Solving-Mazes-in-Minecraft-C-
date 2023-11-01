@@ -7,8 +7,8 @@
 
 #define BUFFER 2
 
-Maze::Maze(mcpp::Coordinate basePoint, int xlen, int zlen, std::vector<std::vector<char>> mazeStructure)
-    : basePoint(basePoint), length(xlen), width(zlen), mazeStructure(mazeStructure)
+Maze::Maze(mcpp::Coordinate basePoint, int xlen, int zlen, std::vector<std::vector<char>> mazeStructure, bool mode)
+: basePoint(basePoint), length(xlen), width(zlen), mazeStructure(mazeStructure), mode(mode)
 {
 }
 
@@ -89,16 +89,32 @@ void Maze::generateMaze(){
         }
     }
 
-    // Select a random starting point
-    mcpp::Coordinate randomStart = Maze::selectRandomStartingPoint();
-    Cell start{randomStart, true};
+    mcpp::Coordinate randomStart;
+    Cell outerWallCell;
+    Cell start;
+    mcpp::Coordinate posOuter;
 
-    // Select a random outer wall cell
-    Cell outerWallCell = Maze::OuterWallCell(randomStart);
+    if (mode == NORMAL_MODE) {
+        // Select a random starting point
+        randomStart = Maze::selectRandomStartingPoint();
+        start = Cell{randomStart, true};
 
-    mcpp::Coordinate posOuter = outerWallCell.coordinate - basePoint;
-    maze[posOuter.x][posOuter.z] = 0;
-    
+        // Select a random outer wall cell
+        outerWallCell = Maze::OuterWallCell(randomStart);
+
+        posOuter = outerWallCell.coordinate - basePoint;
+        maze[posOuter.x][posOuter.z] = 0;
+    }
+    else if (mode == TESTING_MODE) {
+        randomStart = basePoint + mcpp::Coordinate(1, 0, 1);
+        start = Cell{randomStart, true};
+
+        outerWallCell = Cell{basePoint + mcpp::Coordinate(1, 0, 0), true};
+
+        posOuter = outerWallCell.coordinate - basePoint;
+        maze[posOuter.x][posOuter.z] = 0;
+        
+    }
     // Make way in the maze
     removeWall(outerWallCell);
 
@@ -250,37 +266,75 @@ void Maze::generateRecursiveMaze(std::vector<Cell> &cells, Cell cell) {
 
     cell.isVisited = true;
     visitedCells.push_back(cell);
+    int direction;
 
     while (hasUnvisitedNeighbour(cell))
     {
-        int direction = getRandomDirection();
-
         // Create a new cell
         Cell newCell;
         Cell tempCell;
 
-        if (direction == 0) {
-            newCell.coordinate = cell.coordinate + mcpp::Coordinate(2, 0, 0);
-            tempCell.coordinate = cell.coordinate + mcpp::Coordinate(1, 0, 0);
-        }
-        else if (direction == 1) {
-            newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 2);
-            tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 1);
-        }
-        else if (direction == 2) {
-            newCell.coordinate = cell.coordinate + mcpp::Coordinate(-2, 0, 0);
-            tempCell.coordinate = cell.coordinate + mcpp::Coordinate(-1, 0, 0);
-        }
-        else if (direction == 3) {
-            newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -2);
-            tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -1);
-        }
+        if(mode == NORMAL_MODE){
+            direction = getRandomDirection();
+       
 
-        if(isInsideMaze(newCell.coordinate) && !visited(newCell)){
-            removeWall(tempCell);
-            generateRecursiveMaze(cells, newCell);
+            if (direction == 0) {
+                newCell.coordinate = cell.coordinate + mcpp::Coordinate(-2, 0, 0);
+                tempCell.coordinate = cell.coordinate + mcpp::Coordinate(-1, 0, 0);
+            }
+            else if (direction == 1) {
+                newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 2);
+                tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 1);
+            }
+            else if (direction == 2) {
+                newCell.coordinate = cell.coordinate + mcpp::Coordinate(2, 0, 0);
+                tempCell.coordinate = cell.coordinate + mcpp::Coordinate(1, 0, 0);
+            }
+            else if (direction == 3) {
+                newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -2);
+                tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -1);
+            }
+
+            if(isInsideMaze(newCell.coordinate) && !visited(newCell)){
+                removeWall(tempCell);
+                generateRecursiveMaze(cells, newCell);
+            }
+        } else if (mode == TESTING_MODE) {
+                direction = counter;
+                if (counter == 4)
+                {
+                    this->counter = 0;
+                }
+                else
+                {
+                    this->counter++;
+                }
+                std::cout << "Direction: " << direction << std::endl;
+
+                if (direction == 0) {
+                    newCell.coordinate = cell.coordinate + mcpp::Coordinate(-2, 0, 0);
+                    tempCell.coordinate = cell.coordinate + mcpp::Coordinate(-1, 0, 0);
+                }
+                else if (direction == 1) {
+                    newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 2);
+                    tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, 1);
+                }
+                else if (direction == 2) {
+                    newCell.coordinate = cell.coordinate + mcpp::Coordinate(2, 0, 0);
+                    tempCell.coordinate = cell.coordinate + mcpp::Coordinate(1, 0, 0);
+                }
+                else if (direction == 3) {
+                    newCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -2);
+                    tempCell.coordinate = cell.coordinate + mcpp::Coordinate(0, 0, -1);
+                }
+
+                if(isInsideMaze(newCell.coordinate) && !visited(newCell)){
+                    removeWall(tempCell);
+                    generateRecursiveMaze(cells, newCell);
+                }
         }
-    }
+        
+    } 
 }
 
 bool Maze::visited(Cell cell) {
