@@ -7,8 +7,8 @@
 
 #define BUFFER 2
 
-Maze::Maze(mcpp::Coordinate basePoint, int xlen, int zlen, std::vector<std::vector<char>> mazeStructure, bool mode)
-: basePoint(basePoint), length(xlen), width(zlen), mazeStructure(mazeStructure), mode(mode)
+Maze::Maze(mcpp::Coordinate basePoint, int xlen, int zlen, std::vector<std::vector<char>> mazeStructure)
+: basePoint(basePoint), length(xlen), width(zlen), mazeStructure(mazeStructure)
 {
 }
 
@@ -64,7 +64,7 @@ void Maze::generateMazeStructure()
     }
 }
 
-void Maze::generateMaze(){
+void Maze::generateMaze(bool mode){
     Maze::generateMazeStructure();
 
     for(int i = 0; i < length; i++){
@@ -119,7 +119,7 @@ void Maze::generateMaze(){
     removeWall(outerWallCell);
 
     // Recursively make way in the maze
-    generateRecursiveMaze(innerWallCells, start);
+    generateRecursiveMaze(innerWallCells, start, mode);
 
 }
 
@@ -262,7 +262,7 @@ bool Maze::hasUnvisitedNeighbour(Cell cell) {
     return hasUnvisitedNeighbour;
 }
 
-void Maze::generateRecursiveMaze(std::vector<Cell> &cells, Cell cell) {
+void Maze::generateRecursiveMaze(std::vector<Cell> &cells, Cell cell, bool mode) {
 
     cell.isVisited = true;
     visitedCells.push_back(cell);
@@ -297,7 +297,7 @@ void Maze::generateRecursiveMaze(std::vector<Cell> &cells, Cell cell) {
 
             if(isInsideMaze(newCell.coordinate) && !visited(newCell)){
                 removeWall(tempCell);
-                generateRecursiveMaze(cells, newCell);
+                generateRecursiveMaze(cells, newCell, mode);
             }
         } else if (mode == TESTING_MODE) {
                 direction = counter;
@@ -330,7 +330,7 @@ void Maze::generateRecursiveMaze(std::vector<Cell> &cells, Cell cell) {
 
                 if(isInsideMaze(newCell.coordinate) && !visited(newCell)){
                     removeWall(tempCell);
-                    generateRecursiveMaze(cells, newCell);
+                    generateRecursiveMaze(cells, newCell, mode);
                 }
         }
         

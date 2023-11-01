@@ -81,8 +81,8 @@ struct CoordinateComparator {
 
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes);
 void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, 
-                        std::vector<Maze*>& generatedMazes, bool mode);
-void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, bool mode);
+                        std::vector<Maze*>& generatedMazes, const bool mode);
+void SolveMaze(mcpp::MinecraftConnection* mc, Agent*& player, const bool mode);
 void SolveTile(Agent*& player, AgentDirection &dir, int &x, int &z, mcpp::Coordinate& playerPos,
                 mcpp::MinecraftConnection* mc);
 void HighlightSolvedBlock(const mcpp::Coordinate& playerPos, mcpp::MinecraftConnection* mc);
@@ -91,11 +91,11 @@ void UpdateCoordsAfterSolving(const AgentDirection& dir, int& x, int& z, mcpp::C
 std::string coordDirToKey(const CoordDir& cd);
 bool AllVisited(const mcpp::Coordinate cd, const AgentDirection& dir, std::vector<CoordDir>&        
                 visitedTiles, mcpp::MinecraftConnection* mc);
-void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player, bool mode);
+void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player, const bool mode);
 std::vector<int> getValidInts(const std::string& errorMsg);
 bool validateMazeDimensions(const std::vector<std::string>& rows, int& envLength, int& envWidth);
-void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection& dir
-                        , bool mode);
+void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection& dir, 
+                      const bool mode);
 bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, AgentDirection dir);
 bool validateMazeCharacters(const std::vector<std::string>& rows);
 void CleanUp(std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment,
@@ -392,7 +392,6 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
     mcpp::Coordinate basePoint(0, 0, 0);
     int envLength = 0;
     int envWidth = 0;
-    bool mode = NORMAL_MODE;
 
     GetMazeInputs(basePoint, envLength, envWidth, mc);
 
@@ -426,7 +425,7 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
             mazeStructure[i][j] = rows[i][j];
         }
     }
-    Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure, mode);
+    Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
     generatedMazes.push_back(newMaze);
     std::cout << "Maze read successfully" << std::endl;
     terminalMaze = newMaze;
@@ -483,7 +482,7 @@ void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::M
 }
 
 void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, 
-                        std::vector<Maze*>& generatedMazes, bool mode) {
+                        std::vector<Maze*>& generatedMazes, const bool mode) {
 
     std::vector<std::vector<char>> mazeStructure;
     mcpp::Coordinate basePoint(0, 0, 0);
@@ -493,8 +492,8 @@ void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze,
     GetMazeInputs(basePoint, envLength, envWidth, mc);
 
     mazeStructure.resize(envLength, std::vector<char>(envWidth)); 
-    Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure, mode);
-    newMaze->generateMaze();
+    Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
+    newMaze->generateMaze(mode);
     newMaze->updateMazeStructure();
     generatedMazes.push_back(newMaze);
     std::cout << "Maze read successfully" << std::endl;
@@ -779,7 +778,7 @@ bool CheckIfSolved(mcpp::Coordinate& coord, mcpp::MinecraftConnection* mc, Agent
  * @param player: The player that is being initialised
  * @param mode: The mode that the program is running in, as this affects the algorithm
  */
-void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player, bool mode) {
+void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& player, const bool mode) {
     // Initialise random seed for normal mode
     if (mode == NORMAL_MODE) {
         std::srand(std::time(0));
@@ -821,8 +820,8 @@ void SolveManually(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, Agent*& p
  * @param dir: The direction that the agent is facing
  * @param mode: The mode that the program is running in, as this affects the algorithm
  */
-void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection& dir
-                        , bool mode) {
+void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc, AgentDirection& dir,
+                      const bool mode) {
     if (mode == NORMAL_MODE) {
         mcpp::BlockType blockTypeEast = mc->getBlock(startLoc + MOVE_XPLUS);
         mcpp::BlockType blockTypeWest = mc->getBlock(startLoc + MOVE_XMINUS);

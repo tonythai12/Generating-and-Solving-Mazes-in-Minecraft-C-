@@ -12,7 +12,7 @@ class Maze
 
 public:
     Maze(mcpp::Coordinate basePoint, int xlen, int zlen,
-        std::vector<std::vector<char>> mazeStructure, bool mode);
+        std::vector<std::vector<char>> mazeStructure);
     ~Maze();
 
      // struct to store the coordinates of the maze cells
@@ -30,7 +30,7 @@ public:
     void generateMazeStructure();
 
     // Generate the maze
-    void generateMaze();
+    void generateMaze(bool mode);
 
     // Print the maze
     void PrintMaze();
@@ -53,7 +53,7 @@ public:
     // get random direction
     int getRandomDirection();
 
-    void generateRecursiveMaze(std::vector<Cell> &cells, Cell cell);
+    void generateRecursiveMaze(std::vector<Cell> &cells, Cell cell, bool mode);
 
     // get the mazeStructure
     void updateMazeStructure();
@@ -115,8 +115,6 @@ private:
     std::vector<GeneratedBlock> generatedBlocks;
 
     bool mazeBuiltAlready = false;
-
-    bool mode = NORMAL_MODE;
     int counter = 0;
 };
 
