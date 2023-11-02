@@ -169,6 +169,6 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 - Added documentation for all functions
 - Creation of all test cases
 
-See commit history for more information. It should be noted that @tonythai12 had trouble with VSCode and as a result was unable to push their share of the workload (as listed above). Other contributors have assumed @tonythai12's workload. VSCode would not allow @tonythai12 to commit for a while so other group members committed on @tonythai12's behalf. Forced to delete the majority of their commits in order to solve VSCode issues. (This is evident and highlighted in the checkpoints through class). 
+See commit history for more information. It should be noted that @tonythai12 had trouble with VSCode and as a result was unable to push their share of the workload (as listed above). Other contributors have assumed @tonythai12's workload. VSCode would not allow @tonythai12 to commit for a period of time. Forced to delete the majority of their commits in order to solve VSCode issues. (This is evident and highlighted in the checkpoints through class). 
 
 **Ruwan has recommended that this group be individually marked for this assignment.**
