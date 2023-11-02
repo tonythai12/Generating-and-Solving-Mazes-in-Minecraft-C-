@@ -337,6 +337,8 @@ std::vector<int> getValidInts(const std::string& errorMsg) {
  * @param envWidth The width of the maze
  * @return True if the dimensions are valid, false otherwise.
 */
+// Contract:
+// The number of rows (envLength) and the row width (envWidth) must be integers greater than zero
 bool validateMazeDimensions(const std::vector<std::string>& rows, int& envLength, int& envWidth) {
     bool isValid = true;
 
