@@ -506,8 +506,9 @@ void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze,
     int envWidth = 0;
     // Call function to get user inputs for basePoint, envLength, envWidth
     GetMazeInputs(basePoint, envLength, envWidth, mc);
-    // Resice mazeStructure to match dimensions
+    // Resize mazeStructure to match dimensions
     mazeStructure.resize(envLength, std::vector<char>(envWidth)); 
+    // Make new maze object with parameters basePoint, envLength, envWidth, mazeStructure
     Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
     newMaze->generateMaze(mode);
     newMaze->updateMazeStructure();
