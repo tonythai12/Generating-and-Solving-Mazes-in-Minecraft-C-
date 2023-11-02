@@ -407,7 +407,7 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
             std::getline(std::cin, row);
             rows.push_back(row);
         }
-
+        // Check if user entered dimensions are valid 
         if (validateMazeDimensions(rows, envLength, envWidth) && validateMazeCharacters(rows)) {
             validMaze = true;  // Update the control variable to exit the loop
         } else {
