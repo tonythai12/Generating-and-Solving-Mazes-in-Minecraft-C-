@@ -154,7 +154,11 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 - Creation of the ReadMazeFromTerminal function
 - Assisted @pdotkeenan in implementing the flattening of terrain, and restoring environment
 - Documentation for ReadMazeFromTerminal function
+- Validates maze structure input, creation of ```Maze*``` object adding to list of generated mazes, updates ```terminalMaze*``` to new maze
 - Documentation for GenerateRandomMaze function
+- Documentation for validateMazeCharacters function
+- Documentation for validateMazeDimensions function
+- Full implementation of programming contracts for all functions
 
 **@pdotkeenan - Keenan Phillips - s3602528:**
 
@@ -174,5 +178,4 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 - Creation of all test cases
 
 See commit history for more information. It should be noted that @tonythai12 had trouble with VSCode and as a result was unable to push their share of the workload (as listed above). Other contributors have assumed @tonythai12's workload. VSCode would not allow @tonythai12 to commit for a period of time. Forced to delete the majority of their commits in order to solve VSCode issues (this is evident and highlighted in the checkpoints through class). @ravisidhu007 was not able to attend in two in person checkpoints which led to difficulties in communication via microsoft teams and also in person. It should also be noted that @ravisidhu007 was unable to reply on MS Teams  in regards to assumptions about maze generation and the recursive backtracking algorithm. At this stage, also unable to reply in regards to their part for video creation. Other contributors will assume their part for video creation. 
-
 **Ruwan has recommended that this group be individually marked for this assignment.**
