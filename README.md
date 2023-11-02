@@ -52,7 +52,7 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 
 ### Breadth-First Search
 
-- Run ```./mazeRunner -e2``` to enable BFS instead of RHWF. This significantly speeds up the solving algorithm.
+- Run ```./mazeRunner -e2``` to enable BFS instead of RHWF. This significantly speeds up the solving algorithm by finding the shortest path to the exit.
 
 ## Assumptions
 
@@ -76,7 +76,7 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 
 - **Maze Exit:** Assumes the maze has only one exit point. Assumes that the maze exit is a total of 5 air blocks in a 180-degree fashion in front of the player, relative to their current direction. The ```basePoint.y``` coordinate remains unchanged.
 
-- **Base Point:** Assumes that the user chooses a ```basePoint``` that contains a solid block (e.g., ```mcpp::Blocks::GRASS```, ```mcpp::Blocks::STONE```) and NOT blocks that they can walk through or damage them (e.g., ```mcpp::Blocks::STILL_WATER```, ```mcpp::Blocks::STILL_LAVA```). This is because the building algorithm gets the block (using ```getBlock(x, z)```) at the ```basePoint``` and makes that the foundation for the ground of the maze.
+- **Base Point:** Assumes that the user chooses a ```basePoint``` that contains a solid block (e.g., ```mcpp::Blocks::GRASS```, ```mcpp::Blocks::STONE```) and NOT blocks that they can walk through or gravity-affected blocks (e.g., ```mcpp::Blocks::STILL_WATER```, ```mcpp::Blocks::SAND```). This is because the building algorithm gets the block (using ```getBlock(x, z)```) at the ```basePoint``` and makes that the foundation for the ground of the maze. Using such blocks may result in an inaccurate maze being built, especially when the surrounding environment is not flat but requires to be flattened.
 
 ### Solving Algorithm Assumptions
 
@@ -109,7 +109,7 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 
 ## Need to Knows
 
-- The program dynamically allocates memory for the ```mcpp::MinecraftConnection``` object, the ```Agent``` object, and the ```Maze``` object, using the ```new``` keyword. They have appropriate destructors that will be called when either building a new maze or exiting the program.
+- The program dynamically allocates memory for the ```mcpp::MinecraftConnection``` object, the ```Agent``` object, and the ```Maze``` object, using the ```new``` keyword. They have appropriate destructors that will be called when either building a new maze or exiting the program, through the ```delete``` keyword.
 
 - Restoring the environment to its previous state may take a long time, depending on the existing structure. If you believe that the program is stuck in a loop or unresponsive, uncomment the ```std::cout``` statements found in ```Maze::RestoreOldBlocksFirst()``` and ```Maze::rebuildEnvironment()``` and run the program again - it will print the blocks that are being restored in the console. If the program hasn't yet called the destructors and nothing is printing in the console after waiting for a period of time, you can assume that the program is experiencing undefined behaviour. This, however, has been programmed against and shouldn't occur.
 
@@ -137,7 +137,9 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 
 ## Contributors and Workload
 
-**@ravisidhu007 - Ravikaran Singh:**
+**Team: 46**
+
+**@ravisidhu007 - Ravikaran Singh - s3940606:**
 
 - Fully created the recursive backtracking algorithm for automated generating of 'perfect' mazes
 - Partially contributed towards building maze
@@ -145,30 +147,32 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 - Basic implementation of ```Maze::Maze()``` constructor
 - Implementation of ```-testmode``` for recursive backtracking algorithm
 
-**@tonythai12 - Tony Thai:**
+**@tonythai12 - Tony Thai - s4002970:**
 
 - Created test-cases/edgecases for testing
 - Full Implementation of reading maze from terminal
 - Creation of the ReadMazeFromTerminal function
 - Assisted @pdotkeenan in implementing the flattening of terrain, and restoring environment
 - Documentation for ReadMazeFromTerminal function
-- Documentation for GenerateRandomMaze function 
+- Documentation for GenerateRandomMaze function
 
-**@pdotkeenan - Keenan Phillips:**
+**@pdotkeenan - Keenan Phillips - s3602528:**
 
-- Main Menu and its navigation logic
-- Created the RHWF and Extension 2 (BFS)
-- Created all functions for Agent class
-- Implement maze-building algorithm
+- Fully created Main Menu and its navigation logic
+- Created Right-Hand Wall Follower algorithm
+- Fully implemented Enhancement 2: Shortest path to exit
+- Created all functions for ```Agent``` class
+- Fully implemented building maze in Minecraft
 - Validating all user input, re-prompting for input if incorrect
 - Implementing flattening of terrain, getting existing environment structure, and restoring environment
+- Implemented player placement (manual solve), including ```-testmode``` implementation
 - Storing all generated mazes (terminal and randomly generated) in a ```Maze*``` object
 - Creation of custom structs to assist with comparisons and visited tile tracking
-- Assisted @tonythai12 in full and robust implementation of reading maze from terminal
+- Assisted @tonythai12 in full and robust implementation of reading maze from terminal and fully implemented data structure for holding maze
 - Assisted @ravisidhu007 in creating robust ```Maze::Maze()``` constructor
 - Added documentation for all functions
 - Creation of all test cases
 
-See commit history for more information. It should be noted that @tonythai12 had trouble with VSCode and as a result was unable to push their share of the workload (as listed above). Other contributors have assumed @tonythai12's workload. VSCode would not allow @tonythai12 to commit for a period of time. Forced to delete the majority of their commits in order to solve VSCode issues. (This is evident and highlighted in the checkpoints through class). 
+See commit history for more information. It should be noted that @tonythai12 had trouble with VSCode and as a result was unable to push their share of the workload (as listed above). Other contributors have assumed @tonythai12's workload. VSCode would not allow @tonythai12 to commit for a period of time. Forced to delete the majority of their commits in order to solve VSCode issues (this is evident and highlighted in the checkpoints through class).
 
 **Ruwan has recommended that this group be individually marked for this assignment.**
