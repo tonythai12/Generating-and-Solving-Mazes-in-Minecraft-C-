@@ -248,6 +248,12 @@ int main(int argc, char* argv[]) {
  * @param environment: A vector of vectors of vectors of BlockTypes that stores the old blocks
  *                    in the environment.
 */
+// Contract:
+// terminalMaze must be provided and not be null for maze creation
+// any generated mazes are cleaned and restored
+// if terminalMaze is not built it will then build
+// if terminalMaze is already built, an error message is shown
+// if terminalMaze is not provided, user must generate a maze first
 void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes,
                    std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment) {
     if (terminalMaze) { 
