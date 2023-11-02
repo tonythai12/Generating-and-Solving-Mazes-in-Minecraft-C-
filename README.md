@@ -150,7 +150,8 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 **@tonythai12 - Tony Thai - s4002970:**
 
 - Created test-cases/edgecases for testing
-- Full Implementation of reading maze from terminal
+- Implementation of menu navigation 
+- Full Implementation of reading maze from terminal and data structurer for holding maze
 - Creation of the ReadMazeFromTerminal function
 - Assisted @pdotkeenan in implementing the flattening of terrain, and restoring environment
 - Documentation for ReadMazeFromTerminal function
