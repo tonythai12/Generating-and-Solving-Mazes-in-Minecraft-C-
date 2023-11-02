@@ -261,7 +261,7 @@ void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vect
             } 
         }
         if (mazeToBuild->getMazeBuiltStatus() == false) { // Check if maze has not been made yet
-            generatedMazes.clear();
+            generatedMazes.clear(); // Clears list of generated mazes 
             generatedMazes.push_back(mazeToBuild);
             environment = mazeToBuild->getEnvironment(mc);
             mazeToBuild->FlattenAndBuild(mc);
