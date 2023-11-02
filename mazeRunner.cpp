@@ -255,7 +255,7 @@ void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vect
         for (Maze* oldMaze : generatedMazes) { // Iterate through the previous mazes
             if (oldMaze != mazeToBuild) {
                 std::cout << "Cleaning up and restoring existing environment." << std::endl;
-                CleanUp(environment, oldMaze, mc);
+                CleanUp(environment, oldMaze, mc); // Clean and restore environment
                 delete oldMaze;
                 std::cout << "Cleanup and restore successful. Now building new maze." << std::endl;
             } 
