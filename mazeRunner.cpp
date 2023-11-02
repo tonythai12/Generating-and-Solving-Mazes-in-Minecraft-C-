@@ -391,6 +391,8 @@ bool validateMazeCharacters(const std::vector<std::string>& rows) {
  * @param terminalMaze: The maze that is being read from the terminal
  * @param generatedMazes: A vector of mazes that have been generated
 */
+// Contract:
+// reads and checks if maze structure is entered by user from terminal
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes) {
     mcpp::Coordinate basePoint(0, 0, 0);
     int envLength = 0;
