@@ -148,11 +148,11 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 **@tonythai12 - Tony Thai:**
 
 - Created test-cases/edgecases for testing
-- Implementation of reading maze from terminal
-- Creation of the BuildMazeInMC function
+- Full Implementation of reading maze from terminal
 - Creation of the ReadMazeFromTerminal function
 - Assisted @pdotkeenan in implementing the flattening of terrain, and restoring environment
-- Documentation for functions
+- Documentation for ReadMazeFromTerminal function
+- Documentation for GenerateRandomMaze function 
 
 **@pdotkeenan - Keenan Phillips:**
 
