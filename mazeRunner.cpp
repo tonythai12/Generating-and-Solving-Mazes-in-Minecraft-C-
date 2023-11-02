@@ -250,9 +250,9 @@ int main(int argc, char* argv[]) {
 */
 void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes,
                    std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment) {
-    if (terminalMaze) {
+    if (terminalMaze) { 
         Maze* mazeToBuild = generatedMazes.back();  // The last maze generated
-        for (Maze* oldMaze : generatedMazes) {
+        for (Maze* oldMaze : generatedMazes) { // Iterate through the previous mazes
             if (oldMaze != mazeToBuild) {
                 std::cout << "Cleaning up and restoring existing environment." << std::endl;
                 CleanUp(environment, oldMaze, mc);
