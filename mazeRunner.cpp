@@ -512,6 +512,7 @@ void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze,
     Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
     // Generate random maze in maze object
     newMaze->generateMaze(mode);
+    // Update maze structure
     newMaze->updateMazeStructure();
     generatedMazes.push_back(newMaze);
     std::cout << "Maze read successfully" << std::endl;
