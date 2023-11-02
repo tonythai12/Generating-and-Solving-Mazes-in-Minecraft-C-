@@ -394,7 +394,7 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
 
     GetMazeInputs(basePoint, envLength, envWidth, mc);
 
-    std::vector<std::vector<char>> mazeStructure;
+    std::vector<std::vector<char>> mazeStructure; // Store maze structure
     std::vector<std::string> rows;
 
     bool validMaze = false;
