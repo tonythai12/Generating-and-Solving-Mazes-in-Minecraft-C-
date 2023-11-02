@@ -504,7 +504,7 @@ void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze,
     mcpp::Coordinate basePoint(0, 0, 0); // Define base point and initialize dimensions
     int envLength = 0;
     int envWidth = 0;
-    
+    // Call function to get user inputs for basePoint, envLength, envWidth
     GetMazeInputs(basePoint, envLength, envWidth, mc);
 
     mazeStructure.resize(envLength, std::vector<char>(envWidth)); 
