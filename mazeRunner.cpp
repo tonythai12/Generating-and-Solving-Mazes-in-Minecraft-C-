@@ -450,6 +450,7 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
 // Contract:
 // Input must be three integers to specify basePoint
 // length and width must be integers greater than zero
+// length must be positive odd integer and width must be odd integer
 void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::MinecraftConnection* mc) {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
