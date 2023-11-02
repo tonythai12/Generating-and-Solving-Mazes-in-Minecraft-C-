@@ -260,7 +260,7 @@ void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vect
                 std::cout << "Cleanup and restore successful. Now building new maze." << std::endl;
             } 
         }
-        if (mazeToBuild->getMazeBuiltStatus() == false) {
+        if (mazeToBuild->getMazeBuiltStatus() == false) { // Check if maze has not been made yet
             generatedMazes.clear();
             generatedMazes.push_back(mazeToBuild);
             environment = mazeToBuild->getEnvironment(mc);
