@@ -434,12 +434,11 @@ void Maze::GenerateMazeInMC(mcpp::MinecraftConnection* mc) {
             for (int j = 0; j < xLen; j++) {  
                 if (mazeStructure[i][j] == 'x') {
                     mc->setBlock(basePoint + mcpp::Coordinate(i, y + 1, j), mcpp::Blocks::ACACIA_WOOD_PLANK);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(40));
                 } else {
-                    if (!(mc->getBlock(basePoint + mcpp::Coordinate(i, y + 1, j)) == mcpp::Blocks::AIR)) {
-                        mc->setBlock(basePoint + mcpp::Coordinate(i, y + 1, j), mcpp::Blocks::AIR);
-                        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-                    }
+                    // if (!(mc->getBlock(basePoint + mcpp::Coordinate(i, y + 1, j)) == mcpp::Blocks::AIR)) {
+                    //     mc->setBlock(basePoint + mcpp::Coordinate(i, y + 1, j), mcpp::Blocks::AIR);
+                    // }
                     walkableCoords.push_back(basePoint + mcpp::Coordinate(i, 1, j));
                 }
             }
@@ -457,7 +456,7 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp
 
     // Get all blocks using the min/max y-values
     mcpp::Coordinate loc1 = mcpp::Coordinate(basePoint.x - BUFFER, basePoint.y, basePoint.z - BUFFER);
-    mcpp::Coordinate loc2 = mcpp::Coordinate(basePoint.x + length + BUFFER, basePoint.y + 6, basePoint.z + width + BUFFER);
+    mcpp::Coordinate loc2 = mcpp::Coordinate(basePoint.x + length + BUFFER, basePoint.y + 4, basePoint.z + width + BUFFER);
     auto blocks = mc->getBlocks(loc1, loc2);
 
     return blocks;
@@ -487,29 +486,25 @@ void Maze::flattenEnvironment(mcpp::MinecraftConnection* mc) {
 
             // Set blocks above the floorLevel and up to the highest block to AIR
             for (int y = floorLevel + 1; y <= highestBlockY; y++) {
-                mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
-                if (!(mc->getBlock(coord) == mcpp::Blocks::AIR)) {
-                    mc->setBlock(coord, mcpp::Blocks::AIR);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                mcpp::Coordinate coord1(corner1.x + x, y, corner1.z + z);
+                if (!(basePointBlock == mcpp::Blocks::AIR)) {
+                    StoreOldBlock(mc, coord1);
+                    mc->setBlock(coord1, mcpp::Blocks::AIR);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(40));
                 }
             }
 
             // Set the block at floorLevel to BlockType at basePoint
             mcpp::Coordinate coord(corner1.x + x, floorLevel, corner1.z + z);
-            if (!(basePointBlock == mc->getBlock(coord))) {
-                StoreOldBlock(mc, coord);
-                mc->setBlock(coord, basePointBlock);
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            }
+            StoreOldBlock(mc, coord);
+            mc->setBlock(coord, basePointBlock);
 
             // Set blocks below floorLevel to BlockType at basePoint
             for (int y = highestBlockY; y < floorLevel; y++) {
-                mcpp::Coordinate coord(corner1.x + x, y, corner1.z + z);
-                if (!(basePointBlock == mc->getBlock(coord))) {
-                    StoreOldBlock(mc, coord);
-                    mc->setBlock(coord, basePointBlock);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-                }
+                mcpp::Coordinate coord2(corner1.x + x, y, corner1.z + z);
+                StoreOldBlock(mc, coord2);
+                mc->setBlock(coord2, basePointBlock);
+                std::this_thread::sleep_for(std::chrono::milliseconds(40));
             }
         }
     }
@@ -533,11 +528,11 @@ void Maze::rebuildEnvironment(mcpp::MinecraftConnection* mc,
     for (int y = 0; y < yLen; y++) {
         for (int x = 0; x < xLen; x++) {
             for (int z = 0; z < zLen; z++) {
-                mcpp::Coordinate newCoord(basePoint.x + x, basePoint.y + y, basePoint.z + z);
+                mcpp::Coordinate newCoord(basePoint.x + x - BUFFER, basePoint.y + y, basePoint.z + z - BUFFER);
                 mc->setBlock(newCoord, savedEnvironment[y][x][z]);
-                // std::cout << "Rebuilding " << savedEnvironment[y][x][z] << " at (" 
-                // << newCoord.x << ", " << newCoord.y << ", " << newCoord.z << ")" << std::endl;
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                std::this_thread::sleep_for(std::chrono::milliseconds(40));
+                //std::cout << "Rebuilding " << savedEnvironment[y][x][z] << " at (" 
+                //<< newCoord.x << ", " << newCoord.y << ", " << newCoord.z << ")" << std::endl;
             }
         }
     }
@@ -558,10 +553,8 @@ void Maze::FlattenAndBuild(mcpp::MinecraftConnection* mc) {
  * @param mc The MinecraftConnection object.
  * @param coord The coordinate of the block to be stored.
 */
-void Maze::StoreOldBlock(mcpp::MinecraftConnection* mc, mcpp::Coordinate& coord) {
-    GeneratedBlock oldBlock;
-    oldBlock.originalType = mc->getBlock(coord);
-    oldBlock.coordinate = coord;
+void Maze::StoreOldBlock(mcpp::MinecraftConnection* mc, const mcpp::Coordinate& coord) {
+    GeneratedBlock oldBlock(mc->getBlock(coord), coord);
     generatedBlocks.push_back(oldBlock);
 }
 
@@ -574,8 +567,8 @@ void Maze::RestoreOldBlocksFirst(mcpp::MinecraftConnection* mc) {
     for (const auto& block : generatedBlocks) {
         // Set block.coordinate to block.originalType
         mc->setBlock(block.coordinate, block.originalType);
-        // std::cout << "Restoring " << block.originalType << " at (" << block.coordinate.x << ", " << 
-        // block.coordinate.y << ", " << block.coordinate.z << ")" << std::endl;
+        //std::cout << "Restoring " << block.originalType << " at (" << block.coordinate.x << ", " << 
+        //block.coordinate.y << ", " << block.coordinate.z << ")" << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 }

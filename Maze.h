@@ -21,8 +21,10 @@ public:
         mcpp::Coordinate coordinate;
         bool isVisited = false;
     };
-        struct GeneratedBlock {
-        mcpp::BlockType originalType = mcpp::Blocks::AIR;
+    struct GeneratedBlock {
+        GeneratedBlock(mcpp::BlockType originalType, mcpp::Coordinate coordinate) :
+            originalType(originalType), coordinate(coordinate) {}
+        mcpp::BlockType originalType;
         mcpp::Coordinate coordinate;
     };
 
@@ -76,7 +78,7 @@ public:
     void rebuildEnvironment(mcpp::MinecraftConnection* mc,
                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& savedEnvironment);
     void FlattenAndBuild(mcpp::MinecraftConnection* mc);
-    void StoreOldBlock(mcpp::MinecraftConnection* mc, mcpp::Coordinate& coord);
+    void StoreOldBlock(mcpp::MinecraftConnection* mc, const mcpp::Coordinate& coord);
     void RestoreOldBlocksFirst(mcpp::MinecraftConnection* mc);
 
 private:

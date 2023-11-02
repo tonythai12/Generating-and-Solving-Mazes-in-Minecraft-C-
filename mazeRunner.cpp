@@ -452,7 +452,6 @@ void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::M
     } while (static_cast<int>(inputs.size()) != 3);
     
     basePoint = mcpp::Coordinate(inputs[0], inputs[1], inputs[2]);
-    basePoint.y = mc->getHeight(basePoint.x, basePoint.z) + 1;
     
     std::cout << "Enter the length and width of maze:" << std::endl;
     inputs.clear();
