@@ -270,7 +270,7 @@ void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vect
             std::cout << "Error: You are trying to build a maze that's already been built." << std::endl;
         }
 
-    } else {
+    } else { // Informs user to build maze first if there is no terminalMaze given
         std::cout << "Please generate a maze first." << std::endl;
     }
 }
