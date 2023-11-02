@@ -344,7 +344,7 @@ bool validateMazeDimensions(const std::vector<std::string>& rows, int& envLength
 // Checks if number of rows matches environment length
     if (static_cast<int>(rows.size()) != envLength) {
         isValid = false;
-    } else {
+    } else { // Check if width of rows matches environment width
         for (const auto& row : rows) {
             if (isValid && static_cast<int>(row.length()) != envWidth) {
                 isValid = false;
