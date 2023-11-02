@@ -266,7 +266,7 @@ void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vect
             environment = mazeToBuild->getEnvironment(mc); // Update the envrionment 
             mazeToBuild->FlattenAndBuild(mc); // Flatten and build maze
             mazeToBuild->setMazeBuiltStatus(true); // Update MazeBuiltStatus to true to avoid rebuilding
-        } else {
+        } else { // Displays an error message if the maze has already been generated when user is building maze
             std::cout << "Error: You are trying to build a maze that's already been built." << std::endl;
         }
 
