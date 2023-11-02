@@ -300,7 +300,7 @@ void CleanUp(std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment
         " Ignore this message if you didn't generate a maze" << std::endl;
     }
 }
-
+// Contract :
 /** 
  * Checks if any given input is a valid integer. If not, it will print an error message and ask the
  * user to re-enter the input.
