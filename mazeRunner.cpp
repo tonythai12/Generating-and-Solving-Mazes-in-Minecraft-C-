@@ -341,7 +341,7 @@ std::vector<int> getValidInts(const std::string& errorMsg) {
 // The number of rows (envLength) and the row width (envWidth) must be integers greater than zero
 bool validateMazeDimensions(const std::vector<std::string>& rows, int& envLength, int& envWidth) {
     bool isValid = true;
-
+// Checks if number of rows matches environment length
     if (static_cast<int>(rows.size()) != envLength) {
         isValid = false;
     } else {
