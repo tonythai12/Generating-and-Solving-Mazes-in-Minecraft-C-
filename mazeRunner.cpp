@@ -426,7 +426,7 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
     }
     Maze* newMaze = new Maze(basePoint, envLength, envWidth, mazeStructure);
     generatedMazes.push_back(newMaze); // Add maze to list of generated mazes
-    std::cout << "Maze read successfully" << std::endl;
+    std::cout << "Maze read successfully" << std::endl; // Update temrinal maze with new maze and print
     terminalMaze = newMaze;
     newMaze->PrintMaze();
 }
