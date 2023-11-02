@@ -516,6 +516,7 @@ void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze,
     newMaze->updateMazeStructure();
     // Add new maze to generated mazes
     generatedMazes.push_back(newMaze);
+    // Tells user that the maze was read successfully
     std::cout << "Maze read successfully" << std::endl;
     terminalMaze = newMaze;
     terminalMaze->PrintMaze();
