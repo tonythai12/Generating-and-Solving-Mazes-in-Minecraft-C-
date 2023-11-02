@@ -115,7 +115,7 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 
 - You will know when a ```~Destructor``` has been called when you see ```<object> destructor successfully called.``` printed in the console.
 
-- Debug messages will be printed while running RHWF and BFS, in addition to the ```Step[i]: (x, y, z)``` message. This is to provide greater transparency to the user on how the algorithm is working.
+- Debug messages will be printed while running RHWF and BFS, in addition to the ```Step[i]: (x, y, z)``` message. This is to provide greater transparency to the user on how the algorithm is working. For example, using RHWF will print ```"Turning right."```, ```"Cannot move straight or right. Trying to turn left."```, ```"Moving straight."```, and ```"Turning around."```. Using BFS will print ```<< "Current Position: (x, y, z)"```, ```"Found Neighbour: (x, y, z)```, and ```"Enqueueing neighbour and marking as visited."```. Lastly, a manual solve will print ```"Random index: i```, ```"Teleporting to: (x, y, z)"```.
 
 ## Data Structures
 
