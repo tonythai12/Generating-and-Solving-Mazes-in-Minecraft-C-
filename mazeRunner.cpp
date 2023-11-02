@@ -394,6 +394,7 @@ bool validateMazeCharacters(const std::vector<std::string>& rows) {
 // Contract:
 // reads and checks if maze structure is entered by user from terminal
 // envLength and envWidth must be integers greater than zero
+// input for maze structure must have valid dimensions for envLength and envWidth
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes) {
     mcpp::Coordinate basePoint(0, 0, 0);
     int envLength = 0;
