@@ -265,7 +265,7 @@ void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vect
             generatedMazes.push_back(mazeToBuild); // Add generated maze to list
             environment = mazeToBuild->getEnvironment(mc); // Update the envrionment 
             mazeToBuild->FlattenAndBuild(mc); // Flatten and build maze
-            mazeToBuild->setMazeBuiltStatus(true);
+            mazeToBuild->setMazeBuiltStatus(true); // Update MazeBuiltStatus to true to avoid rebuilding
         } else {
             std::cout << "Error: You are trying to build a maze that's already been built." << std::endl;
         }
