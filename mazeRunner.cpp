@@ -501,7 +501,7 @@ void GenerateRandomMaze(mcpp::MinecraftConnection* mc, Maze*& terminalMaze,
                         std::vector<Maze*>& generatedMazes, const bool mode) {
 
     std::vector<std::vector<char>> mazeStructure;
-    mcpp::Coordinate basePoint(0, 0, 0);
+    mcpp::Coordinate basePoint(0, 0, 0); // Define base point and initialize dimensions
     int envLength = 0;
     int envWidth = 0;
     
