@@ -359,7 +359,9 @@ bool validateMazeDimensions(const std::vector<std::string>& rows, int& envLength
  * @param rows A vector of rows of the maze
  * @return True if the characters are valid, false otherwise.
 */
-bool validateMazeCharacters(const std::vector<std::string>& rows) {
+// Contract:
+// Characters in maze are limited to 'x' and '.'
+bool validateMazeCharacters(const std::vector<std::string>& rows) { 
     bool valid = true;  // Initially assume that it's valid, then check for invalid characters
     size_t i = 0;
     size_t numRows = rows.size();
