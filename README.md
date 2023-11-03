@@ -2,7 +2,7 @@
 
 # Assignment 3: Generating and solving mazes in Minecraft via C++
 
-This program uses C++ and the external [```mcpp```](https://github.com/rozukke/mcpp) library to build and generate mazes in Minecraft. Please read this carefully before using the program.
+This program uses C++ and the external [```mcpp```](https://github.com/rozukke/mcpp) library to build and generate mazes in Minecraft. Please read through this carefully before using the program, as there's important information to know. You can view the assignment video demo [here](https://rmiteduau-my.sharepoint.com/:v:/r/personal/s3602528_student_rmit_edu_au/Documents/Programming%20Studio%202%20Assignment%203/Group%2046%20Assignment%203.mp4?csf=1&web=1&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0RpcmVjdCJ9fQ&e=ubngEX)
 
 **Table of Contents**
 
@@ -132,7 +132,7 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 
 ## Need to Knows
 
-- When getting and restoring the environment structure, the implemented algorithm uses a ```BUFFER``` to add extra tiles to the ```length``` and ```width```. For example, this is the ```Maze::getEnvironment() function```:
+- When getting and restoring the environment structure, the implemented algorithm uses a ```BUFFER``` to add extra tiles to the ```length``` and ```width```. For example:
 
 ```cpp
 std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp::MinecraftConnection* mc) {
