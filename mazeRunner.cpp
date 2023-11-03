@@ -471,33 +471,30 @@ void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::M
     } while (static_cast<int>(inputs.size()) != 3);
     
     basePoint = mcpp::Coordinate(inputs[0], inputs[1], inputs[2]);
-    
-    std::cout << "Enter the length and width of maze:" << std::endl;
     inputs.clear();
 
     bool shouldContinue = true;
+    std::cout << "Enter the length and width of maze:" << std::endl;
+
     do {
         shouldContinue = false; 
-        inputs = getValidInts("Input Error: Enter an odd-numbered integer. ");
-        bool isNotOddInput = false;
+        inputs = getValidInts("Input Error: Enter 2 odd-numbered integers for length and width. ");
 
-        if (static_cast<int>(inputs.size()) < 2) {
+        if (inputs.size() > 2) {
+            std::cout << "Input Error: Please only enter two integers for length and width." << std::endl;
+            shouldContinue = true;
+        } else if (inputs.size() < 2) {
             std::cout << "Please enter both length and width." << std::endl;
             shouldContinue = true;
-        }
-        else {
+        } else {
+            // We now have exactly 2 inputs, proceed with validation
             if (inputs[0] % 2 == 0 || inputs[0] <= 0) {
                 std::cout << "Input Error: Length must be a positive odd integer. ";
-                isNotOddInput = true;
+                shouldContinue = true;
             }
             
             if (inputs[1] % 2 == 0 || inputs[1] <= 0) {
                 std::cout << "Input Error: Width must be an odd-numbered integer. ";
-                isNotOddInput = true;
-            }
-
-            if (isNotOddInput) {
-                std::cout << "Please re-enter both length and width:" << std::endl;
                 shouldContinue = true;
             }
         }
