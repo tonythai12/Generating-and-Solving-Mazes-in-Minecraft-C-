@@ -1,4 +1,5 @@
 
+
 Welcome to MineCraft MazeRunner!
 --------------------------------
 
@@ -28,3 +29,4 @@ Enter Menu item to continue:
 
 The End!
 
+The environment vector is empty, so unable to restore environment. Ignore this message if you didn't generate a maze

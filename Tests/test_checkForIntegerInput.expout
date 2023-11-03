@@ -1,3 +1,5 @@
+
+
 Welcome to MineCraft MazeRunner!
 --------------------------------
 
@@ -9,7 +11,6 @@ Welcome to MineCraft MazeRunner!
 5) Exit
 
 Enter Menu item to continue: 
-h
 Input Error: Enter an integer between 1 and 5 ....
 
 ------------- MAIN MENU -------------
@@ -20,6 +21,7 @@ Input Error: Enter an integer between 1 and 5 ....
 5) Exit
 
 Enter Menu item to continue: 
-5
 
 The End!
+
+The environment vector is empty, so unable to restore environment. Ignore this message if you didn't generate a maze
