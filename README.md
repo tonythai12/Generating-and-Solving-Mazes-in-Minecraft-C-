@@ -2,7 +2,7 @@
 
 # Assignment 3: Generating and solving mazes in Minecraft via C++
 
-This program uses C++ and the external [```mcpp```](https://github.com/rozukke/mcpp) library to build and generate mazes in Minecraft.
+This program uses C++ and the external [```mcpp```](https://github.com/rozukke/mcpp) library to build and generate mazes in Minecraft. Please read this carefully before using the program.
 
 **Table of Contents**
 
@@ -131,6 +131,20 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 - **Prior to Maze Building:** Assumes that the user presses the space-bar twice (to initiate flying mode) before building the maze in Minecraft. This will ensure that they stay in the air when the building algorithm teleports them to ```(basePoint.x, basePoint.y + 10, basePoint.z)```.
 
 ## Need to Knows
+
+- When getting and restoring the environment structure, the implemented algorithm uses a ```BUFFER``` to add extra tiles to the ```length``` and ```width```. For example, this is the ```Maze::getEnvironment() function```:
+
+```cpp
+std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp::MinecraftConnection* mc) {
+    mcpp::Coordinate loc1 = mcpp::Coordinate(basePoint.x - BUFFER, basePoint.y, basePoint.z - BUFFER);
+    mcpp::Coordinate loc2 = mcpp::Coordinate(basePoint.x + length + BUFFER, basePoint.y + 4, basePoint.z + width + BUFFER);
+    auto blocks = mc->getBlocks(loc1, loc2);
+
+    return blocks;
+}
+```
+
+- As such, when testing to see if the environment state is the same as before (after cleaning up the environment when a maze was built), you **MUST** account for the ```BUFFER```. If you don't account for the ```BUFFER```, an incorrect result will be returned.
 
 - The program dynamically allocates memory for the ```mcpp::MinecraftConnection``` object, the ```Agent``` object, and the ```Maze``` object, using the ```new``` keyword. They have appropriate destructors that will be called when either building a new maze or exiting the program, through the ```delete``` keyword.
 
