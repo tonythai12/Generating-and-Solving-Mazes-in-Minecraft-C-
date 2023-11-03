@@ -1,0 +1,269 @@
+
+You are running the program in test mode.
+The maze-solving algorithm will be changed to a Breadth-First-Search.
+
+Welcome to MineCraft MazeRunner!
+--------------------------------
+
+------------- MAIN MENU -------------
+1) Generate Maze
+2) Build Maze in MineCraft
+3) Solve Maze
+4) Show Team Information
+5) Exit
+
+Enter Menu item to continue: 
+
+------------- GENERATE MAZE -------------
+1) Read Maze from terminal
+2) Generate Random Maze
+3) Back
+
+Enter Menu item to continue: 
+Enter the basePoint of maze:
+Enter the length and width of maze:
+Direction: 0
+Direction: 1
+Direction: 2
+Direction: 3
+Direction: 4
+Direction: 0
+Direction: 1
+Direction: 2
+Direction: 3
+Direction: 4
+Direction: 0
+Direction: 1
+Direction: 2
+Direction: 3
+Direction: 4
+Direction: 0
+Direction: 1
+Direction: 2
+Direction: 3
+Direction: 4
+Direction: 0
+Direction: 1
+Direction: 2
+Direction: 3
+Direction: 4
+Direction: 0
+Maze read successfully
+**Printing Maze**
+Basepoint: (433, 64, 301)
+Structure:
+xxxxxxx
+....x.x
+xxx.x.x
+x...x.x
+x.xxx.x
+x.....x
+xxxxxxx
+**End Printing Maze**
+
+------------- MAIN MENU -------------
+1) Generate Maze
+2) Build Maze in MineCraft
+3) Solve Maze
+4) Show Team Information
+5) Exit
+
+Enter Menu item to continue: 
+
+------------- MAIN MENU -------------
+1) Generate Maze
+2) Build Maze in MineCraft
+3) Solve Maze
+4) Show Team Information
+5) Exit
+
+Enter Menu item to continue: 
+
+------------- SOLVE MAZE -------------
+1) Solve Manually
+2) Show Escape Route
+3) Back
+
+Enter Menu item to continue: 
+Teleporting to: 438, 65, 306
+
+------------- MAIN MENU -------------
+1) Generate Maze
+2) Build Maze in MineCraft
+3) Solve Maze
+4) Show Team Information
+5) Exit
+
+Enter Menu item to continue: 
+
+------------- SOLVE MAZE -------------
+1) Solve Manually
+2) Show Escape Route
+3) Back
+
+Enter Menu item to continue: 
+Starting BFS from: (438, 65, 306)
+Current Position: (438, 65, 306)
+Found Neighbour: (437, 65, 306)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (438, 65, 305)
+Enqueueing neighbour and marking as visited.
+Current Position: (437, 65, 306)
+Found Neighbour: (436, 65, 306)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (438, 65, 306)
+Current Position: (438, 65, 305)
+Found Neighbour: (438, 65, 304)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (438, 65, 306)
+Enqueueing neighbour and marking as visited.
+Current Position: (436, 65, 306)
+Found Neighbour: (435, 65, 306)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (437, 65, 306)
+Enqueueing neighbour and marking as visited.
+Current Position: (438, 65, 304)
+Found Neighbour: (438, 65, 303)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (438, 65, 305)
+Enqueueing neighbour and marking as visited.
+Current Position: (438, 65, 306)
+Found Neighbour: (437, 65, 306)
+Found Neighbour: (438, 65, 305)
+Current Position: (435, 65, 306)
+Found Neighbour: (434, 65, 306)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (436, 65, 306)
+Enqueueing neighbour and marking as visited.
+Current Position: (437, 65, 306)
+Found Neighbour: (438, 65, 306)
+Found Neighbour: (436, 65, 306)
+Current Position: (438, 65, 303)
+Found Neighbour: (438, 65, 302)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (438, 65, 304)
+Enqueueing neighbour and marking as visited.
+Current Position: (438, 65, 305)
+Found Neighbour: (438, 65, 306)
+Found Neighbour: (438, 65, 304)
+Current Position: (434, 65, 306)
+Found Neighbour: (435, 65, 306)
+Enqueueing neighbour and marking as visited.
+Current Position: (436, 65, 306)
+Found Neighbour: (437, 65, 306)
+Found Neighbour: (435, 65, 306)
+Current Position: (438, 65, 302)
+Found Neighbour: (438, 65, 303)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (437, 65, 302)
+Enqueueing neighbour and marking as visited.
+Current Position: (438, 65, 304)
+Found Neighbour: (438, 65, 305)
+Found Neighbour: (438, 65, 303)
+Current Position: (435, 65, 306)
+Found Neighbour: (436, 65, 306)
+Found Neighbour: (434, 65, 306)
+Current Position: (438, 65, 303)
+Found Neighbour: (438, 65, 304)
+Found Neighbour: (438, 65, 302)
+Current Position: (437, 65, 302)
+Found Neighbour: (436, 65, 302)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (438, 65, 302)
+Enqueueing neighbour and marking as visited.
+Current Position: (436, 65, 302)
+Found Neighbour: (437, 65, 302)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (436, 65, 303)
+Enqueueing neighbour and marking as visited.
+Current Position: (438, 65, 302)
+Found Neighbour: (438, 65, 303)
+Found Neighbour: (437, 65, 302)
+Current Position: (437, 65, 302)
+Found Neighbour: (438, 65, 302)
+Found Neighbour: (436, 65, 302)
+Current Position: (436, 65, 303)
+Found Neighbour: (436, 65, 304)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (436, 65, 302)
+Enqueueing neighbour and marking as visited.
+Current Position: (436, 65, 304)
+Found Neighbour: (435, 65, 304)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (436, 65, 303)
+Enqueueing neighbour and marking as visited.
+Current Position: (436, 65, 302)
+Found Neighbour: (437, 65, 302)
+Found Neighbour: (436, 65, 303)
+Current Position: (435, 65, 304)
+Found Neighbour: (434, 65, 304)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (436, 65, 304)
+Enqueueing neighbour and marking as visited.
+Current Position: (436, 65, 303)
+Found Neighbour: (436, 65, 302)
+Found Neighbour: (436, 65, 304)
+Current Position: (434, 65, 304)
+Found Neighbour: (434, 65, 303)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (435, 65, 304)
+Enqueueing neighbour and marking as visited.
+Current Position: (436, 65, 304)
+Found Neighbour: (435, 65, 304)
+Found Neighbour: (436, 65, 303)
+Current Position: (434, 65, 303)
+Found Neighbour: (434, 65, 302)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (434, 65, 304)
+Enqueueing neighbour and marking as visited.
+Current Position: (435, 65, 304)
+Found Neighbour: (436, 65, 304)
+Found Neighbour: (434, 65, 304)
+Current Position: (434, 65, 302)
+Found Neighbour: (434, 65, 301)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (434, 65, 303)
+Enqueueing neighbour and marking as visited.
+Current Position: (434, 65, 304)
+Found Neighbour: (434, 65, 303)
+Found Neighbour: (435, 65, 304)
+Current Position: (434, 65, 301)
+Found Neighbour: (434, 65, 300)
+Enqueueing neighbour and marking as visited.
+Found Neighbour: (434, 65, 302)
+Enqueueing neighbour and marking as visited.
+Current Position: (434, 65, 303)
+Found Neighbour: (434, 65, 304)
+Found Neighbour: (434, 65, 302)
+Current Position: (434, 65, 300)
+Maze solved!
+Maze Solved! Backtracking to find the path.
+Step [1]: (438, 65, 306)
+Step [2]: (438, 65, 305)
+Step [3]: (438, 65, 304)
+Step [4]: (438, 65, 303)
+Step [5]: (438, 65, 302)
+Step [6]: (437, 65, 302)
+Step [7]: (436, 65, 302)
+Step [8]: (436, 65, 303)
+Step [9]: (436, 65, 304)
+Step [10]: (435, 65, 304)
+Step [11]: (434, 65, 304)
+Step [12]: (434, 65, 303)
+Step [13]: (434, 65, 302)
+Step [14]: (434, 65, 301)
+Step [15]: (434, 65, 300)
+
+------------- MAIN MENU -------------
+1) Generate Maze
+2) Build Maze in MineCraft
+3) Solve Maze
+4) Show Team Information
+5) Exit
+
+Enter Menu item to continue: 
+
+The End!
+
+Agent destructor successfully called.
+Maze destructor successfully called.
