@@ -1,0 +1,126 @@
+
+You are running the program in test mode.
+
+Welcome to MineCraft MazeRunner!
+--------------------------------
+
+------------- MAIN MENU -------------
+1) Generate Maze
+2) Build Maze in MineCraft
+3) Solve Maze
+4) Show Team Information
+5) Exit
+
+Enter Menu item to continue: 
+
+------------- GENERATE MAZE -------------
+1) Read Maze from terminal
+2) Generate Random Maze
+3) Back
+
+Enter Menu item to continue: 
+Enter the basePoint of maze:
+Enter the length and width of maze:
+Enter the environment structure:
+Maze read successfully
+**Printing Maze**
+Basepoint: (433, 64, 301)
+Structure:
+x.xxx
+x.x.x
+x.x.x
+x.x.x
+x.x.x
+x...x
+xxxxx
+**End Printing Maze**
+
+------------- MAIN MENU -------------
+1) Generate Maze
+2) Build Maze in MineCraft
+3) Solve Maze
+4) Show Team Information
+5) Exit
+
+Enter Menu item to continue: 
+
+------------- MAIN MENU -------------
+1) Generate Maze
+2) Build Maze in MineCraft
+3) Solve Maze
+4) Show Team Information
+5) Exit
+
+Enter Menu item to continue: 
+
+------------- SOLVE MAZE -------------
+1) Solve Manually
+2) Show Escape Route
+3) Back
+
+Enter Menu item to continue: 
+Teleporting to: 438, 65, 304
+
+------------- MAIN MENU -------------
+1) Generate Maze
+2) Build Maze in MineCraft
+3) Solve Maze
+4) Show Team Information
+5) Exit
+
+Enter Menu item to continue: 
+
+------------- SOLVE MAZE -------------
+1) Solve Manually
+2) Show Escape Route
+3) Back
+
+Enter Menu item to continue: 
+Turning right.
+Step [1]: (437, 65, 304)
+Moving straight.
+Step [2]: (436, 65, 304)
+Moving straight.
+Step [3]: (435, 65, 304)
+Moving straight.
+Step [4]: (434, 65, 304)
+Cannot move straight or right. Trying to turn left.
+Turning around.
+Step [5]: (435, 65, 304)
+Moving straight.
+Step [6]: (436, 65, 304)
+Moving straight.
+Step [7]: (437, 65, 304)
+Moving straight.
+Step [8]: (438, 65, 304)
+Cannot move straight or right. Trying to turn left.
+Step [9]: (438, 65, 303)
+Moving straight.
+Step [10]: (438, 65, 302)
+Cannot move straight or right. Trying to turn left.
+Step [11]: (437, 65, 302)
+Moving straight.
+Step [12]: (436, 65, 302)
+Moving straight.
+Step [13]: (435, 65, 302)
+Moving straight.
+Step [14]: (434, 65, 302)
+Moving straight.
+Step [15]: (433, 65, 302)
+Moving straight.
+Step [16]: (432, 65, 302)
+Maze solved!
+
+------------- MAIN MENU -------------
+1) Generate Maze
+2) Build Maze in MineCraft
+3) Solve Maze
+4) Show Team Information
+5) Exit
+
+Enter Menu item to continue: 
+
+The End!
+
+Agent destructor successfully called.
+Maze destructor successfully called.
