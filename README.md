@@ -198,7 +198,7 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp
 - Documentation for validateMazeDimensions function
 - Full implementation of programming contracts for all functions
 
-**@pdotkeenan - Keenan Phillips - s3602528:**
+**@pdotkeenan - Keenan Phillips - s3602528: No help was received for the below functions, verify through git blame. All of it was originally and FULLY worked on by Keenan Phillips unless explicitly stated**
 
 - Fully created Main Menu and its navigation logic
 - Created Right-Hand Wall Follower algorithm
