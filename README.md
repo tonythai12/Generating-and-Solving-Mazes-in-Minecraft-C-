@@ -2,7 +2,7 @@
 
 # Assignment 3: Generating and solving mazes in Minecraft via C++
 
-This program uses C++ and the external [```mcpp```](https://github.com/rozukke/mcpp) library to build and generate mazes in Minecraft. Please read through this carefully before using the program, as there's important information to know. You can view the assignment video demo [here](https://rmiteduau-my.sharepoint.com/:v:/r/personal/s3602528_student_rmit_edu_au/Documents/Programming%20Studio%202%20Assignment%203/Group%2046%20Assignment%203.mp4?csf=1&web=1&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0RpcmVjdCJ9fQ&e=ubngEX)
+This program uses C++ and the external [```mcpp```](https://github.com/rozukke/mcpp) library to build and generate mazes in Minecraft. Please read through this carefully before using the program, as there's important information to know. You can view the assignment video demo [here](https://rmiteduau-my.sharepoint.com/:v:/r/personal/s3602528_student_rmit_edu_au/Documents/Programming%20Studio%202%20Assignment%203/Group%2046%20Assignment%203.mp4?csf=1&web=1&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0RpcmVjdCJ9fQ&e=ubngEX).
 
 **Table of Contents**
 
@@ -214,6 +214,8 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp
 - Assisted @ravisidhu007 in creating robust ```Maze::Maze()``` constructor
 - Added documentation for all functions
 - Creation of all test cases
+- Wrote all sections of README.md with no help - [Contributors and Workload](#contributors-and-workload) section was written with all contributors
+  - By extension, wrote all assumptions
 
 See commit history for more information. It should be noted that @tonythai12 had trouble with VSCode and as a result was unable to push their share of the workload (as listed above). Other contributors have assumed @tonythai12's workload. VSCode would not allow @tonythai12 to commit for a period of time. Forced to delete the majority of their commits in order to solve VSCode issues (this is evident and highlighted in the checkpoints through class).
 
