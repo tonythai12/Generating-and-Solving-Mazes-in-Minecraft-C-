@@ -248,6 +248,12 @@ int main(int argc, char* argv[]) {
  * @param environment: A vector of vectors of vectors of BlockTypes that stores the old blocks
  *                    in the environment.
 */
+// Contract:
+// terminalMaze must be provided and not be null for maze creation
+// any generated mazes are cleaned and restored
+// if terminalMaze is not built it will then build
+// if terminalMaze is already built, an error message is shown
+// if terminalMaze is not provided, user must generate a maze first
 void BuildMazeInMC(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes,
                    std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment) {
     if (terminalMaze) { 
@@ -294,7 +300,7 @@ void CleanUp(std::vector<std::vector<std::vector<mcpp::BlockType>>>& environment
         " Ignore this message if you didn't generate a maze" << std::endl;
     }
 }
-
+// Contract :
 /** 
  * Checks if any given input is a valid integer. If not, it will print an error message and ask the
  * user to re-enter the input.
@@ -337,12 +343,14 @@ std::vector<int> getValidInts(const std::string& errorMsg) {
  * @param envWidth The width of the maze
  * @return True if the dimensions are valid, false otherwise.
 */
+// Contract:
+// The number of rows (envLength) and the row width (envWidth) must be integers greater than zero
 bool validateMazeDimensions(const std::vector<std::string>& rows, int& envLength, int& envWidth) {
     bool isValid = true;
-
+// Checks if number of rows matches environment length
     if (static_cast<int>(rows.size()) != envLength) {
         isValid = false;
-    } else {
+    } else { // Check if width of rows matches environment width
         for (const auto& row : rows) {
             if (isValid && static_cast<int>(row.length()) != envWidth) {
                 isValid = false;
@@ -357,7 +365,9 @@ bool validateMazeDimensions(const std::vector<std::string>& rows, int& envLength
  * @param rows A vector of rows of the maze
  * @return True if the characters are valid, false otherwise.
 */
-bool validateMazeCharacters(const std::vector<std::string>& rows) {
+// Contract:
+// Characters in maze are limited to 'x' and '.'
+bool validateMazeCharacters(const std::vector<std::string>& rows) { 
     bool valid = true;  // Initially assume that it's valid, then check for invalid characters
     size_t i = 0;
     size_t numRows = rows.size();
@@ -387,6 +397,11 @@ bool validateMazeCharacters(const std::vector<std::string>& rows) {
  * @param terminalMaze: The maze that is being read from the terminal
  * @param generatedMazes: A vector of mazes that have been generated
 */
+// Contract:
+// reads and checks if maze structure is entered by user from terminal
+// envLength and envWidth must be integers greater than zero
+// input for maze structure must have valid dimensions for envLength and envWidth
+// input for maze structure must only contain 'x' and '.' characters
 void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, std::vector<Maze*>& generatedMazes) {
     mcpp::Coordinate basePoint(0, 0, 0);
     int envLength = 0;
@@ -438,6 +453,10 @@ void ReadMazeFromTerminal(mcpp::MinecraftConnection* mc, Maze*& terminalMaze, st
  * @param width: The width of the maze
  * @param mc: The MineCraft connection
 */
+// Contract:
+// Input must be three integers to specify basePoint
+// length and width must be integers greater than zero
+// length and width must be positive odd integers
 void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::MinecraftConnection* mc) {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
