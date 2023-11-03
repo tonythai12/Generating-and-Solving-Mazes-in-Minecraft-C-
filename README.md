@@ -216,6 +216,7 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp
 - Creation of all test cases
 - Wrote all sections of README.md with no help - [Contributors and Workload](#contributors-and-workload) section was written with all contributors
   - By extension, wrote all assumptions
+- Created and edited video with audio recordings from other contributors
 
 See commit history for more information. It should be noted that @tonythai12 had trouble with VSCode and as a result was unable to push their share of the workload (as listed above). Other contributors have assumed @tonythai12's workload. VSCode would not allow @tonythai12 to commit for a period of time. Forced to delete the majority of their commits in order to solve VSCode issues (this is evident and highlighted in the checkpoints through class).
 
