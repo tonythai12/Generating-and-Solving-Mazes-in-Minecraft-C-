@@ -237,9 +237,9 @@ int main(int argc, char* argv[]) {
     if (mode == TESTING_MODE) {
         auto newEnvironment = terminalMaze->getEnvironment(mc);
         if (compareEnvironments(newEnvironment, environmentCopy)) {
-            std::cout << "Test Passed: Environment is the same as before." << std::endl;
+            std::cout << "Environment is the same as before." << std::endl;
         } else {
-            std::cout << "Test Failed: Environment has changed." << std::endl;
+            std::cout << "Environment has changed." << std::endl;
         }
     }
     
@@ -256,32 +256,30 @@ int main(int argc, char* argv[]) {
 
 bool compareEnvironments(const std::vector<std::vector<std::vector<mcpp::BlockType>>>& env1,
                          const std::vector<std::vector<std::vector<mcpp::BlockType>>>& env2) {
-    bool isSame = true; // Flag to keep track of comparison status
 
-    if (env1.size() != env2.size()) {
-        isSame = false;
+    bool environmentsMatch = true;
+
+    if (env1.size() != env2.size() || 
+        env1[0].size() != env2[0].size() || 
+        env1[0][0].size() != env2[0][0].size()) {
+        environmentsMatch = false; // Dimensions don't match
+
     } else {
-        for (size_t y = 0; y < env1.size() && isSame; y++) {
-            if (env1[y].size() != env2[y].size()) {
-                isSame = false;
-            }
-
-            for (size_t x = 0; x < env1[y].size() && isSame; x++) {
-                if (env1[y][x].size() != env2[y][x].size()) {
-                    isSame = false;
-                }
-
-                for (size_t z = 0; z < env1[y][x].size() && isSame; z++) {
+        for (size_t y = 0; y < env1.size() && environmentsMatch; y++) {
+            for (size_t x = 0; x < env1[0].size() && environmentsMatch; x++) {
+                for (size_t z = 0; z < env1[0][0].size() && environmentsMatch; z++) {
                     if (!(env1[y][x][z] == env2[y][x][z])) {
-                        isSame = false;
+                        environmentsMatch = false; // Block types don't match
                     }
                 }
             }
         }
     }
 
-    return isSame;
+    // At the end of the function, return the result
+    return environmentsMatch;
 }
+
 
 
 /**
