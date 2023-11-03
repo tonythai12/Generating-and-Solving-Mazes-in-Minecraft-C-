@@ -1,0 +1,48 @@
+
+
+Welcome to MineCraft MazeRunner!
+--------------------------------
+
+------------- MAIN MENU -------------
+1) Generate Maze
+2) Build Maze in MineCraft
+3) Solve Maze
+4) Show Team Information
+5) Exit
+
+Enter Menu item to continue: 
+
+------------- GENERATE MAZE -------------
+1) Read Maze from terminal
+2) Generate Random Maze
+3) Back
+
+Enter Menu item to continue: 
+Enter the basePoint of maze:
+Input Error: You must enter exactly 3 integers for the basePoint.
+Enter the basePoint of maze:
+Input Error: Enter 3 integers (e.g., "103 105 100").
+Enter the basePoint of the maze:
+Enter the length and width of maze:
+Maze read successfully
+**Printing Maze**
+Basepoint: (1, 3, 4)
+Structure:
+xxx
+..x
+xxx
+**End Printing Maze**
+
+------------- MAIN MENU -------------
+1) Generate Maze
+2) Build Maze in MineCraft
+3) Solve Maze
+4) Show Team Information
+5) Exit
+
+Enter Menu item to continue: 
+
+The End!
+
+The environment vector is empty, so unable to restore environment. Ignore this message if you didn't generate a maze
+Maze destructor successfully called.
