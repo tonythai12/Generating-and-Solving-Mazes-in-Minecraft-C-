@@ -2,7 +2,7 @@
 
 # Assignment 3: Generating and solving mazes in Minecraft via C++
 
-This program uses C++ and the external [```mcpp```](https://github.com/rozukke/mcpp) library to build and generate mazes in Minecraft. Please read through this carefully before using the program, as there's important information to know. You can view the assignment video demo [here](https://rmiteduau-my.sharepoint.com/:v:/r/personal/s3602528_student_rmit_edu_au/Documents/Programming%20Studio%202%20Assignment%203/Group%2046%20Assignment%203.mp4?csf=1&web=1&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0RpcmVjdCJ9fQ&e=ubngEX).
+This program uses C++ and the external [```mcpp```](https://github.com/rozukke/mcpp) library to build and generate mazes in Minecraft. Please read through this carefully before using the program, as there's important information to know. You can view the assignment video demo [here](https://rmiteduau-my.sharepoint.com/:v:/r/personal/s3602528_student_rmit_edu_au/Documents/Programming%20Studio%202%20Assignment%203/Group%2046%20Video.mp4?csf=1&web=1&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0RpcmVjdCJ9fQ&e=ZhX7nX).
 
 **Table of Contents**
 
