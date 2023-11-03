@@ -234,6 +234,7 @@ int main(int argc, char* argv[]) {
 
     CleanUp(environment, terminalMaze, mc);
     
+    // If we're in testing mode, compare the initial environment state to the final environment state
     if (mode == TESTING_MODE) {
         auto newEnvironment = terminalMaze->getEnvironment(mc);
         if (compareEnvironments(newEnvironment, environmentCopy)) {
@@ -254,9 +255,17 @@ int main(int argc, char* argv[]) {
     return EXIT_SUCCESS;
 }
 
+/**
+ * If in TESTING_MODE, this function compares the initial environment state (prior to flattening and
+ * maze generation) to the final environment state (after flattening and maze generation). Accounts for
+ * BUFFER blocks.
+ * @param env1: The initial environment state
+ * @param env2: The final environment state
+ * @return True if the environments are the same, false otherwise.
+*/
 bool compareEnvironments(const std::vector<std::vector<std::vector<mcpp::BlockType>>>& env1,
                          const std::vector<std::vector<std::vector<mcpp::BlockType>>>& env2) {
-
+    
     bool environmentsMatch = true;
 
     if (env1.size() != env2.size() || 
@@ -275,7 +284,6 @@ bool compareEnvironments(const std::vector<std::vector<std::vector<mcpp::BlockTy
             }
         }
     }
-
     // At the end of the function, return the result
     return environmentsMatch;
 }
@@ -515,6 +523,8 @@ void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::M
     } while (static_cast<int>(inputs.size()) != 3);
     
     basePoint = mcpp::Coordinate(inputs[0], inputs[1], inputs[2]);
+
+    // Clear the vector to avoid repopulating it
     inputs.clear();
 
     bool shouldContinue = true;
@@ -545,7 +555,6 @@ void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::M
 
     } while (shouldContinue);
 
-    
      length = inputs[0], width = inputs[1];
 }
 
@@ -952,32 +961,51 @@ void InitialisePlayer(mcpp::MinecraftConnection* mc, mcpp::Coordinate& startLoc,
  * @return A vector of coordinates that represent the shortest path from the start to the end of the maze.
 */
 std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Agent*& player) {
+    
+    // Queue to hold BFS, along with the prev pos and current dir
     std::queue<std::tuple<mcpp::Coordinate, mcpp::Coordinate, AgentDirection>> bfsQueue;
+    
+    // Set to keep track of visited coordinates with their dir to avoid revisiting
     std::set<CoordDir, CoordDirComparator> visited;
+    
+    // Map to keep track of parent nodes for backtracking once goal is reached
     std::map<CoordDir, CoordDir, CoordDirComparator> parent;
+    
+    // Vector to store the final path from start to goal
     std::vector<mcpp::Coordinate> path;
 
     mcpp::Coordinate start = player->getStartLoc();
+    
+    // Create a CoordDir struct
     CoordDir startState = {.coord = start, .dir = UP};
     
+    // Initialise BFS queue with start state
     bfsQueue.push({start, start, UP});
+    
+    // Mark start state as visited
     visited.insert(startState);
+    
+    // Start state is its own parent (root)
     parent[startState] = startState;
 
     bool pathFound = false;
 
     std::cout << "Starting BFS from: (" << start.x << ", " << start.y << ", " << start.z << ")" << std::endl;
 
-    // While the queue is not empty and the path has not been found
+    // Begin BFS loop
     while (!bfsQueue.empty() && !pathFound) {
+        // Get current state from front of queue
         auto [currentPosition, previousPosition, currentDirection] = bfsQueue.front();
         bfsQueue.pop();
 
         CoordDir currentState = {.coord = currentPosition, .dir = currentDirection};
+        
         std::cout << "Current Position: (" << currentPosition.x << ", " << currentPosition.y << ", " << currentPosition.z << ")" << std::endl;
 
+        // Check if currentPosition is the end of the maze
         if (CheckIfSolved(currentPosition, mc, currentDirection)) {
             std::cout << "Maze Solved! Backtracking to find the path." << std::endl;
+            // Use the parent map to make the path from the end to the start
             CoordDir backtrack = {.coord = currentPosition, .dir = currentDirection};
             path = BacktrackPath(backtrack, start, parent);
             pathFound = true;
@@ -985,27 +1013,35 @@ std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Ag
 
         // Process all neighbours
         if (!pathFound) {
+            // Temp var to rotate through all possible dirs
             AgentDirection tempDirection = currentDirection;
             for (int i = 0; i < 4; i++) {
+                // Check if player can move in current dir
                 if (player->canMove(currentPosition.x, currentPosition.z, tempDirection, currentPosition, mc)) {
+                    // Find neighbouring coord based on current direction
                     mcpp::Coordinate neighbour = player->findNeighbour(tempDirection, currentPosition, mc);
                     CoordDir neighbourState = {.coord = neighbour, .dir = tempDirection};
+                    
                     std::cout << "Found Neighbour: (" << neighbour.x << ", " << neighbour.y 
                     << ", " << neighbour.z << ")" << std::endl;
 
+                    // If neighbour hasn't been visited, mark as visited and enqueue it
                     if (!visited.count(neighbourState)) {
                         visited.insert(neighbourState);  // Mark as visited here
                         bfsQueue.push({neighbour, currentPosition, tempDirection});
+                        // Record the parent of the neighbour state for path creation
                         parent[neighbourState] = currentState;
                         std::cout << "Enqueueing neighbour and marking as visited." << std::endl;
                     }
                 }
+                // Rotate agent in a clockwise fashion
                 tempDirection = player->turn(tempDirection);
             }
         }
     }
     return path;
 }
+
 
 /**
  * Backtracks from the end of the maze to the start to find the shortest path.
