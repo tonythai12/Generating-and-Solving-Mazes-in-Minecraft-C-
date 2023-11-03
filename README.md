@@ -15,6 +15,7 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
   - [Assumptions](#assumptions)
     - [General Assumptions](#general-assumptions)
     - [Maze Assumptions](#maze-assumptions)
+    - [Recursive Backtracking Algorithm Assumptions](#recursive-backtracking-algorithm-assumptions)
     - [Solving Algorithm Assumptions](#solving-algorithm-assumptions)
     - [Agent (player) Assumptions](#agent-player-assumptions)
     - [User Interaction Assumptions](#user-interaction-assumptions)
@@ -77,6 +78,28 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 - **Maze Exit:** Assumes the maze has only one exit point. Assumes that the maze exit is a total of 5 air blocks in a 180-degree fashion in front of the player, relative to their current direction. The ```basePoint.y``` coordinate remains unchanged.
 
 - **Base Point:** Assumes that the user chooses a ```basePoint``` that contains a solid block (e.g., ```mcpp::Blocks::GRASS```, ```mcpp::Blocks::STONE```) and NOT blocks that they can walk through or gravity-affected blocks (e.g., ```mcpp::Blocks::STILL_WATER```, ```mcpp::Blocks::SAND```). This is because the building algorithm gets the block (using ```getBlock(x, z)```) at the ```basePoint``` and makes that the foundation for the ground of the maze. Using such blocks may result in an inaccurate maze being built, especially when the surrounding environment is not flat but requires to be flattened.
+
+### Recursive Backtracking Algorithm Assumptions
+
+- **Grid Structure:** The code assumes that the maze is a grid, where even indices represent walls and odd indices represent potential paths.
+
+- **Starting Points:** The starting point is automatically determined, and it could be at any cell with coordinates ```(1, 1)```, ```(1, width - 2)```, ```(length - 2, 1)```, or ```(length - 2, width - 2)``` based on the ```selectRandomStartingPoint``` function.
+
+- **Modes:** There are two modes for generating the maze - ```NORMAL_MODE``` and ```TESTING_MODE```. Each has its own logic for creating the maze, which could impact the complexity and pattern of the generated maze.
+
+- **Recursion:** The maze is generated using a recursive function. This might have limitations on very large grids due to stack overflow issues.
+
+- **Cell Representation:** The cells and walls in the maze are represented by integers in a 2D ```std::vector```. Walls are typically represented by '1' and open cells are represented by '0'.
+
+- **Coordinate System:** The maze uses a custom coordinate system ```mcpp::Coordinate```, and this should be compatible with the rest of the codebase.
+
+- **Randomness:** In ```NORMAL_MODE```, the selection of directions is random, which means each maze generated will be unique unless the random seed is explicitly set.
+
+- **Visit Tracking:** The algorithm keeps track of visited cells. The code assumes that all cells are initially unvisited.
+
+- **Inclusion of ```basePoint```:** The code assumes that the ```basePoint``` will be added to the coordinates of the maze, but the reason and impact of this are not documented.
+
+- **Data Synchronisation:** It assumes that ```maze```, ```mazeStructure```, and other relevant data structures like ```cells``` are appropriately initialised and synchronised.
 
 ### Solving Algorithm Assumptions
 
@@ -178,5 +201,6 @@ This program uses C++ and the external [```mcpp```](https://github.com/rozukke/m
 - Added documentation for all functions
 - Creation of all test cases
 
-See commit history for more information. It should be noted that @tonythai12 had trouble with VSCode and as a result was unable to push their share of the workload (as listed above). Other contributors have assumed @tonythai12's workload. VSCode would not allow @tonythai12 to commit for a period of time. Forced to delete the majority of their commits in order to solve VSCode issues (this is evident and highlighted in the checkpoints through class). It should also be noted that @ravisidhu007 was unable to reply on MS Teams  in regards to assumptions about maze generation and the recursive backtracking algorithm. 
+See commit history for more information. It should be noted that @tonythai12 had trouble with VSCode and as a result was unable to push their share of the workload (as listed above). Other contributors have assumed @tonythai12's workload. VSCode would not allow @tonythai12 to commit for a period of time. Forced to delete the majority of their commits in order to solve VSCode issues (this is evident and highlighted in the checkpoints through class).
+
 **Ruwan has recommended that this group be individually marked for this assignment.**
