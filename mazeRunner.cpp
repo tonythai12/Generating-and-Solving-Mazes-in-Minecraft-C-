@@ -107,6 +107,8 @@ std::vector<mcpp::Coordinate> FindShortestPath(mcpp::MinecraftConnection* mc, Ag
 void GetMazeInputs(mcpp::Coordinate& basePoint, int& length, int& width, mcpp::MinecraftConnection* mc);
 std::vector<mcpp::Coordinate> BacktrackPath(CoordDir& backtrack, const mcpp::Coordinate& start, 
                                             std::map<CoordDir, CoordDir, CoordDirComparator>& parent);
+bool compareEnvironments(const std::vector<std::vector<std::vector<mcpp::BlockType>>>& env1,
+                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& env2);
 
 int main(int argc, char* argv[]) {
 
@@ -130,6 +132,7 @@ int main(int argc, char* argv[]) {
     Maze* terminalMaze = nullptr;
     Agent* player = nullptr;
     std::vector<std::vector<std::vector<mcpp::BlockType>>> environment;
+    std::vector<std::vector<std::vector<mcpp::BlockType>>> environmentCopy;
     std::vector<Maze*> generatedMazes;
 
     printStartText();
@@ -225,7 +228,20 @@ int main(int argc, char* argv[]) {
     }
     printExitMassage();
 
+    if (mode == TESTING_MODE) {
+        environmentCopy = environment;
+    }
+
     CleanUp(environment, terminalMaze, mc);
+    
+    if (mode == TESTING_MODE) {
+        auto newEnvironment = terminalMaze->getEnvironment(mc);
+        if (compareEnvironments(newEnvironment, environmentCopy)) {
+            std::cout << "Test Passed: Environment is the same as before." << std::endl;
+        } else {
+            std::cout << "Test Failed: Environment has changed." << std::endl;
+        }
+    }
     
     if (player) {
         delete player;
@@ -237,6 +253,36 @@ int main(int argc, char* argv[]) {
     player = nullptr;
     return EXIT_SUCCESS;
 }
+
+bool compareEnvironments(const std::vector<std::vector<std::vector<mcpp::BlockType>>>& env1,
+                         const std::vector<std::vector<std::vector<mcpp::BlockType>>>& env2) {
+    bool isSame = true; // Flag to keep track of comparison status
+
+    if (env1.size() != env2.size()) {
+        isSame = false;
+    } else {
+        for (size_t y = 0; y < env1.size() && isSame; y++) {
+            if (env1[y].size() != env2[y].size()) {
+                isSame = false;
+            }
+
+            for (size_t x = 0; x < env1[y].size() && isSame; x++) {
+                if (env1[y][x].size() != env2[y][x].size()) {
+                    isSame = false;
+                }
+
+                for (size_t z = 0; z < env1[y][x].size() && isSame; z++) {
+                    if (!(env1[y][x][z] == env2[y][x][z])) {
+                        isSame = false;
+                    }
+                }
+            }
+        }
+    }
+
+    return isSame;
+}
+
 
 /**
  * Builds the generated maze in the MineCraft world. First checks if there are any existing mazes built.
