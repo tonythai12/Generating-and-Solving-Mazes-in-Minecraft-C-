@@ -197,6 +197,7 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp
 - Documentation for validateMazeCharacters function
 - Documentation for validateMazeDimensions function
 - Full implementation of programming contracts for all functions
+- FUll explanation of menu navigaiton and reading maze from terminal explanation in video demonstration including VSCode and gameplay overview
 
 **@pdotkeenan - Keenan Phillips - s3602528: All tasks below were FULLY worked on by Keenan Phillips, with no help whatsoever (unless explicitly stated), verify through git blame**
 
@@ -218,6 +219,6 @@ std::vector<std::vector<std::vector<mcpp::BlockType>>> Maze::getEnvironment(mcpp
   - By extension, wrote all assumptions
 - Created and edited video with audio recordings from other contributors
 
-See commit history for more information. It should be noted that @tonythai12 had trouble with VSCode and as a result was unable to push their share of the workload (as listed above). Other contributors have assumed @tonythai12's workload. VSCode would not allow @tonythai12 to commit for a period of time. Forced to delete the majority of their commits in order to solve VSCode issues (this is evident and highlighted in the checkpoints through class).
+See commit history for more information. It should be noted that @tonythai12 had trouble with VSCode and as a result was unable to push some of their workload (as listed above) but still committed in contribution with their team members. Other contributors have assumed @tonythai12's workload. VSCode would not allow @tonythai12 to commit for a period of time and they were forced to delete the majority of their commits in order to solve VSCode issues (this is evident and highlighted in the checkpoints through class).
 
 **Ruwan has recommended that this group be individually marked for this assignment.**
